@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Cartao, Tela } from '@/components/ui';
+import { Cartao, Grade, Tela } from '@/components/ui';
 import { useTema } from '@/lib/theme';
 
 const ITENS: {
@@ -23,6 +23,7 @@ export default function Organizacao() {
 
   return (
     <Tela titulo="Organização">
+      <Grade minimo={340}>
       {ITENS.map((item) => (
         <Pressable key={item.rota} onPress={() => router.push(item.rota as never)}>
           <Cartao estilo={estilos.linha}>
@@ -37,6 +38,7 @@ export default function Organizacao() {
           </Cartao>
         </Pressable>
       ))}
+      </Grade>
     </Tela>
   );
 }

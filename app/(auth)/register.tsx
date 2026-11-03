@@ -1,4 +1,6 @@
 import { Link, useRouter } from 'expo-router';
+
+import { LogoInicio } from '@/components/LogoKingCoin';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 
@@ -77,8 +79,9 @@ export default function Cadastro() {
 
   return (
     <TelaFormulario margemTopo>
-      <View style={{ marginTop: 8, marginBottom: 8, gap: 4 }}>
-        <Text style={{ color: cores.texto, fontSize: 28, fontWeight: '800' }}>Criar conta</Text>
+      <View style={{ alignItems: 'center', gap: 6, marginBottom: 8 }}>
+        <LogoInicio tamanho={64} />
+        <Text style={{ color: cores.texto, fontSize: 28, fontWeight: '800', marginTop: 6 }}>Criar conta</Text>
         <Text style={{ color: cores.suave }}>Comece a organizar suas finanças.</Text>
       </View>
 

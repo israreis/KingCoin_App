@@ -3,7 +3,7 @@ import { Text } from 'react-native';
 
 import { BotaoFlutuante, useBotaoFlutuante } from '@/components/BotaoFlutuante';
 import { MetaDeslizavel } from '@/components/MetaCartao';
-import { Carregando, MensagemErro, Tela, Vazio } from '@/components/ui';
+import { Carregando, Grade, MensagemErro, Tela, Vazio } from '@/components/ui';
 import { listarMetas } from '@/lib/api';
 import { useDica } from '@/lib/dicas';
 import { useTema } from '@/lib/theme';
@@ -40,6 +40,7 @@ export default function Metas() {
         </Text>
       ) : null}
 
+      <Grade minimo={340}>
       {dados?.map((meta, indice) => (
         <MetaDeslizavel
           key={meta.id}
@@ -49,6 +50,7 @@ export default function Metas() {
           onDicaConcluida={dica.concluir}
         />
       ))}
+      </Grade>
     </Tela>
   );
 }

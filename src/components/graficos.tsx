@@ -123,9 +123,8 @@ export function GraficoRosca({ dados, vazio }: { dados: Fatia[]; vazio: string }
             stroke={arco.cor}
             strokeWidth={traco}
             strokeDasharray={`${arco.comprimento} ${circunferencia - arco.comprimento}`}
-            strokeDashoffset={-arco.inicio}
-            rotation={-90}
-            origin={`${tamanho / 2}, ${tamanho / 2}`}
+            // Começa no topo (12h) sem rotação: a rotação gera CSS inválido na web.
+            strokeDashoffset={circunferencia / 4 - arco.inicio}
           />
         ))}
         <SvgTexto

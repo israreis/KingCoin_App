@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { DRIVER_NATIVO } from '@/lib/layout';
 import { useTema } from '@/lib/theme';
 
 /** Tempo sem rolar até o botão voltar a aparecer. */
@@ -48,7 +49,7 @@ export function BotaoFlutuante({
   useEffect(() => {
     Animated.spring(animacao, {
       toValue: visivel ? 1 : 0,
-      useNativeDriver: true,
+      useNativeDriver: DRIVER_NATIVO,
       damping: 16,
       stiffness: 180,
     }).start();

@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 
 import { BarraProgresso, GraficoBarras, GraficoLinha, GraficoRosca } from '@/components/graficos';
-import { Cartao, Carregando, MensagemErro, Secao, Tela, Vazio } from '@/components/ui';
+import { Cartao, Carregando, Grade, MensagemErro, Secao, Tela, Vazio } from '@/components/ui';
 import { listarMetas, listarMovimentacoes, listarRecorrencias } from '@/lib/api';
 import { moeda } from '@/lib/format';
 import {
@@ -89,6 +89,8 @@ export default function Dashboard() {
 
       {dados && mensal ? (
         <>
+          <Grade minimo={460}>
+          <View style={{ gap: 14 }}>
           <Secao titulo="Insights do mês" />
           <Cartao>
             {dados.insights.temDespesas || dados.insights.receitasMes > 0 ? (
@@ -141,7 +143,9 @@ export default function Dashboard() {
               <Vazio texto="Sem movimentações neste mês para analisar." />
             )}
           </Cartao>
+          </View>
 
+          <View style={{ gap: 14 }}>
           <Secao titulo="Receitas x despesas" />
           <Cartao>
             <GraficoBarras
@@ -166,23 +170,31 @@ export default function Dashboard() {
               </>
             ) : null}
           </Cartao>
+          </View>
 
+          <View style={{ gap: 14 }}>
           <Secao titulo="Evolução da carteira" />
           <Cartao>
             <Text style={{ color: cores.suave, fontSize: 12 }}>Saldo acumulado nos últimos 6 meses</Text>
             <GraficoLinha labels={dados.evolucao.labels} valores={dados.evolucao.valores} />
           </Cartao>
+          </View>
 
+          <View style={{ gap: 14 }}>
           <Secao titulo="Despesas por categoria" />
           <Cartao>
             <GraficoRosca dados={dados.despesas} vazio="Nenhuma despesa neste mês." />
           </Cartao>
+          </View>
 
+          <View style={{ gap: 14 }}>
           <Secao titulo="Receitas por categoria" />
           <Cartao>
             <GraficoRosca dados={dados.receitas} vazio="Nenhuma receita neste mês." />
           </Cartao>
+          </View>
 
+          <View style={{ gap: 14 }}>
           <Secao titulo="Progresso das metas" />
           {dados.metas.length === 0 ? (
             <Vazio texto="Crie metas na aba Metas para acompanhar o progresso." />
@@ -201,6 +213,8 @@ export default function Dashboard() {
               ))}
             </Cartao>
           )}
+          </View>
+          </Grade>
         </>
       ) : null}
     </Tela>

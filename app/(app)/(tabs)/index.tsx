@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { MetaDeslizavel } from '@/components/MetaCartao';
 import { TransacaoDeslizavel } from '@/components/TransacaoItem';
-import { Botao, Cartao, Carregando, Chips, MensagemErro, Secao, Tela, Vazio } from '@/components/ui';
+import { Botao, Cartao, Carregando, Chips, Grade, MensagemErro, Secao, Tela, Vazio } from '@/components/ui';
 import {
   excluirMovimentacao,
   gerarRecorrencias,
@@ -126,6 +126,7 @@ export default function Carteira() {
 
       {dados ? (
         <>
+          <Grade>
           <Cartao>
             <Text style={{ color: cores.suave, fontWeight: '600' }}>Saldo · {textoPeriodo(periodo)}</Text>
             <Text style={[estilos.valorGrande, { color: cores.texto }]}>{moeda(dados.saldo.valor)}</Text>
@@ -154,6 +155,7 @@ export default function Carteira() {
             </Text>
             <Variacao dados={dados.investimentos} rotulo="vs. período anterior" />
           </Cartao>
+          </Grade>
 
           {dados.alertasOrcamento.length > 0 ? (
             <Pressable onPress={() => router.push('/orcamentos')}>
@@ -177,6 +179,8 @@ export default function Carteira() {
             onPress={() => router.push('/transacao')}
           />
 
+          <Grade>
+          <View style={estilos.coluna}>
           <Secao titulo="Últimas movimentações" />
           {dados.ultimas.length === 0 ? (
             <Vazio texto="Nenhuma movimentação nos últimos 30 dias." />
@@ -200,6 +204,8 @@ export default function Carteira() {
             </>
           )}
 
+          </View>
+          <View style={estilos.coluna}>
           <Secao titulo={`Movimentações · ${textoPeriodo(periodo)}`} />
           {dados.doPeriodo.length === 0 ? (
             <Vazio texto="Nenhuma movimentação neste período." />
@@ -214,6 +220,8 @@ export default function Carteira() {
             ))
           )}
 
+          </View>
+          <View style={estilos.coluna}>
           <Secao
             titulo="Metas"
             acao={
@@ -235,6 +243,8 @@ export default function Carteira() {
               />
             ))
           )}
+          </View>
+          </Grade>
         </>
       ) : null}
     </Tela>
@@ -247,4 +257,5 @@ const estilos = StyleSheet.create({
   variacao: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   linha: { flexDirection: 'row', gap: 12 },
   metade: { flex: 1 },
+  coluna: { gap: 14 },
 });

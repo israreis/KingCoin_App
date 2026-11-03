@@ -1,17 +1,25 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
-// Mostra as notificações também com o app aberto (não existe no navegador).
+type ModuloNotificacoes = typeof import('expo-notifications');
+
+/** Carrega o módulo só no celular (no navegador ele não funciona e gera avisos). */
+const carregar = (): Promise<ModuloNotificacoes> => import('expo-notifications');
+
+// Mostra as notificações também com o app aberto.
 if (Platform.OS !== 'web') {
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowBanner: true,
-      shouldShowList: true,
-      shouldPlaySound: false,
-      shouldSetBadge: false,
-    }),
-  });
+  carregar()
+    .then((Notifications) =>
+      Notifications.setNotificationHandler({
+        handleNotification: async () => ({
+          shouldShowBanner: true,
+          shouldShowList: true,
+          shouldPlaySound: false,
+          shouldSetBadge: false,
+        }),
+      }),
+    )
+    .catch(() => {});
 }
 
 const CHAVE = 'kingcoin:notificacoes';
@@ -37,6 +45,7 @@ export async function lerPreferencias(): Promise<PreferenciasNotificacao> {
 }
 
 async function pedirPermissao(): Promise<boolean> {
+  const Notifications = await carregar();
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync(CANAL, {
       name: 'Lembretes',
@@ -52,6 +61,7 @@ async function pedirPermissao(): Promise<boolean> {
 /** Agenda ou cancela os lembretes conforme as preferências e as salva. */
 export async function aplicarPreferencias(prefs: PreferenciasNotificacao): Promise<void> {
   if (Platform.OS === 'web') throw new Error('Lembretes só funcionam no app do celular.');
+  const Notifications = await carregar();
   if ((prefs.diario || prefs.semanal) && !(await pedirPermissao())) {
     throw new Error('Permita as notificações do KingCoin nas configurações do aparelho.');
   }

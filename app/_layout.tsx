@@ -64,14 +64,12 @@ function Guarda() {
   );
 }
 
-/** No navegador, centraliza o app com largura de celular. */
+/** No navegador, ocupa a tela toda com o fundo do tema (cada tela limita a própria largura). */
 function MolduraWeb({ children }: { children: ReactNode }) {
   const { cores } = useTema();
   if (Platform.OS !== 'web') return <>{children}</>;
   return (
-    <View style={{ flex: 1, backgroundColor: cores.fundo, alignItems: 'center' }}>
-      <View style={{ flex: 1, width: '100%', maxWidth: 560 }}>{children}</View>
-    </View>
+    <View style={{ flex: 1, backgroundColor: cores.fundo }}>{children}</View>
   );
 }
 

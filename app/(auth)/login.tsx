@@ -2,7 +2,7 @@ import { Link } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { LogoKingCoin } from '@/components/LogoKingCoin';
+import { LogoInicio } from '@/components/LogoKingCoin';
 import { Botao, Campo, CampoSenha, MensagemErro, TelaFormulario } from '@/components/ui';
 import { appleDisponivel, entrarComApple, entrarComGoogle } from '@/lib/oauth';
 import { supabase } from '@/lib/supabase';
@@ -55,7 +55,7 @@ export default function Login() {
   return (
     <TelaFormulario margemTopo>
       <View style={estilos.topo}>
-        <LogoKingCoin tamanho={96} />
+        <LogoInicio tamanho={96} />
         <Text style={[estilos.titulo, { color: cores.texto }]}>KingCoin</Text>
         <Text style={{ color: cores.suave }}>Suas finanças, sob controle.</Text>
       </View>

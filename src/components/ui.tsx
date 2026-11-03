@@ -26,9 +26,10 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { mascararMoeda } from '@/lib/format';
 import { REGRAS_SENHA } from '@/lib/senha';
 import { useFocusEffect } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { Children, useCallback, useState } from 'react';
 
 import { useBarraAbas } from '@/lib/barraAbas';
+import { useDesktop } from '@/lib/layout';
 import { useTema } from '@/lib/theme';
 import { useId } from 'react';
 
@@ -57,6 +58,8 @@ type TelaProps = {
   onRolar?: (evento: NativeSyntheticEvent<NativeScrollEvent>) => void;
   /** Elemento fixo sobre o conteúdo (ex.: botão flutuante). */
   flutuante?: ReactNode;
+  /** Largura máxima do conteúdo no navegador (computador). */
+  larguraMaxima?: number;
 };
 
 export function Tela({
@@ -69,8 +72,14 @@ export function Tela({
   bordas = ['top'],
   onRolar,
   flutuante,
+  larguraMaxima = 1200,
 }: TelaProps) {
   const { cores } = useTema();
+  const desktop = useDesktop();
+  const larguraWeb =
+    Platform.OS === 'web'
+      ? { width: '100%' as const, maxWidth: larguraMaxima, alignSelf: 'center' as const, ...(desktop ? { paddingHorizontal: 32 } : null) }
+      : null;
   const { aoRolar, mostrar } = useBarraAbas();
 
   // Ao entrar na tela, a barra de abas volta a aparecer.
@@ -91,7 +100,7 @@ export function Tela({
     <SafeAreaView style={[estilos.tela, { backgroundColor: cores.fundo }]} edges={bordas}>
       {rolavel ? (
         <ScrollView
-          contentContainerStyle={estilos.conteudo}
+          contentContainerStyle={[estilos.conteudo, larguraWeb]}
           onScroll={(evento) => {
             aoRolar(evento);
             onRolar?.(evento);
@@ -113,7 +122,7 @@ export function Tela({
           {children}
         </ScrollView>
       ) : (
-        <Pressable style={estilos.conteudoFixo} onPress={Keyboard.dismiss} accessible={false}>
+        <Pressable style={[estilos.conteudoFixo, larguraWeb]} onPress={Keyboard.dismiss} accessible={false}>
           {cabecalho}
           {children}
         </Pressable>
@@ -149,7 +158,11 @@ export function TelaFormulario({
             paddingBottom: insets.bottom + 40,
           },
           // Telas de entrada no navegador: centralizadas na vertical, com respiro.
+          margemTopo ? estilos.entradaCentralizada : null,
           margemTopo && Platform.OS === 'web' ? estilos.entradaWeb : null,
+          Platform.OS === 'web'
+            ? { width: '100%', maxWidth: margemTopo ? 480 : 720, alignSelf: 'center' }
+            : null,
         ]}
         keyboardShouldPersistTaps="handled"
           keyboardDismissMode={MODO_FECHAR_TECLADO}
@@ -157,6 +170,26 @@ export function TelaFormulario({
         {children}
       </ScrollView>
     </KeyboardAvoidingView>
+  );
+}
+
+// --- Grade (colunas no computador) ----------------------------------------
+
+/**
+ * No computador, distribui os filhos em colunas com largura mínima `minimo`.
+ * No celular e em janelas estreitas, mantém um embaixo do outro.
+ */
+export function Grade({ children, minimo = 320 }: { children: ReactNode; minimo?: number }) {
+  const desktop = useDesktop();
+  if (!desktop) return <>{children}</>;
+  return (
+    <View style={estilos.grade}>
+      {Children.toArray(children).map((filho, indice) => (
+        <View key={indice} style={{ flexGrow: 1, flexBasis: minimo, minWidth: minimo, gap: 14 }}>
+          {filho}
+        </View>
+      ))}
+    </View>
   );
 }
 
@@ -547,7 +580,8 @@ export function BotaoIcone({
 
 const estilos = StyleSheet.create({
   tela: { flex: 1 },
-  entradaWeb: { flexGrow: 1, justifyContent: 'center', paddingTop: 56, paddingBottom: 56 },
+  entradaCentralizada: { flexGrow: 1, justifyContent: 'center' },
+  entradaWeb: { paddingTop: 56, paddingBottom: 56 },
   conteudo: { paddingHorizontal: ESPACO_TELA, paddingTop: ESPACO_TELA, paddingBottom: 130, gap: 16 },
   conteudoFixo: { flex: 1, paddingHorizontal: ESPACO_TELA, paddingTop: ESPACO_TELA, gap: 16 },
   cabecalho: {
@@ -557,6 +591,7 @@ const estilos = StyleSheet.create({
     marginBottom: 4,
   },
   titulo: { fontSize: 26, fontWeight: '700' },
+  grade: { flexDirection: 'row', flexWrap: 'wrap', gap: 16, alignItems: 'flex-start' },
   cartao: { borderWidth: 1, borderRadius: 18, padding: 18, gap: 10 },
   secao: {
     flexDirection: 'row',

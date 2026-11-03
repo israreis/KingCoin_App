@@ -374,3 +374,32 @@ header {
   font-weight: 300;
   text-transform: uppercase;
 }
+
+/* ------------------------------------------------------------------
+ * Liquid glass (mesmo estilo da barra do app): vidro translúcido com
+ * desfoque, borda clara e brilho interno.
+ * ------------------------------------------------------------------ */
+.liquid-glass {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.065));
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  -webkit-backdrop-filter: blur(26px) saturate(190%);
+  backdrop-filter: blur(26px) saturate(190%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 0 28px rgba(255, 255, 255, 0.04),
+    0 24px 60px -24px rgba(0, 0, 0, 0.55);
+}
+
+/* Links da navbar viram pílulas de vidro ao passar o mouse */
+.liquid-glass .nav-link {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  transition: background 0.35s cubic-bezier(0.3, 0.7, 0.2, 1), border-color 0.35s, color 0.35s;
+}
+.liquid-glass .nav-link:hover {
+  color: #ffffff;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.06));
+  border-color: rgba(255, 255, 255, 0.16);
+}

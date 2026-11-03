@@ -1,3 +1,4 @@
+import { Platform, Pressable } from 'react-native';
 import Svg, { G, Polygon } from 'react-native-svg';
 
 /** Logo do KingCoin (coroa sobre o "K"), em vetor. */
@@ -13,5 +14,21 @@ export function LogoKingCoin({ tamanho = 110, cor = '#23b785' }: { tamanho?: num
         points="809.29 113.99 809.29 171.76 541.81 323.52 540.32 599.76 404.64 677.58 268.94 599.76 267.48 323.52 0 171.76 0 113.99 113.99 0 227.99 113.99 290.65 113.99 404.64 0 518.64 113.99 581.3 113.99 695.29 0 809.29 113.99"
       />
     </Svg>
+  );
+}
+
+/** Logo das telas de entrada: no navegador, volta para a landing page. */
+export function LogoInicio({ tamanho = 96 }: { tamanho?: number }) {
+  if (Platform.OS !== 'web') return <LogoKingCoin tamanho={tamanho} />;
+  return (
+    <Pressable
+      accessibilityRole="link"
+      accessibilityLabel="Voltar para a página inicial"
+      onPress={() => {
+        (globalThis as unknown as { location: { href: string } }).location.href = '/landing/index.html';
+      }}
+    >
+      <LogoKingCoin tamanho={tamanho} />
+    </Pressable>
   );
 }

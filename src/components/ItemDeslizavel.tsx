@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { Animated, PanResponder, Pressable, StyleSheet, View } from 'react-native';
 
+import { DRIVER_NATIVO } from '@/lib/layout';
 import { useTema } from '@/lib/theme';
 
 const LARGURA_ACAO = 72;
@@ -27,7 +28,7 @@ export function ItemDeslizavel({ children, onEditar, onExcluir, dica, onDicaConc
     aberto.current = abrir;
     Animated.spring(posicao, {
       toValue: abrir ? -LARGURA_TOTAL : 0,
-      useNativeDriver: true,
+      useNativeDriver: DRIVER_NATIVO,
       bounciness: 0,
     }).start();
   };
@@ -52,9 +53,9 @@ export function ItemDeslizavel({ children, onEditar, onExcluir, dica, onDicaConc
     if (!dica) return;
     const animacao = Animated.sequence([
       Animated.delay(700),
-      Animated.timing(posicao, { toValue: -LARGURA_TOTAL * 0.75, duration: 450, useNativeDriver: true }),
+      Animated.timing(posicao, { toValue: -LARGURA_TOTAL * 0.75, duration: 450, useNativeDriver: DRIVER_NATIVO }),
       Animated.delay(900),
-      Animated.timing(posicao, { toValue: 0, duration: 350, useNativeDriver: true }),
+      Animated.timing(posicao, { toValue: 0, duration: 350, useNativeDriver: DRIVER_NATIVO }),
     ]);
     animacao.start(({ finished }) => {
       if (finished) onDicaConcluida?.();
