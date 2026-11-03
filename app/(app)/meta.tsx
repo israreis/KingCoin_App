@@ -1,8 +1,8 @@
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 
 import { Alert } from '@/lib/alerta';
-import { Botao, Campo, CampoMoeda, Carregando, MensagemErro, TelaFormulario } from '@/components/ui';
+import { Botao, BotoesFormulario, Campo, CampoMoeda, Carregando, MensagemErro, TelaFormulario } from '@/components/ui';
 import { buscarMeta, criarMeta, editarMeta, excluirMeta } from '@/lib/api';
 import { lerValor, numeroParaCampo } from '@/lib/format';
 
@@ -81,8 +81,7 @@ export default function FormularioMeta() {
   if (carregando) return <Carregando />;
 
   return (
-    <TelaFormulario>
-      <Stack.Screen options={{ title: idMeta ? 'Editar meta' : 'Nova meta' }} />
+    <TelaFormulario titulo={idMeta ? 'Editar meta' : 'Nova meta'}>
 
       {erro ? <MensagemErro texto={erro} /> : null}
 
@@ -106,7 +105,7 @@ export default function FormularioMeta() {
         placeholder="0,00"
       />
 
-      <Botao texto={idMeta ? 'Salvar alterações' : 'Criar meta'} onPress={salvar} carregando={salvando} />
+      <BotoesFormulario texto={idMeta ? 'Salvar' : 'Adicionar'} onPress={salvar} carregando={salvando} />
       {idMeta ? <Botao texto="Excluir meta" variante="perigo" onPress={excluir} /> : null}
     </TelaFormulario>
   );

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Text } from 'react-native';
 
 import { Alert } from '@/lib/alerta';
-import { Botao, Campo, CampoSenha, MensagemErro, RequisitosSenha, TelaFormulario } from '@/components/ui';
+import { Botao, BotoesFormulario, Campo, CampoSenha, MensagemErro, RequisitosSenha, TelaFormulario } from '@/components/ui';
 import { MENSAGEM_SENHA_FRACA, senhaForte } from '@/lib/senha';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
@@ -63,7 +63,7 @@ export default function AlterarSenha() {
   }
 
   return (
-    <TelaFormulario>
+    <TelaFormulario titulo="Alterar senha">
       <Text style={{ color: cores.suave, lineHeight: 21 }}>
         {codigoEnviado
           ? `Enviamos um código para ${email}. Digite-o abaixo junto com a nova senha.`
@@ -93,7 +93,7 @@ export default function AlterarSenha() {
             erro={confirmar && confirmar !== senha ? 'As senhas não conferem.' : null}
             sucesso={confirmar && confirmar === senha ? 'As senhas conferem.' : null}
           />
-          <Botao texto="Alterar senha" onPress={salvar} carregando={carregando} />
+          <BotoesFormulario texto="Salvar" onPress={salvar} carregando={carregando} />
           <Botao
             texto="Reenviar código"
             variante="contorno"
@@ -102,7 +102,7 @@ export default function AlterarSenha() {
           />
         </>
       ) : (
-        <Botao texto="Enviar código" icone="mail-outline" onPress={enviarCodigo} carregando={carregando} />
+        <BotoesFormulario texto="Enviar código" icone="mail-outline" onPress={enviarCodigo} carregando={carregando} />
       )}
     </TelaFormulario>
   );

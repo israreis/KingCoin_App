@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Text } from 'react-native';
 
-import { Botao, Campo, Cartao, MensagemErro, TelaFormulario } from '@/components/ui';
+import { Botao, BotoesFormulario, Campo, Cartao, MensagemErro, TelaFormulario } from '@/components/ui';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import { useTema } from '@/lib/theme';
@@ -56,7 +56,7 @@ export default function AlterarEmail() {
 
   if (enviado) {
     return (
-      <TelaFormulario>
+      <TelaFormulario titulo="Alterar e-mail">
         <Cartao>
           <Text style={{ color: cores.texto, fontSize: 17, fontWeight: '700' }}>Confirme o novo e-mail</Text>
           <Text style={{ color: cores.suave, lineHeight: 21 }}>
@@ -71,7 +71,7 @@ export default function AlterarEmail() {
   }
 
   return (
-    <TelaFormulario>
+    <TelaFormulario titulo="Alterar e-mail">
       <Text style={{ color: cores.suave, lineHeight: 21 }}>
         E-mail atual: <Text style={{ color: cores.texto, fontWeight: '600' }}>{emailAtual}</Text>
       </Text>
@@ -92,7 +92,7 @@ export default function AlterarEmail() {
         keyboardType="email-address"
       />
 
-      <Botao texto="Enviar confirmação" icone="mail-outline" onPress={enviar} carregando={carregando} />
+      <BotoesFormulario texto="Enviar" icone="mail-outline" onPress={enviar} carregando={carregando} />
     </TelaFormulario>
   );
 }

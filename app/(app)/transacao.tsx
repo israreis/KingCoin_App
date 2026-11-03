@@ -1,4 +1,4 @@
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import {
   Image,
@@ -16,6 +16,7 @@ import { Alert } from '@/lib/alerta';
 import { CampoData } from '@/components/CampoData';
 import {
   Botao,
+  BotoesFormulario,
   Campo,
   CampoMoeda,
   Carregando,
@@ -283,8 +284,7 @@ export default function FormularioTransacao() {
   const imagemAnexada = comprovanteLocal ?? comprovanteUrl;
 
   return (
-    <TelaFormulario>
-      <Stack.Screen options={{ title: idMovimentacao ? 'Editar movimentação' : 'Nova movimentação' }} />
+    <TelaFormulario titulo={idMovimentacao ? 'Editar movimentação' : 'Nova movimentação'}>
 
       {erro ? <MensagemErro texto={erro} /> : null}
 
@@ -386,8 +386,8 @@ export default function FormularioTransacao() {
         />
       )}
 
-      <Botao
-        texto={idMovimentacao ? 'Salvar alterações' : 'Adicionar'}
+      <BotoesFormulario
+        texto={idMovimentacao ? 'Salvar' : 'Adicionar'}
         onPress={salvar}
         carregando={salvando}
       />

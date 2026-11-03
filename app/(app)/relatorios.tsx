@@ -56,7 +56,7 @@ export default function Relatorios() {
   }
 
   return (
-    <TelaFormulario>
+    <TelaFormulario titulo="Relatórios" voltar>
       <Text style={{ color: cores.suave }}>
         Escolha o período e exporte as suas movimentações em PDF ou Excel.
       </Text>

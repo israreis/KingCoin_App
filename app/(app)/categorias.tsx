@@ -55,7 +55,7 @@ export default function Categorias() {
   }
 
   return (
-    <Tela atualizando={atualizando} onAtualizar={atualizar} bordas={[]}>
+    <Tela titulo="Categorias" voltar atualizando={atualizando} onAtualizar={atualizar}>
       <Cartao>
         <Text style={{ color: cores.texto, fontWeight: '700', fontSize: 16 }}>
           {editando ? 'Renomear categoria' : 'Nova categoria'}

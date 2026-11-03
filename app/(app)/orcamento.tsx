@@ -1,8 +1,8 @@
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Text } from 'react-native';
 
-import { Botao, CampoMoeda, Carregando, Chips, MensagemErro, TelaFormulario } from '@/components/ui';
+import { Botao, BotoesFormulario, CampoMoeda, Carregando, Chips, MensagemErro, TelaFormulario } from '@/components/ui';
 import {
   buscarOrcamento,
   criarOrcamento,
@@ -93,8 +93,7 @@ export default function FormularioOrcamento() {
   if (carregando) return <Carregando />;
 
   return (
-    <TelaFormulario>
-      <Stack.Screen options={{ title: idOrcamento ? 'Editar orçamento' : 'Novo orçamento' }} />
+    <TelaFormulario titulo={idOrcamento ? 'Editar orçamento' : 'Novo orçamento'}>
 
       {erro ? <MensagemErro texto={erro} /> : null}
 
@@ -122,8 +121,8 @@ export default function FormularioOrcamento() {
         placeholder="0,00"
       />
 
-      <Botao
-        texto={idOrcamento ? 'Salvar alterações' : 'Criar orçamento'}
+      <BotoesFormulario
+        texto={idOrcamento ? 'Salvar' : 'Adicionar'}
         onPress={salvar}
         carregando={salvando}
         desabilitado={!idOrcamento && disponiveis.length === 0}

@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 
-import { Botao, Campo, Carregando, MensagemErro, TelaFormulario } from '@/components/ui';
+import { BotoesFormulario, Campo, Carregando, MensagemErro, TelaFormulario } from '@/components/ui';
 import { buscarPerfil, salvarPerfil } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { mascararTelefone } from '@/lib/format';
@@ -57,7 +57,7 @@ export default function EditarPerfil() {
   if (carregando) return <Carregando />;
 
   return (
-    <TelaFormulario>
+    <TelaFormulario titulo="Editar dados">
       {erro ? <MensagemErro texto={erro} /> : null}
 
       <Campo
@@ -85,8 +85,7 @@ export default function EditarPerfil() {
         placeholder="(11) 98765-4321"
       />
 
-      <Botao texto="Salvar alterações" onPress={salvar} carregando={salvando} />
-      <Botao texto="Cancelar" variante="contorno" onPress={() => router.back()} desabilitado={salvando} />
+      <BotoesFormulario texto="Salvar" onPress={salvar} carregando={salvando} />
     </TelaFormulario>
   );
 }

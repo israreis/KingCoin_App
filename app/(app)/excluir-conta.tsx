@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Text } from 'react-native';
 
 import { Alert } from '@/lib/alerta';
-import { Botao, Campo, Cartao, MensagemErro, TelaFormulario } from '@/components/ui';
+import { BotoesFormulario, Campo, Cartao, MensagemErro, TelaFormulario } from '@/components/ui';
 import { excluirMinhaConta } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { mostrarErro } from '@/lib/dialogos';
@@ -59,7 +59,7 @@ export default function ExcluirConta() {
   }
 
   return (
-    <TelaFormulario>
+    <TelaFormulario titulo="Excluir conta">
       <Cartao estilo={{ borderColor: COR_TIPO.DESPESA }}>
         <Text style={{ color: cores.texto, fontWeight: '700', fontSize: 16 }}>
           O que será apagado
@@ -89,7 +89,7 @@ export default function ExcluirConta() {
         />
       )}
 
-      <Botao texto="Excluir minha conta" variante="perigo" onPress={confirmar} carregando={carregando} />
+      <BotoesFormulario texto="Excluir" variante="perigo" onPress={confirmar} carregando={carregando} />
     </TelaFormulario>
   );
 }

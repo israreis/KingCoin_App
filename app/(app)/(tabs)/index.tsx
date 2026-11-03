@@ -252,6 +252,12 @@ export default function Carteira() {
               />
             ))
           )}
+          <Botao
+            texto="Nova meta"
+            icone="flag-outline"
+            variante="contorno"
+            onPress={() => router.push('/meta')}
+          />
           </View>
         </>
       ) : null}

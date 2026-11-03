@@ -1,9 +1,10 @@
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { Switch, Text, View } from 'react-native';
 
 import {
   Botao,
+  BotoesFormulario,
   Campo,
   CampoMoeda,
   Carregando,
@@ -129,8 +130,7 @@ export default function FormularioRecorrencia() {
   if (carregando) return <Carregando />;
 
   return (
-    <TelaFormulario>
-      <Stack.Screen options={{ title: idRecorrencia ? 'Editar recorrência' : 'Nova recorrência' }} />
+    <TelaFormulario titulo={idRecorrencia ? 'Editar recorrência' : 'Nova recorrência'}>
 
       {erro ? <MensagemErro texto={erro} /> : null}
 
@@ -181,8 +181,8 @@ export default function FormularioRecorrencia() {
         As movimentações são lançadas automaticamente quando você abre o app, a partir de hoje.
       </Text>
 
-      <Botao
-        texto={idRecorrencia ? 'Salvar alterações' : 'Criar recorrência'}
+      <BotoesFormulario
+        texto={idRecorrencia ? 'Salvar' : 'Adicionar'}
         onPress={salvar}
         carregando={salvando}
       />

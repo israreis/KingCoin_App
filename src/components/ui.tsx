@@ -25,7 +25,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { mascararMoeda } from '@/lib/format';
 import { REGRAS_SENHA } from '@/lib/senha';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { Children, useCallback, useState } from 'react';
 
 import { useBarraAbas } from '@/lib/barraAbas';
@@ -62,6 +62,8 @@ type TelaProps = {
   flutuante?: ReactNode;
   /** Largura máxima do conteúdo no navegador (computador). */
   larguraMaxima?: number;
+  /** Mostra a seta de voltar antes do logo (telas abertas a partir de outra). */
+  voltar?: boolean;
 };
 
 export function Tela({
@@ -75,6 +77,7 @@ export function Tela({
   onRolar,
   flutuante,
   larguraMaxima = LARGURA_CONTEUDO,
+  voltar = false,
 }: TelaProps) {
   const { cores } = useTema();
   const desktop = useDesktop();
@@ -91,17 +94,7 @@ export function Tela({
     }, [mostrar]),
   );
 
-  const cabecalho = titulo ? (
-    <View style={estilos.cabecalho}>
-      <View style={estilos.tituloLinha}>
-        <LogoKingCoin tamanho={26} cor={cores.primaria} />
-        <Text style={[estilos.titulo, { color: cores.texto }]} numberOfLines={1}>
-          {titulo}
-        </Text>
-      </View>
-      {acoes}
-    </View>
-  ) : null;
+  const cabecalho = titulo ? <Cabecalho titulo={titulo} acoes={acoes} voltar={voltar} /> : null;
 
   return (
     <SafeAreaView style={[estilos.tela, { backgroundColor: cores.fundo }]} edges={bordas}>
@@ -143,12 +136,100 @@ export function Tela({
  * Tela de formulário: sobe o conteúdo quando o teclado abre e respeita as áreas
  * seguras. Use `margemTopo` em telas sem cabeçalho (login, cadastro).
  */
+/** Volta para a tela anterior; se a página foi aberta direto (web), vai para a Carteira. */
+export function useVoltar() {
+  const router = useRouter();
+  return useCallback(() => {
+    if (router.canGoBack()) router.back();
+    else router.replace('/');
+  }, [router]);
+}
+
+/** Cabeçalho padrão das telas: logo + título (e, opcionalmente, seta de voltar e ações). */
+export function Cabecalho({
+  titulo,
+  acoes,
+  voltar = false,
+}: {
+  titulo: string;
+  acoes?: ReactNode;
+  voltar?: boolean;
+}) {
+  const { cores } = useTema();
+  const irVoltar = useVoltar();
+  return (
+    <View style={estilos.cabecalho}>
+      <View style={estilos.tituloLinha}>
+        {voltar ? (
+          <Pressable
+            onPress={irVoltar}
+            hitSlop={10}
+            accessibilityRole="button"
+            accessibilityLabel="Voltar"
+            style={(estado) => [estilos.botaoIcone, vidro(estado)]}
+          >
+            <Ionicons name="chevron-back" size={24} color={cores.texto} />
+          </Pressable>
+        ) : null}
+        <LogoKingCoin tamanho={26} cor={cores.primaria} />
+        <Text style={[estilos.titulo, { color: cores.texto }]} numberOfLines={1}>
+          {titulo}
+        </Text>
+      </View>
+      {acoes}
+    </View>
+  );
+}
+
+/** Botões do rodapé dos formulários: Cancelar e a ação principal, lado a lado. */
+export function BotoesFormulario({
+  texto,
+  onPress,
+  carregando,
+  desabilitado,
+  variante = 'primario',
+  icone,
+  onCancelar,
+}: {
+  texto: string;
+  onPress: () => void;
+  carregando?: boolean;
+  desabilitado?: boolean;
+  variante?: 'primario' | 'perigo';
+  icone?: keyof typeof Ionicons.glyphMap;
+  onCancelar?: () => void;
+}) {
+  const irVoltar = useVoltar();
+  return (
+    <View style={estilos.botoesLinha}>
+      <View style={estilos.botaoMetade}>
+        <Botao texto="Cancelar" variante="contorno" onPress={onCancelar ?? irVoltar} desabilitado={carregando} />
+      </View>
+      <View style={estilos.botaoMetade}>
+        <Botao
+          texto={texto}
+          onPress={onPress}
+          carregando={carregando}
+          desabilitado={desabilitado}
+          variante={variante}
+          icone={icone}
+        />
+      </View>
+    </View>
+  );
+}
+
 export function TelaFormulario({
   children,
   margemTopo = false,
+  titulo,
+  voltar = false,
 }: {
   children: ReactNode;
   margemTopo?: boolean;
+  /** Cabeçalho igual ao das telas principais (logo + título). */
+  titulo?: string;
+  voltar?: boolean;
 }) {
   const { cores } = useTema();
   const insets = useSafeAreaInsets();
@@ -162,7 +243,7 @@ export function TelaFormulario({
         contentContainerStyle={[
           estilos.conteudo,
           {
-            paddingTop: (margemTopo ? insets.top : 0) + ESPACO_TELA,
+            paddingTop: insets.top + ESPACO_TELA,
             paddingBottom: insets.bottom + 40,
           },
           // Telas de entrada no navegador: centralizadas na vertical, com respiro.
@@ -180,6 +261,7 @@ export function TelaFormulario({
         keyboardShouldPersistTaps="handled"
           keyboardDismissMode={MODO_FECHAR_TECLADO}
       >
+        {titulo ? <Cabecalho titulo={titulo} voltar={voltar} /> : null}
         {children}
       </ScrollView>
     </KeyboardAvoidingView>
@@ -636,6 +718,8 @@ const estilos = StyleSheet.create({
     paddingHorizontal: 18,
   },
   botaoTexto: { fontSize: 16, fontWeight: '700' },
+  botoesLinha: { flexDirection: 'row', gap: 12 },
+  botaoMetade: { flex: 1 },
   campo: { gap: 6 },
   rotulo: { fontSize: 13, fontWeight: '600' },
   entrada: {

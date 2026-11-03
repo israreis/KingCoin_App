@@ -37,7 +37,8 @@ export default function Orcamentos() {
     <Tela
       atualizando={atualizando}
       onAtualizar={atualizar}
-      bordas={[]}
+      titulo="Orçamentos"
+      voltar
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <Text style={{ color: cores.suave, flex: 1, paddingRight: 12 }}>

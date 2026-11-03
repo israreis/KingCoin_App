@@ -22,10 +22,8 @@ export default function AppLayout() {
       <View style={{ flex: 1 }}>
         <Stack
           screenOptions={{
-            headerStyle: { backgroundColor: cores.card },
-            headerTintColor: cores.texto,
-            headerShadowVisible: false,
-            headerBackButtonDisplayMode: 'minimal',
+            // Cada tela desenha o próprio cabeçalho (logo + título), igual às abas.
+            headerShown: false,
             contentStyle: { backgroundColor: cores.fundo },
           }}
         >

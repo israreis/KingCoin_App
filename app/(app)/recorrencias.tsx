@@ -13,7 +13,7 @@ export default function Recorrencias() {
   const { dados, carregando, atualizando, erro, atualizar } = useDados(listarRecorrencias, []);
 
   return (
-    <Tela atualizando={atualizando} onAtualizar={atualizar} bordas={[]}>
+    <Tela titulo="Recorrências" voltar atualizando={atualizando} onAtualizar={atualizar}>
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <Text style={{ color: cores.suave, flex: 1, paddingRight: 12 }}>
           Salário, aluguel, assinaturas: lançados automaticamente todo mês, no dia escolhido.

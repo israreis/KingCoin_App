@@ -17,7 +17,8 @@ export default function Metas() {
 
   return (
     <Tela
-      bordas={[]}
+      titulo="Metas"
+      voltar
       atualizando={atualizando}
       onAtualizar={atualizar}
       onRolar={botao.aoRolar}

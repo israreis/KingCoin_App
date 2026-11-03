@@ -45,7 +45,7 @@ const TUTORIAIS: { icone: keyof typeof Ionicons.glyphMap; titulo: string; texto:
 export default function Ajuda() {
   const { cores } = useTema();
   return (
-    <TelaFormulario>
+    <TelaFormulario titulo="Ajuda" voltar>
       {TUTORIAIS.map((item) => (
         <Cartao key={item.titulo}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
