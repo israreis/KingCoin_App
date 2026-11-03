@@ -12,6 +12,7 @@ import { normalizar } from '@/lib/format';
 import { PERIODOS, PERIODO_PADRAO, calcularPeriodo } from '@/lib/periodos';
 import { COR_TIPO, TEXTO_TIPO, useTema } from '@/lib/theme';
 import { useDados } from '@/lib/useDados';
+import { useDica } from '@/lib/dicas';
 import type { PeriodoId, Tipo } from '@/types';
 
 type FiltroTipo = Tipo | 'TODOS';
@@ -26,6 +27,7 @@ const OPCOES_TIPO: { id: FiltroTipo; texto: string; cor?: string }[] = [
 export default function Transacoes() {
   const { cores } = useTema();
   const router = useRouter();
+  const dica = useDica('movimentacoes');
   const [periodo, setPeriodo] = useState<PeriodoId>(PERIODO_PADRAO);
   const [tipo, setTipo] = useState<FiltroTipo>('TODOS');
   const [busca, setBusca] = useState('');
@@ -84,6 +86,12 @@ export default function Transacoes() {
         placeholder="Buscar por descrição ou categoria"
       />
 
+      {dica.mostrar && filtradas.length > 0 ? (
+        <Text style={{ color: cores.suave, fontSize: 13 }}>
+          Dica: deslize um item para a esquerda para editar ou excluir.
+        </Text>
+      ) : null}
+
       {erro ? <MensagemErro texto={erro} /> : null}
       {carregando && !dados ? (
         <Carregando />
@@ -96,6 +104,8 @@ export default function Transacoes() {
               mov={item}
               onEditar={() => editar(item.id)}
               onExcluir={() => excluir(item.id)}
+              dica={dica.mostrar && index === 0}
+              onDicaConcluida={dica.concluir}
             />
           )}
           keyboardShouldPersistTaps="handled"

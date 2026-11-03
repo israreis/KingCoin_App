@@ -22,6 +22,7 @@ import type { Resumo } from '@/lib/saldos';
 import { COR_TIPO, useTema } from '@/lib/theme';
 import { useDesktop } from '@/lib/layout';
 import { useDados } from '@/lib/useDados';
+import { useDica } from '@/lib/dicas';
 import type { PeriodoId } from '@/types';
 
 const TRANSACOES_DO_PERIODO = 10;
@@ -47,6 +48,7 @@ export default function Carteira() {
   const { cores } = useTema();
   const { session } = useAuth();
   const router = useRouter();
+  const dica = useDica('carteira');
   const desktop = useDesktop();
   const [periodo, setPeriodo] = useState<PeriodoId>(PERIODO_PADRAO);
 
@@ -204,12 +206,19 @@ export default function Carteira() {
             <Vazio texto="Nenhuma movimentação nos últimos 30 dias." />
           ) : (
             <>
+              {dica.mostrar ? (
+                <Text style={{ color: cores.suave, fontSize: 13 }}>
+                  Dica: deslize um item para a esquerda para editar ou excluir.
+                </Text>
+              ) : null}
               {dados.ultimas.map((mov, indice) => (
                 <TransacaoDeslizavel
                   key={mov.id}
                   mov={mov}
                   onEditar={() => editar(mov.id)}
                   onExcluir={() => excluir(mov.id)}
+                  dica={dica.mostrar && indice === 0}
+                  onDicaConcluida={dica.concluir}
                 />
               ))}
             </>
@@ -249,6 +258,8 @@ export default function Carteira() {
                 key={meta.id}
                 meta={meta}
                 onAlterada={atualizar}
+                dica={dica.mostrar && dados.ultimas.length === 0 && indice === 0}
+                onDicaConcluida={dica.concluir}
               />
             ))
           )}

@@ -5,6 +5,7 @@ import { KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Text, Vie
 import { Alert } from '@/lib/alerta';
 import { BarraProgresso } from '@/components/graficos';
 import { BotoesAcao } from '@/components/BotoesAcao';
+import { ItemDeslizavel } from '@/components/ItemDeslizavel';
 import { vidro } from '@/components/vidro';
 import { Botao, Cartao, CampoMoeda } from '@/components/ui';
 import { aportarMeta, excluirMeta } from '@/lib/api';
@@ -23,10 +24,16 @@ const ATALHOS = [50, 100, 500];
 export function MetaDeslizavel({
   meta,
   onAlterada,
+  dica,
+  onDicaConcluida,
 }: {
   meta: Meta;
   onAlterada: () => void;
+  dica?: boolean;
+  onDicaConcluida?: () => void;
 }) {
+  // No celular: deslize para editar/excluir. Na web: botões dentro do cartão.
+  const web = Platform.OS === 'web';
   const { cores } = useTema();
   const router = useRouter();
   const [modalAberto, setModalAberto] = useState(false);
@@ -75,46 +82,56 @@ export function MetaDeslizavel({
     aportar(quantia);
   }
 
+  const cartao = (
+    <Pressable onPress={editar}>
+      <Cartao>
+        <View style={estilos.topo}>
+          <Text style={{ color: cores.texto, fontSize: 16, fontWeight: '700', flex: 1 }} numberOfLines={1}>
+            {meta.nome}
+          </Text>
+          <Text style={{ color: cores.primaria, fontWeight: '700' }}>{Math.round(progresso)}%</Text>
+          {web ? <BotoesAcao onEditar={editar} onExcluir={excluir} /> : null}
+        </View>
+        <BarraProgresso porcentagem={progresso} />
+        <Text style={{ color: cores.suave, fontSize: 13 }}>
+          {moeda(meta.valor_atual)} de {moeda(meta.valor_meta)}
+        </Text>
+
+        <View style={estilos.atalhos}>
+          {ATALHOS.map((quantia) => (
+            <Pressable
+              key={quantia}
+              disabled={enviando}
+              onPress={() => aportar(quantia)}
+              style={(estado) => [
+                estilos.atalho,
+                { borderColor: cores.primaria, opacity: enviando ? 0.5 : 1 },
+                vidro(estado, enviando),
+              ]}
+            >
+              <Text style={{ color: cores.primaria, fontWeight: '700', fontSize: 12 }}>+ R$ {quantia}</Text>
+            </Pressable>
+          ))}
+          <Pressable
+            onPress={() => setModalAberto(true)}
+            style={(estado) => [estilos.atalho, { borderColor: cores.borda }, vidro(estado)]}
+          >
+            <Text style={{ color: cores.texto, fontWeight: '700', fontSize: 12 }}>Outro valor</Text>
+          </Pressable>
+        </View>
+      </Cartao>
+    </Pressable>
+  );
+
   return (
     <>
-      <Pressable onPress={editar}>
-        <Cartao>
-          <View style={estilos.topo}>
-            <Text style={{ color: cores.texto, fontSize: 16, fontWeight: '700', flex: 1 }} numberOfLines={1}>
-              {meta.nome}
-            </Text>
-            <Text style={{ color: cores.primaria, fontWeight: '700' }}>{Math.round(progresso)}%</Text>
-            <BotoesAcao onEditar={editar} onExcluir={excluir} />
-          </View>
-          <BarraProgresso porcentagem={progresso} />
-          <Text style={{ color: cores.suave, fontSize: 13 }}>
-            {moeda(meta.valor_atual)} de {moeda(meta.valor_meta)}
-          </Text>
-
-          <View style={estilos.atalhos}>
-            {ATALHOS.map((quantia) => (
-              <Pressable
-                key={quantia}
-                disabled={enviando}
-                onPress={() => aportar(quantia)}
-                style={(estado) => [
-                  estilos.atalho,
-                  { borderColor: cores.primaria, opacity: enviando ? 0.5 : 1 },
-                  vidro(estado, enviando),
-                ]}
-              >
-                <Text style={{ color: cores.primaria, fontWeight: '700', fontSize: 12 }}>+ R$ {quantia}</Text>
-              </Pressable>
-            ))}
-            <Pressable
-              onPress={() => setModalAberto(true)}
-              style={(estado) => [estilos.atalho, { borderColor: cores.borda }, vidro(estado)]}
-            >
-              <Text style={{ color: cores.texto, fontWeight: '700', fontSize: 12 }}>Outro valor</Text>
-            </Pressable>
-          </View>
-        </Cartao>
-      </Pressable>
+      {web ? (
+        cartao
+      ) : (
+        <ItemDeslizavel onEditar={editar} onExcluir={excluir} dica={dica} onDicaConcluida={onDicaConcluida}>
+          {cartao}
+        </ItemDeslizavel>
+      )}
 
       <Modal visible={modalAberto} transparent animationType="fade" onRequestClose={() => setModalAberto(false)}>
         <KeyboardAvoidingView

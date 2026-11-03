@@ -1,11 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { dataBR, moeda } from '@/lib/format';
 import { COR_TIPO, useTema } from '@/lib/theme';
 import type { ReactNode } from 'react';
 
 import { BotoesAcao } from './BotoesAcao';
+import { ItemDeslizavel } from './ItemDeslizavel';
 import type { Movimentacao, Tipo } from '@/types';
 
 const ICONE_POR_CATEGORIA: Record<string, keyof typeof Ionicons.glyphMap> = {
@@ -81,17 +82,32 @@ export function TransacaoItem({
   );
 }
 
-/** Item da lista com botões de editar/excluir (itens pendentes não podem ser alterados). */
+/**
+ * Item da lista com editar/excluir (itens pendentes não podem ser alterados).
+ * No celular: deslize para a esquerda. Na web: botões dentro do cartão.
+ */
 export function TransacaoDeslizavel({
   mov,
   onEditar,
   onExcluir,
+  dica,
+  onDicaConcluida,
 }: {
   mov: Movimentacao;
   onEditar: () => void;
   onExcluir: () => void;
+  dica?: boolean;
+  onDicaConcluida?: () => void;
 }) {
   if (mov.pendente) return <TransacaoItem mov={mov} />;
+
+  if (Platform.OS !== 'web') {
+    return (
+      <ItemDeslizavel onEditar={onEditar} onExcluir={onExcluir} dica={dica} onDicaConcluida={onDicaConcluida}>
+        <TransacaoItem mov={mov} onPress={onEditar} />
+      </ItemDeslizavel>
+    );
+  }
 
   return (
     <TransacaoItem

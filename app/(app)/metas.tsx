@@ -7,10 +7,12 @@ import { Carregando, Grade, MensagemErro, Tela, Vazio } from '@/components/ui';
 import { listarMetas } from '@/lib/api';
 import { useTema } from '@/lib/theme';
 import { useDados } from '@/lib/useDados';
+import { useDica } from '@/lib/dicas';
 
 export default function Metas() {
   const { cores } = useTema();
   const router = useRouter();
+  const dica = useDica('metas');
   const { dados, carregando, atualizando, erro, atualizar } = useDados(listarMetas, []);
   const botao = useBotaoFlutuante();
   const temMetas = (dados?.length ?? 0) > 0;
@@ -37,12 +39,20 @@ export default function Metas() {
         <Vazio texto="Nenhuma meta ainda. Toque em + para criar a primeira." />
       ) : null}
 
+      {dica.mostrar && temMetas ? (
+        <Text style={{ color: cores.suave, fontSize: 13 }}>
+          Dica: deslize uma meta para a esquerda para editar ou excluir.
+        </Text>
+      ) : null}
+
       <Grade minimo={340}>
       {dados?.map((meta, indice) => (
         <MetaDeslizavel
           key={meta.id}
           meta={meta}
           onAlterada={atualizar}
+          dica={dica.mostrar && indice === 0}
+          onDicaConcluida={dica.concluir}
         />
       ))}
       </Grade>
