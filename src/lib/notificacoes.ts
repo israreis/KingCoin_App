@@ -2,15 +2,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
-// Mostra as notificações também com o app aberto.
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowBanner: true,
-    shouldShowList: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
-});
+// Mostra as notificações também com o app aberto (não existe no navegador).
+if (Platform.OS !== 'web') {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowBanner: true,
+      shouldShowList: true,
+      shouldPlaySound: false,
+      shouldSetBadge: false,
+    }),
+  });
+}
 
 const CHAVE = 'kingcoin:notificacoes';
 const ID_DIARIO = 'kingcoin-lembrete-diario';
@@ -49,6 +51,7 @@ async function pedirPermissao(): Promise<boolean> {
 
 /** Agenda ou cancela os lembretes conforme as preferências e as salva. */
 export async function aplicarPreferencias(prefs: PreferenciasNotificacao): Promise<void> {
+  if (Platform.OS === 'web') throw new Error('Lembretes só funcionam no app do celular.');
   if ((prefs.diario || prefs.semanal) && !(await pedirPermissao())) {
     throw new Error('Permita as notificações do KingCoin nas configurações do aparelho.');
   }

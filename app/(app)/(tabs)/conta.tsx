@@ -1,8 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, Image, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
+import { Image, Platform, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 
+import { Alert } from '@/lib/alerta';
 import { Botao, Cartao, Carregando, Chips, MensagemErro, Secao, Tela } from '@/components/ui';
 import { buscarPerfil, escolherEEnviarFoto } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
@@ -15,6 +16,9 @@ import { limparCache } from '@/lib/offline';
 import { supabase } from '@/lib/supabase';
 import { useTema } from '@/lib/theme';
 import { useDados } from '@/lib/useDados';
+
+/** Biometria e lembretes não existem no navegador. */
+const RECURSOS_DO_CELULAR = Platform.OS !== 'web';
 
 export default function Conta() {
   const { cores, escuro, alternar } = useTema();
@@ -131,24 +135,28 @@ export default function Conta() {
       <Secao titulo="Preferências" />
       <Cartao>
         <LinhaSwitch rotulo="Tema escuro" valor={escuro} onChange={alternar} />
-        <LinhaSwitch rotulo="Desbloquear com biometria" valor={biometria.ativada} onChange={mudarBiometria} />
-        <LinhaSwitch
-          rotulo="Lembrete diário"
-          valor={prefs.diario}
-          onChange={(valor) => mudarNotificacoes({ ...prefs, diario: valor })}
-        />
-        {prefs.diario ? (
-          <Chips
-            opcoes={[12, 18, 20, 21].map((hora) => ({ id: hora, texto: `${hora}h` }))}
-            valor={prefs.hora}
-            onChange={(hora) => mudarNotificacoes({ ...prefs, hora })}
-          />
+        {RECURSOS_DO_CELULAR ? (
+          <>
+            <LinhaSwitch rotulo="Desbloquear com biometria" valor={biometria.ativada} onChange={mudarBiometria} />
+            <LinhaSwitch
+              rotulo="Lembrete diário"
+              valor={prefs.diario}
+              onChange={(valor) => mudarNotificacoes({ ...prefs, diario: valor })}
+            />
+            {prefs.diario ? (
+              <Chips
+                opcoes={[12, 18, 20, 21].map((hora) => ({ id: hora, texto: `${hora}h` }))}
+                valor={prefs.hora}
+                onChange={(hora) => mudarNotificacoes({ ...prefs, hora })}
+              />
+            ) : null}
+            <LinhaSwitch
+              rotulo="Resumo semanal (domingo, 18h)"
+              valor={prefs.semanal}
+              onChange={(valor) => mudarNotificacoes({ ...prefs, semanal: valor })}
+            />
+          </>
         ) : null}
-        <LinhaSwitch
-          rotulo="Resumo semanal (domingo, 18h)"
-          valor={prefs.semanal}
-          onChange={(valor) => mudarNotificacoes({ ...prefs, semanal: valor })}
-        />
       </Cartao>
 
       <Secao titulo="Ajuda" />

@@ -1,6 +1,6 @@
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import {
   Botao,
@@ -10,6 +10,7 @@ import {
   RequisitosSenha,
   TelaFormulario,
 } from '@/components/ui';
+import { Alert } from '@/lib/alerta';
 import { MENSAGEM_SENHA_FRACA, senhaForte } from '@/lib/senha';
 import { supabase } from '@/lib/supabase';
 import { useTema } from '@/lib/theme';

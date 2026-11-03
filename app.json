@@ -20,7 +20,12 @@
       }
     },
     "web": {
-      "favicon": "./assets/icon.png"
+      "favicon": "./assets/icon.png",
+      "bundler": "metro",
+      "output": "single",
+      "name": "KingCoin",
+      "themeColor": "#000805",
+      "backgroundColor": "#000805"
     },
     "plugins": [
       "expo-router",

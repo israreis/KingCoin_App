@@ -1,7 +1,8 @@
 import { Link } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
+import { Alert } from '@/lib/alerta';
 import { Botao, Campo, CampoSenha, MensagemErro, RequisitosSenha, TelaFormulario } from '@/components/ui';
 import { MENSAGEM_SENHA_FRACA, senhaForte } from '@/lib/senha';
 import { supabase } from '@/lib/supabase';

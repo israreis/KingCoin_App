@@ -1,6 +1,6 @@
 # KingCoin App
 
-App mobile de controle financeiro pessoal, versão React Native do [KingCoin](https://github.com/israreis/KingCoin). Usa **Expo (SDK 58)** e **Supabase** como backend (login, banco Postgres e arquivos).
+App de controle financeiro pessoal para **iPhone, Android e navegador**, a partir de um único código. Usa **Expo (SDK 58)** e **Supabase** como backend (login, banco Postgres e arquivos). Substitui a versão web em Django ([KingCoin](https://github.com/israreis/KingCoin)): as três plataformas usam o mesmo banco e o mesmo login.
 
 ## Funcionalidades
 
@@ -51,6 +51,23 @@ Escaneie o QR code com o Expo Go. O celular precisa estar na mesma rede do compu
 
 Nunca coloque a chave `service_role` no app: a chave anon é pública e quem protege os dados é o Row Level Security do `schema.sql`.
 
+## Versão web
+
+```bash
+npm run web          # abre no navegador em http://localhost:8081
+npm run build:web    # gera o site estático em dist/
+```
+
+No Supabase, em **Authentication > URL Configuration**, adicione em **Redirect URLs** o endereço local (`http://localhost:8081`) e o endereço publicado. Use o endereço publicado também como **Site URL**.
+
+Publicação gratuita (escolha um):
+
+- **Vercel**: importe o repositório; o `vercel.json` já define o build e o redirecionamento das rotas. Cadastre `EXPO_PUBLIC_SUPABASE_URL` e `EXPO_PUBLIC_SUPABASE_ANON_KEY` nas variáveis de ambiente do projeto.
+- **Netlify**: comando de build `npx expo export --platform web`, pasta `dist`; o `public/_redirects` já trata as rotas. Cadastre as mesmas variáveis.
+- **EAS Hosting**: `npx expo export --platform web` e depois `npx eas-cli deploy`.
+
+Na web, biometria e lembretes ficam escondidos, o comprovante é escolhido como arquivo, o Excel é baixado direto e o PDF abre a janela de impressão (escolha "Salvar como PDF").
+
 ## Expo Go x development build
 
 No Expo Go quase tudo funciona, com três exceções:
@@ -74,6 +91,8 @@ npx expo start --dev-client
 | Comando | O que faz |
 |---|---|
 | `npm start` | Inicia o servidor de desenvolvimento |
+| `npm run web` | Abre a versão web no navegador |
+| `npm run build:web` | Gera a versão web para publicar (`dist/`) |
 | `npm run typecheck` | Verifica os tipos TypeScript |
 | `npm test` | Roda os testes automatizados |
 | `npm run test:watch` | Roda os testes de novo a cada arquivo salvo |

@@ -1,7 +1,8 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { Alert } from '@/lib/alerta';
 import { BarraProgresso } from '@/components/graficos';
 import { ItemDeslizavel } from '@/components/ItemDeslizavel';
 import { Botao, Cartao, CampoMoeda } from '@/components/ui';

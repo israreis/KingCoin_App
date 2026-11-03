@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
-import { useState } from 'react';
+import { createElement, useState } from 'react';
 import { Modal, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { dataBR, isoParaData, paraISO } from '@/lib/format';
@@ -21,6 +21,36 @@ export function CampoData({
   const { cores, escuro } = useTema();
   const [aberto, setAberto] = useState(false);
   const [temporaria, setTemporaria] = useState(() => isoParaData(value));
+
+  // Na web usa o seletor de data do próprio navegador.
+  if (Platform.OS === 'web') {
+    return (
+      <View style={{ gap: 6 }}>
+        <Text style={{ color: cores.suave, fontSize: 13, fontWeight: '600' }}>{rotulo}</Text>
+        {createElement('input', {
+          type: 'date',
+          value,
+          'aria-label': rotulo,
+          onChange: (evento: { target: { value: string } }) => {
+            if (evento.target.value) onChange(evento.target.value);
+          },
+          style: {
+            minHeight: 48,
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderColor: cores.borda,
+            borderRadius: 12,
+            padding: '0 14px',
+            fontSize: 16,
+            fontFamily: 'inherit',
+            backgroundColor: cores.campo,
+            color: cores.texto,
+            colorScheme: escuro ? 'dark' : 'light',
+          },
+        })}
+      </View>
+    );
+  }
 
   function abrir() {
     if (Platform.OS === 'android') {

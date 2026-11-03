@@ -1,7 +1,7 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert } from 'react-native';
 
+import { Alert } from '@/lib/alerta';
 import { Botao, Campo, CampoMoeda, Carregando, MensagemErro, TelaFormulario } from '@/components/ui';
 import { buscarMeta, criarMeta, editarMeta, excluirMeta } from '@/lib/api';
 import { lerValor, numeroParaCampo } from '@/lib/format';

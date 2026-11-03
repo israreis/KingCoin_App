@@ -1,4 +1,4 @@
-import { Alert } from 'react-native';
+import { Alert } from './alerta';
 
 export function confirmarExclusao(titulo: string, aoConfirmar: () => void | Promise<void>) {
   Alert.alert(titulo, 'Essa ação não pode ser desfeita.', [

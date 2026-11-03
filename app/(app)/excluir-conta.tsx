@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Alert, Text } from 'react-native';
+import { Text } from 'react-native';
 
+import { Alert } from '@/lib/alerta';
 import { Botao, Campo, Cartao, MensagemErro, TelaFormulario } from '@/components/ui';
 import { excluirMinhaConta } from '@/lib/api';
 import { useAuth } from '@/lib/auth';

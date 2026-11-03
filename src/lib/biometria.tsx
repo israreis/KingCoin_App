@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
-import { AppState, Image, StyleSheet, Text, View } from 'react-native';
+import { AppState, Image, Platform, StyleSheet, Text, View } from 'react-native';
 
 import { Botao } from '@/components/ui';
 
@@ -33,6 +33,7 @@ export function BiometriaProvider({ children }: { children: ReactNode }) {
   const saiuEm = useRef<number | null>(null);
 
   useEffect(() => {
+    if (Platform.OS === 'web') return; // sem biometria no navegador
     AsyncStorage.getItem(CHAVE)
       .then((valor) => {
         if (valor === '1') {

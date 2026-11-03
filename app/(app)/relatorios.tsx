@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Alert, Text } from 'react-native';
+import { Text } from 'react-native';
 
+import { Alert } from '@/lib/alerta';
 import { CampoData } from '@/components/CampoData';
 import { Botao, Cartao, Chips, MensagemErro, TelaFormulario } from '@/components/ui';
 import { listarMovimentacoes } from '@/lib/api';

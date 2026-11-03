@@ -1,7 +1,6 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import {
-  Alert,
   Image,
   KeyboardAvoidingView,
   Modal,
@@ -13,6 +12,7 @@ import {
   View,
 } from 'react-native';
 
+import { Alert } from '@/lib/alerta';
 import { CampoData } from '@/components/CampoData';
 import {
   Botao,
@@ -144,6 +144,10 @@ export default function FormularioTransacao() {
   }
 
   function escolherOrigem() {
+    if (Platform.OS === 'web') {
+      anexar('galeria');
+      return;
+    }
     Alert.alert('Comprovante', 'De onde vem a imagem?', [
       { text: 'Tirar foto', onPress: () => anexar('camera') },
       { text: 'Escolher da galeria', onPress: () => anexar('galeria') },

@@ -1,6 +1,7 @@
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
+import { Platform } from 'react-native';
 import * as XLSX from 'xlsx';
 
 import type { Movimentacao } from '@/types';
@@ -83,6 +84,12 @@ export async function exportarPdf({ movimentacoes, inicio, fim, usuario }: Param
     </body>
   </html>`;
 
+  // Na web abre a impressão do navegador, onde dá para salvar como PDF.
+  if (Platform.OS === 'web') {
+    await Print.printAsync({ html });
+    return;
+  }
+
   const { uri } = await Print.printToFileAsync({ html });
   await compartilhar(uri, 'application/pdf', 'com.adobe.pdf');
 }
@@ -115,6 +122,12 @@ export async function exportarExcel({ movimentacoes, inicio, fim, usuario }: Par
 
   const livro = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(livro, planilha, 'Movimentações');
+
+  // Na web o navegador baixa o arquivo direto.
+  if (Platform.OS === 'web') {
+    XLSX.writeFile(livro, `kingcoin-${inicio}_${fim}.xlsx`);
+    return;
+  }
 
   const base64 = XLSX.write(livro, { type: 'base64', bookType: 'xlsx' });
   const caminho = `${FileSystem.cacheDirectory}kingcoin-${inicio}_${fim}.xlsx`;

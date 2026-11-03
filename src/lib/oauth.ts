@@ -27,6 +27,16 @@ async function salvarSessaoDaUrl(url: string) {
 }
 
 export async function entrarComGoogle(): Promise<void> {
+  if (Platform.OS === 'web') {
+    const origem = (globalThis as unknown as { location?: { origin: string } }).location?.origin;
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: origem },
+    });
+    if (error) throw new Error(error.message);
+    return;
+  }
+
   const redirectTo = Linking.createURL('auth/callback');
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',

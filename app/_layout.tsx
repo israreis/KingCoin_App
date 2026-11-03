@@ -1,7 +1,8 @@
 import { Slot, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { Text, View } from 'react-native';
+import { Platform, Text, View } from 'react-native';
+import type { ReactNode } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { Carregando } from '@/components/ui';
@@ -53,15 +54,28 @@ function Guarda() {
   );
 }
 
+/** No navegador, centraliza o app com largura de celular. */
+function MolduraWeb({ children }: { children: ReactNode }) {
+  const { cores } = useTema();
+  if (Platform.OS !== 'web') return <>{children}</>;
+  return (
+    <View style={{ flex: 1, backgroundColor: cores.fundo, alignItems: 'center' }}>
+      <View style={{ flex: 1, width: '100%', maxWidth: 560 }}>{children}</View>
+    </View>
+  );
+}
+
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <TemaProvider>
+        <MolduraWeb>
         <AuthProvider>
           <BiometriaProvider>
             <Guarda />
           </BiometriaProvider>
         </AuthProvider>
+        </MolduraWeb>
       </TemaProvider>
     </SafeAreaProvider>
   );
