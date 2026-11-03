@@ -1,0 +1,54 @@
+{
+  "expo": {
+    "name": "KingCoin",
+    "slug": "kingcoin-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "kingcoin",
+    "userInterfaceStyle": "automatic",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000805"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.israreis.kingcoin",
+      "usesAppleSignIn": true
+    },
+    "android": {
+      "package": "com.israreis.kingcoin",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#000805"
+      }
+    },
+    "web": {
+      "favicon": "./assets/icon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O KingCoin precisa acessar suas fotos para definir a foto de perfil.",
+          "cameraPermission": "O KingCoin usa a câmera para fotografar comprovantes."
+        }
+      ],
+      "expo-sharing",
+      "expo-splash-screen",
+      "expo-status-bar",
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Use o Face ID para desbloquear o KingCoin."
+        }
+      ],
+      "expo-notifications",
+      "expo-apple-authentication",
+      "expo-web-browser",
+      "@react-native-community/datetimepicker"
+    ]
+  }
+}
