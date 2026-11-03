@@ -144,6 +144,12 @@ const estilos = StyleSheet.create({
   topo: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 10 },
   atalhos: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 4 },
   atalho: { borderWidth: 1, borderRadius: 999, paddingVertical: 6, paddingHorizontal: 12 },
-  fundoModal: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: 'rgba(0,0,0,0.6)' },
-  caixaModal: { borderWidth: 1, borderRadius: 20, padding: 20, gap: 14 },
+  fundoModal: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+  },
+  caixaModal: { width: '100%', maxWidth: 420, borderWidth: 1, borderRadius: 20, padding: 20, gap: 14 },
 });

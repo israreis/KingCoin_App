@@ -27,7 +27,7 @@ export default function TabsLayout() {
         <Tabs.Screen name="transacoes" options={{ title: 'Movimentações' }} />
         <Tabs.Screen name="dashboard" options={{ title: 'Dashboard' }} />
         <Tabs.Screen name="organizacao" options={{ title: 'Organização' }} />
-        <Tabs.Screen name="conta" options={{ title: 'Conta' }} />
+        <Tabs.Screen name="conta" options={{ title: 'Perfil' }} />
       </Tabs>
     );
   }
@@ -52,7 +52,7 @@ export default function TabsLayout() {
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="conta">
         <NativeTabs.Trigger.Icon sf="person" md="person" />
-        <NativeTabs.Trigger.Label>Conta</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Label>Perfil</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
     </NativeTabs>
   );

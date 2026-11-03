@@ -96,7 +96,7 @@ export default function Conta() {
   const inicial = nomeCompleto.charAt(0).toUpperCase() || '?';
 
   return (
-    <Tela titulo="Minha conta">
+    <Tela titulo="Perfil">
       {erro ? <MensagemErro texto={erro} /> : null}
       {carregando && !perfil ? <Carregando /> : null}
 

@@ -451,8 +451,14 @@ const estilos = StyleSheet.create({
     borderRadius: 14,
     padding: 14,
   },
-  fundoModal: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: 'rgba(0,0,0,0.6)' },
-  caixaModal: { borderWidth: 1, borderRadius: 20, padding: 20, gap: 14 },
+  fundoModal: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+  },
+  caixaModal: { width: '100%', maxWidth: 420, borderWidth: 1, borderRadius: 20, padding: 20, gap: 14 },
   fundoImagem: { flex: 1, backgroundColor: 'rgba(0,0,0,0.92)', justifyContent: 'center' },
   imagemGrande: { width: '100%', height: '90%' },
 });

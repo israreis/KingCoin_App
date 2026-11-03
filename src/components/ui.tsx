@@ -31,6 +31,7 @@ import { Children, useCallback, useState } from 'react';
 import { useBarraAbas } from '@/lib/barraAbas';
 import { LARGURA_CONTEUDO, useDesktop } from '@/lib/layout';
 import { useTema } from '@/lib/theme';
+import { LogoKingCoin } from './LogoKingCoin';
 import { vidro } from './vidro';
 import { useId } from 'react';
 
@@ -92,7 +93,12 @@ export function Tela({
 
   const cabecalho = titulo ? (
     <View style={estilos.cabecalho}>
-      <Text style={[estilos.titulo, { color: cores.texto }]}>{titulo}</Text>
+      <View style={estilos.tituloLinha}>
+        <LogoKingCoin tamanho={26} cor={cores.primaria} />
+        <Text style={[estilos.titulo, { color: cores.texto }]} numberOfLines={1}>
+          {titulo}
+        </Text>
+      </View>
       {acoes}
     </View>
   ) : null;
@@ -608,7 +614,8 @@ const estilos = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 4,
   },
-  titulo: { fontSize: 26, fontWeight: '700' },
+  tituloLinha: { flexDirection: 'row', alignItems: 'center', gap: 10, flexShrink: 1 },
+  titulo: { fontSize: 26, fontWeight: '700', flexShrink: 1 },
   grade: { flexDirection: 'row', flexWrap: 'wrap', gap: 16, alignItems: 'flex-start' },
   cartao: { borderWidth: 1, borderRadius: 18, padding: 18, gap: 10 },
   secao: {

@@ -13,7 +13,7 @@ const ABAS: Record<string, { icone: Icone; iconeAtivo: Icone; titulo: string; ro
   transacoes: { icone: 'swap-vertical-outline', iconeAtivo: 'swap-vertical', titulo: 'Movimentações', rota: '/transacoes' },
   dashboard: { icone: 'stats-chart-outline', iconeAtivo: 'stats-chart', titulo: 'Dashboard', rota: '/dashboard' },
   organizacao: { icone: 'grid-outline', iconeAtivo: 'grid', titulo: 'Organização', rota: '/organizacao' },
-  conta: { icone: 'person-outline', iconeAtivo: 'person', titulo: 'Conta', rota: '/conta' },
+  conta: { icone: 'person-outline', iconeAtivo: 'person', titulo: 'Perfil', rota: '/conta' },
 };
 
 export type PropsDockWeb = {
