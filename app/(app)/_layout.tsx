@@ -1,5 +1,5 @@
 import { Stack } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuth } from '@/lib/auth';
@@ -22,8 +22,13 @@ export default function AppLayout() {
       <View style={{ flex: 1 }}>
         <Stack
           screenOptions={{
-            // Cada tela desenha o próprio cabeçalho (logo + título), igual às abas.
-            headerShown: false,
+            // Na web cada tela desenha o próprio cabeçalho (logo + título), igual às abas.
+            // No celular fica o cabeçalho nativo, com a seta de voltar.
+            headerShown: Platform.OS !== 'web',
+            headerStyle: { backgroundColor: cores.card },
+            headerTintColor: cores.texto,
+            headerShadowVisible: false,
+            headerBackButtonDisplayMode: 'minimal',
             contentStyle: { backgroundColor: cores.fundo },
           }}
         >

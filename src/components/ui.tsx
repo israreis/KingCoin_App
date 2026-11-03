@@ -25,7 +25,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { mascararMoeda } from '@/lib/format';
 import { REGRAS_SENHA } from '@/lib/senha';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { Children, useCallback, useState } from 'react';
 
 import { useBarraAbas } from '@/lib/barraAbas';
@@ -94,10 +94,22 @@ export function Tela({
     }, [mostrar]),
   );
 
-  const cabecalho = titulo ? <Cabecalho titulo={titulo} acoes={acoes} voltar={voltar} /> : null;
+  // No celular, telas abertas por cima das abas (voltar) usam o cabeçalho nativo.
+  const cabecalhoNativo = voltar && Platform.OS !== 'web';
+  const cabecalho = !titulo ? null : cabecalhoNativo ? (
+    <>
+      <Stack.Screen options={{ title: titulo }} />
+      {acoes}
+    </>
+  ) : (
+    <Cabecalho titulo={titulo} acoes={acoes} voltar={voltar} />
+  );
 
   return (
-    <SafeAreaView style={[estilos.tela, { backgroundColor: cores.fundo }]} edges={bordas}>
+    <SafeAreaView
+      style={[estilos.tela, { backgroundColor: cores.fundo }]}
+      edges={voltar && Platform.OS !== 'web' ? [] : bordas}
+    >
       {rolavel ? (
         <ScrollView
           contentContainerStyle={[estilos.conteudo, larguraWeb]}
@@ -243,7 +255,8 @@ export function TelaFormulario({
         contentContainerStyle={[
           estilos.conteudo,
           {
-            paddingTop: insets.top + ESPACO_TELA,
+            // No celular o cabeçalho nativo já reserva a área do topo.
+            paddingTop: (margemTopo || Platform.OS === 'web' ? insets.top : 0) + ESPACO_TELA,
             paddingBottom: insets.bottom + 40,
           },
           // Telas de entrada no navegador: centralizadas na vertical, com respiro.
@@ -261,7 +274,11 @@ export function TelaFormulario({
         keyboardShouldPersistTaps="handled"
           keyboardDismissMode={MODO_FECHAR_TECLADO}
       >
-        {titulo ? <Cabecalho titulo={titulo} voltar={voltar} /> : null}
+        {!titulo ? null : Platform.OS === 'web' ? (
+          <Cabecalho titulo={titulo} voltar={voltar} />
+        ) : (
+          <Stack.Screen options={{ title: titulo }} />
+        )}
         {children}
       </ScrollView>
     </KeyboardAvoidingView>
