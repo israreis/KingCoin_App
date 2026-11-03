@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Text, View } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { BarraProgresso, GraficoBarras, GraficoLinha, GraficoRosca } from '@/components/graficos';
 import { Cartao, Carregando, Grade, MensagemErro, Secao, Tela, Vazio } from '@/components/ui';
@@ -15,6 +16,7 @@ import {
 } from '@/lib/saldos';
 import { COR_TIPO, useTema } from '@/lib/theme';
 import { useDados } from '@/lib/useDados';
+import { useDesktop } from '@/lib/layout';
 
 function Comparativo({
   rotulo,
@@ -62,6 +64,12 @@ function LinhaInsight({ rotulo, valor, cor }: { rotulo: string; valor: string; c
 
 export default function Dashboard() {
   const { cores } = useTema();
+  const desktop = useDesktop();
+  // Altura do gráfico "Receitas x despesas": os outros gráficos usam a mesma.
+  const [alturaGrafico, setAlturaGrafico] = useState(0);
+  const cartaoGrafico = desktop
+    ? [estilos.coluna, { minHeight: alturaGrafico, justifyContent: 'center' as const }]
+    : undefined;
 
   const { dados, carregando, atualizando, erro, atualizar } = useDados(async () => {
     const [movs, metas, recorrencias] = await Promise.all([
@@ -145,9 +153,10 @@ export default function Dashboard() {
           </View>
 
           <Grade minimo={420} igualar>
-          <View style={{ gap: 14 }}>
+          <View style={estilos.coluna}>
           <Secao titulo="Receitas x despesas" />
-          <Cartao>
+          <View style={estilos.coluna} onLayout={(e) => desktop && setAlturaGrafico(e.nativeEvent.layout.height)}>
+          <Cartao estilo={estilos.coluna}>
             <GraficoBarras
               labels={mensal.labels}
               receitas={mensal.receitas}
@@ -171,25 +180,26 @@ export default function Dashboard() {
             ) : null}
           </Cartao>
           </View>
+          </View>
 
-          <View style={{ gap: 14 }}>
+          <View style={estilos.coluna}>
           <Secao titulo="Evolução da carteira" />
-          <Cartao>
+          <Cartao estilo={cartaoGrafico}>
             <Text style={{ color: cores.suave, fontSize: 12 }}>Saldo acumulado nos últimos 6 meses</Text>
             <GraficoLinha labels={dados.evolucao.labels} valores={dados.evolucao.valores} />
           </Cartao>
           </View>
 
-          <View style={{ gap: 14 }}>
+          <View style={estilos.coluna}>
           <Secao titulo="Despesas por categoria" />
-          <Cartao>
+          <Cartao estilo={cartaoGrafico}>
             <GraficoRosca dados={dados.despesas} vazio="Nenhuma despesa neste mês." />
           </Cartao>
           </View>
 
-          <View style={{ gap: 14 }}>
+          <View style={estilos.coluna}>
           <Secao titulo="Receitas por categoria" />
-          <Cartao>
+          <Cartao estilo={cartaoGrafico}>
             <GraficoRosca dados={dados.receitas} vazio="Nenhuma receita neste mês." />
           </Cartao>
           </View>
@@ -221,3 +231,8 @@ export default function Dashboard() {
     </Tela>
   );
 }
+
+const estilos = StyleSheet.create({
+  // No desktop os gráficos dividem a linha e esticam até a mesma altura.
+  coluna: { flex: 1, gap: 14 },
+});

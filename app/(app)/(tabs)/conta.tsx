@@ -96,12 +96,17 @@ export default function Conta() {
   const inicial = nomeCompleto.charAt(0).toUpperCase() || '?';
 
   return (
-    <Tela titulo="Minha conta" larguraMaxima={760}>
+    <Tela titulo="Minha conta">
       {erro ? <MensagemErro texto={erro} /> : null}
       {carregando && !perfil ? <Carregando /> : null}
 
       <View style={estilos.cabecalho}>
-        <Pressable onPress={trocarFoto} disabled={enviandoFoto} accessibilityLabel="Trocar foto de perfil">
+        <Pressable
+          onPress={trocarFoto}
+          disabled={enviandoFoto}
+          accessibilityLabel="Trocar foto de perfil"
+          style={estilos.areaAvatar}
+        >
           {foto ? (
             <Image source={{ uri: foto }} style={estilos.avatar} />
           ) : (
@@ -260,13 +265,18 @@ const estilos = StyleSheet.create({
   avatar: { width: 104, height: 104, borderRadius: 52 },
   avatarPadrao: { alignItems: 'center', justifyContent: 'center' },
   inicial: { color: '#ffffff', fontSize: 42, fontWeight: '700' },
+  areaAvatar: { width: 104, height: 104 },
   camera: {
     position: 'absolute',
     right: 0,
     bottom: 0,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 34,
+    height: 34,
+    minWidth: 34,
+    minHeight: 34,
+    aspectRatio: 1,
+    flexShrink: 0,
+    borderRadius: 17,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',

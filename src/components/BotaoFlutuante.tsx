@@ -3,7 +3,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Platform, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { DRIVER_NATIVO, useDesktop } from '@/lib/layout';
+import { DRIVER_NATIVO, useDesktop, LARGURA_CONTEUDO } from '@/lib/layout';
+import { vidro } from './vidro';
 import { useTema } from '@/lib/theme';
 
 /** Tempo sem rolar até o botão voltar a aparecer. */
@@ -35,7 +36,7 @@ export function BotaoFlutuante({
   onPress,
   rotulo,
   acimaDaBarra = false,
-  larguraConteudo,
+  larguraConteudo = LARGURA_CONTEUDO,
 }: {
   visivel: boolean;
   onPress: () => void;
@@ -85,9 +86,10 @@ export function BotaoFlutuante({
         onPress={onPress}
         accessibilityRole="button"
         accessibilityLabel={rotulo}
-        style={({ pressed }) => [
+        style={(estado) => [
           estilos.botao,
-          { backgroundColor: cores.primaria, transform: [{ scale: pressed ? 0.92 : 1 }] },
+          { backgroundColor: cores.primaria, transform: [{ scale: estado.pressed ? 0.92 : 1 }] },
+          vidro(estado),
         ]}
       >
         <Ionicons name="add" size={34} color="#ffffff" />

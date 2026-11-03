@@ -62,14 +62,12 @@ export default function Transacoes() {
     <Tela
       titulo="Movimentações"
       rolavel={false}
-      larguraMaxima={960}
       acoes={<BotaoIcone icone="download-outline" onPress={() => router.push('/relatorios')} />}
       flutuante={
         <BotaoFlutuante
           visivel={botao.visivel}
           rotulo="Nova movimentação"
           acimaDaBarra
-          larguraConteudo={960}
           onPress={() => router.push('/transacao')}
         />
       }

@@ -29,8 +29,9 @@ import { useFocusEffect } from 'expo-router';
 import { Children, useCallback, useState } from 'react';
 
 import { useBarraAbas } from '@/lib/barraAbas';
-import { useDesktop } from '@/lib/layout';
+import { LARGURA_CONTEUDO, useDesktop } from '@/lib/layout';
 import { useTema } from '@/lib/theme';
+import { vidro } from './vidro';
 import { useId } from 'react';
 
 /** Respiro entre o conteúdo e as bordas da tela. */
@@ -72,7 +73,7 @@ export function Tela({
   bordas = ['top'],
   onRolar,
   flutuante,
-  larguraMaxima = 1200,
+  larguraMaxima = LARGURA_CONTEUDO,
 }: TelaProps) {
   const { cores } = useTema();
   const desktop = useDesktop();
@@ -145,6 +146,7 @@ export function TelaFormulario({
 }) {
   const { cores } = useTema();
   const insets = useSafeAreaInsets();
+  const desktop = useDesktop();
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: cores.fundo }}
@@ -161,7 +163,12 @@ export function TelaFormulario({
           margemTopo ? estilos.entradaCentralizada : null,
           margemTopo && Platform.OS === 'web' ? estilos.entradaWeb : null,
           Platform.OS === 'web'
-            ? { width: '100%', maxWidth: margemTopo ? 480 : 720, alignSelf: 'center' }
+            ? {
+                width: '100%',
+                maxWidth: margemTopo ? 480 : LARGURA_CONTEUDO,
+                alignSelf: 'center',
+                ...(desktop && !margemTopo ? { paddingHorizontal: 32 } : null),
+              }
             : null,
         ]}
         keyboardShouldPersistTaps="handled"
@@ -260,9 +267,10 @@ export function Botao({
     <Pressable
       onPress={onPress}
       disabled={inativo}
-      style={({ pressed }) => [
+      style={(estado) => [
         estilos.botao,
-        { backgroundColor: fundo, borderColor: borda, opacity: inativo ? 0.6 : pressed ? 0.85 : 1 },
+        { backgroundColor: fundo, borderColor: borda, opacity: inativo ? 0.6 : estado.pressed ? 0.85 : 1 },
+        vidro(estado, inativo),
       ]}
     >
       {carregando ? (
@@ -496,12 +504,13 @@ export function Chips<T extends string | number>({
         onLayout={aoMedir ? (e) => aoMedir(e.nativeEvent.layout.width) : undefined}
         accessibilityRole="button"
         accessibilityState={{ selected: ativo }}
-        style={[
+        style={(estado) => [
           estilos.chip,
           {
             backgroundColor: ativo ? destaque : 'transparent',
             borderColor: ativo ? destaque : cores.borda,
           },
+          vidro(estado),
         ]}
       >
         <Text style={{ color: ativo ? '#ffffff' : cores.texto, fontWeight: '600', fontSize: 13 }}>
@@ -518,7 +527,7 @@ export function Chips<T extends string | number>({
       onLayout={aoMedir ? (e) => aoMedir(e.nativeEvent.layout.width) : undefined}
       accessibilityRole="button"
       accessibilityLabel={expandido ? 'Mostrar menos opções' : 'Mostrar mais opções'}
-      style={[estilos.chip, { borderColor: cores.borda }]}
+      style={(estado) => [estilos.chip, { borderColor: cores.borda }, vidro(estado)]}
     >
       <Ionicons
         name={expandido ? 'chevron-up' : 'ellipsis-horizontal'}
@@ -581,7 +590,7 @@ export function BotaoIcone({
 }) {
   const { cores } = useTema();
   return (
-    <Pressable onPress={onPress} hitSlop={10} style={estilos.botaoIcone}>
+    <Pressable onPress={onPress} hitSlop={10} style={(estado) => [estilos.botaoIcone, vidro(estado)]}>
       <Ionicons name={icone} size={24} color={cores.primaria} />
     </Pressable>
   );
@@ -655,5 +664,5 @@ const estilos = StyleSheet.create({
   centro: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 40 },
   vazio: { textAlign: 'center', paddingVertical: 20, fontSize: 14 },
   alerta: { borderWidth: 1, borderRadius: 12, padding: 12 },
-  botaoIcone: { padding: 4 },
+  botaoIcone: { padding: 6, borderRadius: 999 },
 });

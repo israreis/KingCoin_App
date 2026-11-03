@@ -190,7 +190,7 @@ export default function Carteira() {
             </Pressable>
           ) : null}
 
-          <View style={desktop ? estilos.botaoDesktop : undefined}>
+          <View style={[estilos.botao, desktop ? estilos.botaoDesktop : null]}>
             <Botao
               texto="Nova movimentação"
               icone="add-circle-outline"
@@ -267,5 +267,6 @@ const estilos = StyleSheet.create({
   metade: { flex: 1 },
   coluna: { gap: 14 },
   resumo: { flex: 1 },
+  botao: { marginTop: 10, marginBottom: 10 },
   botaoDesktop: { width: '50%', alignSelf: 'center' },
 });

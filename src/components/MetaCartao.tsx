@@ -4,7 +4,8 @@ import { KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Text, Vie
 
 import { Alert } from '@/lib/alerta';
 import { BarraProgresso } from '@/components/graficos';
-import { ItemDeslizavel } from '@/components/ItemDeslizavel';
+import { BotoesAcao } from '@/components/BotoesAcao';
+import { vidro } from '@/components/vidro';
 import { Botao, Cartao, CampoMoeda } from '@/components/ui';
 import { aportarMeta, excluirMeta } from '@/lib/api';
 import { confirmarExclusao, mostrarErro } from '@/lib/dialogos';
@@ -54,6 +55,17 @@ export function MetaDeslizavel({
     }
   }
 
+  function excluir() {
+    confirmarExclusao('Excluir meta', async () => {
+      try {
+        await excluirMeta(meta.id);
+        onAlterada();
+      } catch (e) {
+        mostrarErro(e);
+      }
+    });
+  }
+
   function confirmarOutroValor() {
     const quantia = lerValor(valor);
     if (quantia === null || quantia <= 0) {
@@ -65,53 +77,44 @@ export function MetaDeslizavel({
 
   return (
     <>
-      <ItemDeslizavel
-        onEditar={editar}
-        onExcluir={() =>
-          confirmarExclusao('Excluir meta', async () => {
-            try {
-              await excluirMeta(meta.id);
-              onAlterada();
-            } catch (e) {
-              mostrarErro(e);
-            }
-          })
-        }
-      >
-        <Pressable onPress={editar}>
-          <Cartao>
-            <View style={estilos.topo}>
-              <Text style={{ color: cores.texto, fontSize: 16, fontWeight: '700', flex: 1 }} numberOfLines={1}>
-                {meta.nome}
-              </Text>
-              <Text style={{ color: cores.primaria, fontWeight: '700' }}>{Math.round(progresso)}%</Text>
-            </View>
-            <BarraProgresso porcentagem={progresso} />
-            <Text style={{ color: cores.suave, fontSize: 13 }}>
-              {moeda(meta.valor_atual)} de {moeda(meta.valor_meta)}
+      <Pressable onPress={editar}>
+        <Cartao>
+          <View style={estilos.topo}>
+            <Text style={{ color: cores.texto, fontSize: 16, fontWeight: '700', flex: 1 }} numberOfLines={1}>
+              {meta.nome}
             </Text>
+            <Text style={{ color: cores.primaria, fontWeight: '700' }}>{Math.round(progresso)}%</Text>
+            <BotoesAcao onEditar={editar} onExcluir={excluir} />
+          </View>
+          <BarraProgresso porcentagem={progresso} />
+          <Text style={{ color: cores.suave, fontSize: 13 }}>
+            {moeda(meta.valor_atual)} de {moeda(meta.valor_meta)}
+          </Text>
 
-            <View style={estilos.atalhos}>
-              {ATALHOS.map((quantia) => (
-                <Pressable
-                  key={quantia}
-                  disabled={enviando}
-                  onPress={() => aportar(quantia)}
-                  style={[estilos.atalho, { borderColor: cores.primaria, opacity: enviando ? 0.5 : 1 }]}
-                >
-                  <Text style={{ color: cores.primaria, fontWeight: '700', fontSize: 12 }}>+ R$ {quantia}</Text>
-                </Pressable>
-              ))}
+          <View style={estilos.atalhos}>
+            {ATALHOS.map((quantia) => (
               <Pressable
-                onPress={() => setModalAberto(true)}
-                style={[estilos.atalho, { borderColor: cores.borda }]}
+                key={quantia}
+                disabled={enviando}
+                onPress={() => aportar(quantia)}
+                style={(estado) => [
+                  estilos.atalho,
+                  { borderColor: cores.primaria, opacity: enviando ? 0.5 : 1 },
+                  vidro(estado, enviando),
+                ]}
               >
-                <Text style={{ color: cores.texto, fontWeight: '700', fontSize: 12 }}>Outro valor</Text>
+                <Text style={{ color: cores.primaria, fontWeight: '700', fontSize: 12 }}>+ R$ {quantia}</Text>
               </Pressable>
-            </View>
-          </Cartao>
-        </Pressable>
-      </ItemDeslizavel>
+            ))}
+            <Pressable
+              onPress={() => setModalAberto(true)}
+              style={(estado) => [estilos.atalho, { borderColor: cores.borda }, vidro(estado)]}
+            >
+              <Text style={{ color: cores.texto, fontWeight: '700', fontSize: 12 }}>Outro valor</Text>
+            </Pressable>
+          </View>
+        </Cartao>
+      </Pressable>
 
       <Modal visible={modalAberto} transparent animationType="fade" onRequestClose={() => setModalAberto(false)}>
         <KeyboardAvoidingView
@@ -138,7 +141,7 @@ export function MetaDeslizavel({
 }
 
 const estilos = StyleSheet.create({
-  topo: { flexDirection: 'row', justifyContent: 'space-between', gap: 8 },
+  topo: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 10 },
   atalhos: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 4 },
   atalho: { borderWidth: 1, borderRadius: 999, paddingVertical: 6, paddingHorizontal: 12 },
   fundoModal: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: 'rgba(0,0,0,0.6)' },

@@ -67,6 +67,26 @@ function Guarda() {
 /** No navegador, ocupa a tela toda com o fundo do tema (cada tela limita a própria largura). */
 function MolduraWeb({ children }: { children: ReactNode }) {
   const { cores } = useTema();
+
+  // Mesmo ícone da landing em todas as telas do app web.
+  useEffect(() => {
+    type Elemento = { remove: () => void; setAttribute: (nome: string, valor: string) => void };
+    const doc = (globalThis as unknown as {
+      document?: {
+        head: { appendChild: (el: Elemento) => void };
+        querySelectorAll: (seletor: string) => { forEach: (fn: (el: Elemento) => void) => void };
+        createElement: (tag: string) => Elemento;
+      };
+    }).document;
+    if (Platform.OS !== 'web' || !doc) return;
+    doc.querySelectorAll('link[rel~="icon"], link[rel="shortcut icon"]').forEach((el) => el.remove());
+    const link = doc.createElement('link');
+    link.setAttribute('rel', 'icon');
+    link.setAttribute('type', 'image/svg+xml');
+    link.setAttribute('href', '/landing/img/favicon.svg');
+    doc.head.appendChild(link);
+  }, []);
+
   if (Platform.OS !== 'web') return <>{children}</>;
   return (
     <View style={{ flex: 1, backgroundColor: cores.fundo }}>{children}</View>

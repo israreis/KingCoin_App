@@ -25,7 +25,6 @@ export default function Metas() {
         <BotaoFlutuante
           visivel={botao.visivel}
           rotulo="Nova meta"
-          larguraConteudo={1200}
           onPress={() => router.push('/meta')}
         />
       }

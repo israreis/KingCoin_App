@@ -3,7 +3,9 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { dataBR, moeda } from '@/lib/format';
 import { COR_TIPO, useTema } from '@/lib/theme';
-import { ItemDeslizavel } from './ItemDeslizavel';
+import type { ReactNode } from 'react';
+
+import { BotoesAcao } from './BotoesAcao';
 import type { Movimentacao, Tipo } from '@/types';
 
 const ICONE_POR_CATEGORIA: Record<string, keyof typeof Ionicons.glyphMap> = {
@@ -33,9 +35,12 @@ const SINAL: Record<Tipo, string> = { RECEITA: '+', DESPESA: '-', ECONOMIA: '' }
 export function TransacaoItem({
   mov,
   onPress,
+  acoes,
 }: {
   mov: Movimentacao;
   onPress?: () => void;
+  /** Botões exibidos à direita, dentro do cartão. */
+  acoes?: ReactNode;
 }) {
   const { cores } = useTema();
   const cor = COR_TIPO[mov.categorias.tipo];
@@ -70,6 +75,8 @@ export function TransacaoItem({
           </View>
         ) : null}
       </View>
+      {acoes ? <View style={[estilos.divisor, { backgroundColor: cores.borda }]} /> : null}
+      {acoes}
     </Pressable>
   );
 }
@@ -87,9 +94,11 @@ export function TransacaoDeslizavel({
   if (mov.pendente) return <TransacaoItem mov={mov} />;
 
   return (
-    <ItemDeslizavel onEditar={onEditar} onExcluir={onExcluir}>
-      <TransacaoItem mov={mov} onPress={onEditar} />
-    </ItemDeslizavel>
+    <TransacaoItem
+      mov={mov}
+      onPress={onEditar}
+      acoes={<BotoesAcao onEditar={onEditar} onExcluir={onExcluir} />}
+    />
   );
 }
 
@@ -108,4 +117,5 @@ const estilos = StyleSheet.create({
   direita: { alignItems: 'flex-end', gap: 2 },
   pendente: { flexDirection: 'row', alignItems: 'center', gap: 3 },
   valor: { fontSize: 15, fontWeight: '700' },
+  divisor: { width: StyleSheet.hairlineWidth, alignSelf: 'stretch', marginVertical: 4 },
 });

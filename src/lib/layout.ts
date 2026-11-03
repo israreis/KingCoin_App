@@ -9,4 +9,7 @@ export function useDesktop(): boolean {
 }
 
 /** Animações nativas não existem no navegador. */
+/** Largura máxima do conteúdo de todas as telas na web (a mesma da Carteira). */
+export const LARGURA_CONTEUDO = 1200;
+
 export const DRIVER_NATIVO = Platform.OS !== 'web';
