@@ -32,6 +32,7 @@ import { useBarraAbas } from '@/lib/barraAbas';
 import { LARGURA_CONTEUDO, useDesktop } from '@/lib/layout';
 import { useTema } from '@/lib/theme';
 import { LogoKingCoin } from './LogoKingCoin';
+import { EntradaTela } from './transicao';
 import { vidro } from './vidro';
 import { useId } from 'react';
 
@@ -110,6 +111,7 @@ export function Tela({
       style={[estilos.tela, { backgroundColor: cores.fundo }]}
       edges={voltar && Platform.OS !== 'web' ? [] : bordas}
     >
+      <EntradaTela>
       {rolavel ? (
         <ScrollView
           contentContainerStyle={[estilos.conteudo, larguraWeb]}
@@ -145,6 +147,7 @@ export function Tela({
           {children}
         </Pressable>
       )}
+      </EntradaTela>
       {flutuante}
     </SafeAreaView>
   );
@@ -253,6 +256,7 @@ export function TelaFormulario({
       style={{ flex: 1, backgroundColor: cores.fundo }}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
+      <EntradaTela>
       <ScrollView
         contentContainerStyle={[
           estilos.conteudo,
@@ -283,6 +287,7 @@ export function TelaFormulario({
         )}
         {children}
       </ScrollView>
+      </EntradaTela>
     </KeyboardAvoidingView>
   );
 }

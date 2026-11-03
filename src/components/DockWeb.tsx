@@ -114,6 +114,12 @@ export function DockWeb({ ativa: abaAtiva }: { ativa: string }) {
               borderColor: ativa ? vidro.borda : 'transparent',
               backgroundColor: ativa ? vidro.pilula : sobre ? 'rgba(255,255,255,0.08)' : 'transparent',
               transform: [{ scale: estado.pressed ? 0.94 : 1 }],
+              // Troca de aba com transição suave da pílula (só CSS, por isso o cast).
+              ...({
+                transitionProperty: 'background-color, border-color, transform',
+                transitionDuration: '280ms',
+                transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
+              } as object),
             };
           }}
         >
