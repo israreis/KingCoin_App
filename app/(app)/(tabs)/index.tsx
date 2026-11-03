@@ -15,12 +15,12 @@ import {
 } from '@/lib/api';
 import { confirmarExclusao, mostrarErro } from '@/lib/dialogos';
 import { useAuth } from '@/lib/auth';
-import { useDica } from '@/lib/dicas';
 import { moeda, paraISO } from '@/lib/format';
 import { PERIODOS, PERIODO_PADRAO, calcularPeriodo, periodoAnterior, textoPeriodo } from '@/lib/periodos';
 import { gastosPorCategoria, resumo, statusOrcamento, totaisPorTipo } from '@/lib/saldos';
 import type { Resumo } from '@/lib/saldos';
 import { COR_TIPO, useTema } from '@/lib/theme';
+import { useDesktop } from '@/lib/layout';
 import { useDados } from '@/lib/useDados';
 import type { PeriodoId } from '@/types';
 
@@ -47,8 +47,8 @@ export default function Carteira() {
   const { cores } = useTema();
   const { session } = useAuth();
   const router = useRouter();
+  const desktop = useDesktop();
   const [periodo, setPeriodo] = useState<PeriodoId>(PERIODO_PADRAO);
-  const dica = useDica('carteira');
 
   const { dados, carregando, atualizando, erro, atualizar } = useDados(async () => {
     // Lança as movimentações recorrentes vencidas antes de carregar os números.
@@ -126,29 +126,46 @@ export default function Carteira() {
 
       {dados ? (
         <>
-          <Grade>
-          <Cartao>
+          <Grade minimo={220} igualar>
+          <Cartao estilo={desktop ? estilos.resumo : undefined}>
             <Text style={{ color: cores.suave, fontWeight: '600' }}>Saldo · {textoPeriodo(periodo)}</Text>
             <Text style={[estilos.valorGrande, { color: cores.texto }]}>{moeda(dados.saldo.valor)}</Text>
             <Variacao dados={dados.saldo} rotulo="vs. período anterior" />
           </Cartao>
 
-          <View style={estilos.linha}>
-            <Cartao estilo={estilos.metade}>
+          {desktop ? (
+            <Cartao estilo={estilos.resumo}>
               <Text style={{ color: cores.suave, fontSize: 12, fontWeight: '600' }}>Receitas</Text>
               <Text style={{ color: COR_TIPO.RECEITA, fontSize: 17, fontWeight: '700' }}>
                 {moeda(dados.totais.receitas)}
               </Text>
             </Cartao>
-            <Cartao estilo={estilos.metade}>
+          ) : (
+            <View style={estilos.linha}>
+              <Cartao estilo={estilos.metade}>
+                <Text style={{ color: cores.suave, fontSize: 12, fontWeight: '600' }}>Receitas</Text>
+                <Text style={{ color: COR_TIPO.RECEITA, fontSize: 17, fontWeight: '700' }}>
+                  {moeda(dados.totais.receitas)}
+                </Text>
+              </Cartao>
+              <Cartao estilo={estilos.metade}>
+                <Text style={{ color: cores.suave, fontSize: 12, fontWeight: '600' }}>Despesas</Text>
+                <Text style={{ color: COR_TIPO.DESPESA, fontSize: 17, fontWeight: '700' }}>
+                  {moeda(dados.totais.despesas)}
+                </Text>
+              </Cartao>
+            </View>
+          )}
+          {desktop ? (
+            <Cartao estilo={estilos.resumo}>
               <Text style={{ color: cores.suave, fontSize: 12, fontWeight: '600' }}>Despesas</Text>
               <Text style={{ color: COR_TIPO.DESPESA, fontSize: 17, fontWeight: '700' }}>
                 {moeda(dados.totais.despesas)}
               </Text>
             </Cartao>
-          </View>
+          ) : null}
 
-          <Cartao>
+          <Cartao estilo={desktop ? estilos.resumo : undefined}>
             <Text style={{ color: cores.suave, fontWeight: '600' }}>Investimentos e economia</Text>
             <Text style={[estilos.valorMedio, { color: COR_TIPO.ECONOMIA }]}>
               {moeda(dados.investimentos.valor)}
@@ -173,32 +190,26 @@ export default function Carteira() {
             </Pressable>
           ) : null}
 
-          <Botao
-            texto="Nova movimentação"
-            icone="add-circle-outline"
-            onPress={() => router.push('/transacao')}
-          />
+          <View style={desktop ? estilos.botaoDesktop : undefined}>
+            <Botao
+              texto="Nova movimentação"
+              icone="add-circle-outline"
+              onPress={() => router.push('/transacao')}
+            />
+          </View>
 
-          <Grade>
           <View style={estilos.coluna}>
           <Secao titulo="Últimas movimentações" />
           {dados.ultimas.length === 0 ? (
             <Vazio texto="Nenhuma movimentação nos últimos 30 dias." />
           ) : (
             <>
-              {dica.mostrar ? (
-                <Text style={{ color: cores.suave, fontSize: 13 }}>
-                  Dica: deslize um item para a esquerda para editar ou excluir.
-                </Text>
-              ) : null}
               {dados.ultimas.map((mov, indice) => (
                 <TransacaoDeslizavel
                   key={mov.id}
                   mov={mov}
                   onEditar={() => editar(mov.id)}
                   onExcluir={() => excluir(mov.id)}
-                  dica={dica.mostrar && indice === 0}
-                  onDicaConcluida={dica.concluir}
                 />
               ))}
             </>
@@ -238,13 +249,10 @@ export default function Carteira() {
                 key={meta.id}
                 meta={meta}
                 onAlterada={atualizar}
-                dica={dica.mostrar && dados.ultimas.length === 0 && indice === 0}
-                onDicaConcluida={dica.concluir}
               />
             ))
           )}
           </View>
-          </Grade>
         </>
       ) : null}
     </Tela>
@@ -258,4 +266,6 @@ const estilos = StyleSheet.create({
   linha: { flexDirection: 'row', gap: 12 },
   metade: { flex: 1 },
   coluna: { gap: 14 },
+  resumo: { flex: 1 },
+  botaoDesktop: { width: '50%', alignSelf: 'center' },
 });

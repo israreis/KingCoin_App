@@ -74,24 +74,20 @@ export function TransacaoItem({
   );
 }
 
-/** Item da lista com deslizar para editar/excluir (itens pendentes não podem ser alterados). */
+/** Item da lista com botões de editar/excluir (itens pendentes não podem ser alterados). */
 export function TransacaoDeslizavel({
   mov,
   onEditar,
   onExcluir,
-  dica,
-  onDicaConcluida,
 }: {
   mov: Movimentacao;
   onEditar: () => void;
   onExcluir: () => void;
-  dica?: boolean;
-  onDicaConcluida?: () => void;
 }) {
   if (mov.pendente) return <TransacaoItem mov={mov} />;
 
   return (
-    <ItemDeslizavel onEditar={onEditar} onExcluir={onExcluir} dica={dica} onDicaConcluida={onDicaConcluida}>
+    <ItemDeslizavel onEditar={onEditar} onExcluir={onExcluir}>
       <TransacaoItem mov={mov} onPress={onEditar} />
     </ItemDeslizavel>
   );

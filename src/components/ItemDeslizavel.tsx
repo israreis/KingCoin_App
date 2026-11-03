@@ -1,114 +1,55 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
-import { Animated, PanResponder, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
-import { DRIVER_NATIVO } from '@/lib/layout';
 import { useTema } from '@/lib/theme';
-
-const LARGURA_ACAO = 72;
-const LARGURA_TOTAL = LARGURA_ACAO * 2;
 
 type Props = {
   children: ReactNode;
   onEditar: () => void;
   onExcluir: () => void;
-  /** Anima o item uma vez para mostrar que ele pode ser deslizado. */
-  dica?: boolean;
-  onDicaConcluida?: () => void;
 };
 
-/** Deslize o item para a esquerda para revelar os botões de editar e excluir. */
-export function ItemDeslizavel({ children, onEditar, onExcluir, dica, onDicaConcluida }: Props) {
+/** Item de lista com os botões de editar e excluir sempre visíveis ao lado. */
+export function ItemDeslizavel({ children, onEditar, onExcluir }: Props) {
   const { cores } = useTema();
-  const posicao = useRef(new Animated.Value(0)).current;
-  const aberto = useRef(false);
 
-  const animar = (abrir: boolean) => {
-    aberto.current = abrir;
-    Animated.spring(posicao, {
-      toValue: abrir ? -LARGURA_TOTAL : 0,
-      useNativeDriver: DRIVER_NATIVO,
-      bounciness: 0,
-    }).start();
-  };
-
-  const gesto = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: (_evento, g) =>
-        Math.abs(g.dx) > 12 && Math.abs(g.dx) > Math.abs(g.dy) * 1.5,
-      onPanResponderMove: (_evento, g) => {
-        const base = aberto.current ? -LARGURA_TOTAL : 0;
-        posicao.setValue(Math.max(-LARGURA_TOTAL - 16, Math.min(0, base + g.dx)));
-      },
-      onPanResponderRelease: (_evento, g) => {
-        const base = aberto.current ? -LARGURA_TOTAL : 0;
-        animar(base + g.dx < -LARGURA_ACAO);
-      },
-      onPanResponderTerminate: () => animar(aberto.current),
-    }),
-  ).current;
-
-  useEffect(() => {
-    if (!dica) return;
-    const animacao = Animated.sequence([
-      Animated.delay(700),
-      Animated.timing(posicao, { toValue: -LARGURA_TOTAL * 0.75, duration: 450, useNativeDriver: DRIVER_NATIVO }),
-      Animated.delay(900),
-      Animated.timing(posicao, { toValue: 0, duration: 350, useNativeDriver: DRIVER_NATIVO }),
-    ]);
-    animacao.start(({ finished }) => {
-      if (finished) onDicaConcluida?.();
-    });
-    return () => animacao.stop();
-  }, [dica, posicao, onDicaConcluida]);
-
-  // Os botões só aparecem quando o item é deslizado (evita cantos coloridos atrás do cartão).
-  const opacidadeAcoes = posicao.interpolate({
-    inputRange: [-LARGURA_TOTAL, -8, 0],
-    outputRange: [1, 1, 0],
-    extrapolate: 'clamp',
-  });
+  const botao = (icone: 'create-outline' | 'trash-outline', rotulo: string, cor: string, onPress: () => void) => (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={rotulo}
+      hitSlop={6}
+      onPress={onPress}
+      style={({ pressed }) => [
+        estilos.acao,
+        { borderColor: cores.borda, backgroundColor: cores.card, opacity: pressed ? 0.7 : 1 },
+      ]}
+    >
+      <Ionicons name={icone} size={18} color={cor} />
+    </Pressable>
+  );
 
   return (
-    <View style={estilos.envoltorio}>
-      <Animated.View style={[estilos.acoes, { opacity: opacidadeAcoes }]}>
-        <Pressable
-          style={[estilos.acao, { backgroundColor: cores.primaria }]}
-          onPress={() => {
-            animar(false);
-            onEditar();
-          }}
-        >
-          <Ionicons name="create-outline" size={22} color="#ffffff" />
-        </Pressable>
-        <Pressable
-          style={[estilos.acao, { backgroundColor: cores.perigo }]}
-          onPress={() => {
-            animar(false);
-            onExcluir();
-          }}
-        >
-          <Ionicons name="trash-outline" size={22} color="#ffffff" />
-        </Pressable>
-      </Animated.View>
-
-      <Animated.View style={{ transform: [{ translateX: posicao }] }} {...gesto.panHandlers}>
-        {children}
-      </Animated.View>
+    <View style={estilos.linha}>
+      <View style={estilos.conteudo}>{children}</View>
+      <View style={estilos.acoes}>
+        {botao('create-outline', 'Editar', cores.primaria, onEditar)}
+        {botao('trash-outline', 'Excluir', cores.perigo, onExcluir)}
+      </View>
     </View>
   );
 }
 
 const estilos = StyleSheet.create({
-  envoltorio: { borderRadius: 16, overflow: 'hidden' },
-  acoes: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    right: 0,
-    width: LARGURA_TOTAL,
-    flexDirection: 'row',
+  linha: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  conteudo: { flex: 1 },
+  acoes: { gap: 8 },
+  acao: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  acao: { width: LARGURA_ACAO, alignItems: 'center', justifyContent: 'center' },
 });

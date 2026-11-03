@@ -89,7 +89,6 @@ export default function Dashboard() {
 
       {dados && mensal ? (
         <>
-          <Grade minimo={460}>
           <View style={{ gap: 14 }}>
           <Secao titulo="Insights do mês" />
           <Cartao>
@@ -145,6 +144,7 @@ export default function Dashboard() {
           </Cartao>
           </View>
 
+          <Grade minimo={420} igualar>
           <View style={{ gap: 14 }}>
           <Secao titulo="Receitas x despesas" />
           <Cartao>
@@ -194,6 +194,8 @@ export default function Dashboard() {
           </Cartao>
           </View>
 
+          </Grade>
+
           <View style={{ gap: 14 }}>
           <Secao titulo="Progresso das metas" />
           {dados.metas.length === 0 ? (
@@ -214,7 +216,6 @@ export default function Dashboard() {
             </Cartao>
           )}
           </View>
-          </Grade>
         </>
       ) : null}
     </Tela>

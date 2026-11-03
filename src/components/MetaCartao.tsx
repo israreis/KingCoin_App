@@ -16,19 +16,15 @@ import type { Meta } from '@/types';
 const ATALHOS = [50, 100, 500];
 
 /**
- * Cartão de meta com deslizar para editar/excluir e aportes rápidos
+ * Cartão de meta com botões de editar/excluir e aportes rápidos
  * (sem abrir o formulário). Usado na Carteira e na tela de Metas.
  */
 export function MetaDeslizavel({
   meta,
   onAlterada,
-  dica,
-  onDicaConcluida,
 }: {
   meta: Meta;
   onAlterada: () => void;
-  dica?: boolean;
-  onDicaConcluida?: () => void;
 }) {
   const { cores } = useTema();
   const router = useRouter();
@@ -81,8 +77,6 @@ export function MetaDeslizavel({
             }
           })
         }
-        dica={dica}
-        onDicaConcluida={onDicaConcluida}
       >
         <Pressable onPress={editar}>
           <Cartao>

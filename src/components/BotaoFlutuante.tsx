@@ -1,9 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, StyleSheet } from 'react-native';
+import { Animated, Platform, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { DRIVER_NATIVO } from '@/lib/layout';
+import { DRIVER_NATIVO, useDesktop } from '@/lib/layout';
 import { useTema } from '@/lib/theme';
 
 /** Tempo sem rolar até o botão voltar a aparecer. */
@@ -35,15 +35,25 @@ export function BotaoFlutuante({
   onPress,
   rotulo,
   acimaDaBarra = false,
+  larguraConteudo,
 }: {
   visivel: boolean;
   onPress: () => void;
   rotulo: string;
   /** true nas telas com barra de abas, para o botão ficar acima dela. */
   acimaDaBarra?: boolean;
+  /** Na web, alinha o botão à borda direita do conteúdo com esta largura máxima. */
+  larguraConteudo?: number;
 }) {
   const { cores } = useTema();
   const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const desktop = useDesktop();
+  const web = Platform.OS === 'web';
+  const direita =
+    web && larguraConteudo && width > larguraConteudo
+      ? (width - larguraConteudo) / 2 + (desktop ? 32 : 20)
+      : 20;
   const animacao = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -61,7 +71,8 @@ export function BotaoFlutuante({
       style={[
         estilos.envoltorio,
         {
-          bottom: insets.bottom + (acimaDaBarra ? 88 : 24),
+          right: direita,
+          bottom: insets.bottom + (acimaDaBarra ? (web ? 104 : 88) : 24),
           opacity: animacao,
           transform: [
             { translateY: animacao.interpolate({ inputRange: [0, 1], outputRange: [120, 0] }) },
@@ -86,7 +97,7 @@ export function BotaoFlutuante({
 }
 
 const estilos = StyleSheet.create({
-  envoltorio: { position: 'absolute', right: 20 },
+  envoltorio: { position: 'absolute' },
   botao: {
     width: 64,
     height: 64,

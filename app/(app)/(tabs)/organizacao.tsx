@@ -12,7 +12,7 @@ const ITENS: {
   rota: string;
 }[] = [
   { icone: 'pie-chart-outline', titulo: 'Orçamentos', descricao: 'Limite mensal de gastos por categoria', rota: '/orcamentos' },
-  { icone: 'repeat-outline', titulo: 'Movimentações recorrentes', descricao: 'Salário, aluguel e assinaturas lançados todo mês', rota: '/recorrencias' },
+  { icone: 'repeat-outline', titulo: 'Movimentações recorrentes', descricao: 'Salário, aluguel e assinaturas', rota: '/recorrencias' },
   { icone: 'pricetags-outline', titulo: 'Categorias', descricao: 'Crie e organize suas categorias', rota: '/categorias' },
   { icone: 'document-text-outline', titulo: 'Relatórios', descricao: 'Exporte suas movimentações em PDF ou Excel', rota: '/relatorios' },
 ];

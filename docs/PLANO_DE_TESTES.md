@@ -40,7 +40,7 @@ Leitura técnica de cada funcionalidade, para orientar onde testar com mais cuid
 | 3 | Login com Apple | Implementado | Só iPhone, exige conta Apple Developer e development build | Baixa |
 | 4 | Biometria | Implementado | Bloqueia após 30 s em segundo plano; no Expo Go o pedido de Face ID mostra "Expo Go" | Média |
 | 5 | Carteira (saldo, variação, alertas) | Implementado | Variação usa a mesma regra do site; comparar com valores esperados à mão | Alta |
-| 6 | Movimentações (CRUD, busca, filtros, deslizar) | Implementado | Deslizar pode competir com a rolagem; conferir em listas longas | Alta |
+| 6 | Movimentações (CRUD, busca, filtros, deslizar) | Implementado | Editar e excluir ficam em botões ao lado de cada item | Alta |
 | 7 | Seletor de data nativo | Implementado | Visual diferente no iOS (calendário) e no Android (diálogo) **[A]** | Média |
 | 8 | Máscara de moeda | Implementado | Limite de 10 dígitos (até 99.999.999,99) | Média |
 | 9 | Comprovante (foto) | Implementado | Exige internet; conferir se a imagem antiga é apagada ao trocar | Média |
@@ -130,9 +130,9 @@ Leitura técnica de cada funcionalidade, para orientar onde testar com mais cuid
 | TRA-07 | Atalhos Hoje/Ontem | Tocar em Ontem | Data muda para ontem | | |
 | TRA-08 | Editar | Tocar numa movimentação → mudar valor → Salvar | Valor atualizado na lista | | |
 | TRA-09 | Excluir pelo formulário | Abrir → Excluir → confirmar | Some da lista | | |
-| TRA-10 | Deslizar para editar | Deslizar o item para a esquerda → lápis | Abre o formulário de edição | | |
-| TRA-11 | Deslizar para excluir | Deslizar → lixeira → confirmar | Item removido | | |
-| TRA-12 | Deslizar e rolar | Rolar a lista na vertical rapidamente | Rola sem abrir itens por engano | | |
+| TRA-10 | Botão de editar | Tocar no lápis ao lado do item | Abre o formulário de edição | | |
+| TRA-11 | Botão de excluir | Tocar na lixeira ao lado do item → confirmar | Item removido | | |
+| TRA-12 | Rolagem da lista | Rolar a lista rapidamente | Rola sem acionar editar/excluir por engano | | |
 | TRA-13 | Busca | Digitar parte da descrição, depois o nome da categoria, depois com/sem acento | Filtra corretamente nos três casos | | |
 | TRA-14 | Filtro por tipo | Tocar em Receita/Despesa/Economia/Todas | Lista filtra | | |
 | TRA-16 | Comprovante pela câmera | Anexar → Tirar foto | Miniatura aparece; tocar abre em tela cheia | | |
@@ -148,7 +148,7 @@ Leitura técnica de cada funcionalidade, para orientar onde testar com mais cuid
 | MET-02 | Aporte rápido | Tocar em + R$ 100 | Valor guardado e percentual sobem | | |
 | MET-03 | Outro valor | Outro valor → 250,00 → Guardar | Soma 250 | | |
 | MET-04 | Meta atingida | Aportar até passar do valor da meta | Alerta "Meta atingida!"; barra em 100% | | |
-| MET-05 | Editar e excluir | Tocar → editar → salvar; deslizar → excluir | Funciona como nas movimentações | | |
+| MET-05 | Editar e excluir | Lápis → editar → salvar; lixeira → excluir | Funciona como nas movimentações | | |
 | MET-06 | Validação | Criar meta sem nome ou com valor 0 | Mensagens de erro | | |
 
 ## 7. Orçamentos, recorrências e categorias

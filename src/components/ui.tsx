@@ -179,11 +179,20 @@ export function TelaFormulario({
  * No computador, distribui os filhos em colunas com largura mínima `minimo`.
  * No celular e em janelas estreitas, mantém um embaixo do outro.
  */
-export function Grade({ children, minimo = 320 }: { children: ReactNode; minimo?: number }) {
+export function Grade({
+  children,
+  minimo = 320,
+  igualar = false,
+}: {
+  children: ReactNode;
+  minimo?: number;
+  /** Mesma altura para todos os itens da linha. */
+  igualar?: boolean;
+}) {
   const desktop = useDesktop();
   if (!desktop) return <>{children}</>;
   return (
-    <View style={estilos.grade}>
+    <View style={[estilos.grade, igualar ? { alignItems: 'stretch' } : null]}>
       {Children.toArray(children).map((filho, indice) => (
         <View key={indice} style={{ flexGrow: 1, flexBasis: minimo, minWidth: minimo, gap: 14 }}>
           {filho}

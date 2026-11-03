@@ -1,4 +1,9 @@
+import { Tabs } from 'expo-router';
 import { NativeTabs } from 'expo-router/native-tabs';
+import { Platform } from 'react-native';
+
+import { DockWeb } from '@/components/DockWeb';
+import type { PropsDockWeb } from '@/components/DockWeb';
 
 import { useBarraAbas } from '@/lib/barraAbas';
 import { useTema } from '@/lib/theme';
@@ -10,6 +15,22 @@ import { useTema } from '@/lib/theme';
 export default function TabsLayout() {
   const { cores } = useTema();
   const { visivel } = useBarraAbas();
+
+  // No navegador a barra nativa fica no topo; lá usamos uma barra própria embaixo.
+  if (Platform.OS === 'web') {
+    return (
+      <Tabs
+        tabBar={(props) => <DockWeb {...(props as unknown as PropsDockWeb)} />}
+        screenOptions={{ headerShown: false }}
+      >
+        <Tabs.Screen name="index" options={{ title: 'Carteira' }} />
+        <Tabs.Screen name="transacoes" options={{ title: 'Movimentações' }} />
+        <Tabs.Screen name="dashboard" options={{ title: 'Dashboard' }} />
+        <Tabs.Screen name="organizacao" options={{ title: 'Organização' }} />
+        <Tabs.Screen name="conta" options={{ title: 'Conta' }} />
+      </Tabs>
+    );
+  }
 
   return (
     <NativeTabs tintColor={cores.primaria} minimizeBehavior="never" hidden={!visivel}>

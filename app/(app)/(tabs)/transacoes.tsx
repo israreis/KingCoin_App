@@ -8,7 +8,6 @@ import { BotaoIcone, CampoBusca, MODO_FECHAR_TECLADO, Carregando, Chips, Mensage
 import { excluirMovimentacao, listarMovimentacoes } from '@/lib/api';
 import { confirmarExclusao, mostrarErro } from '@/lib/dialogos';
 import { useBarraAbas } from '@/lib/barraAbas';
-import { useDica } from '@/lib/dicas';
 import { normalizar } from '@/lib/format';
 import { PERIODOS, PERIODO_PADRAO, calcularPeriodo } from '@/lib/periodos';
 import { COR_TIPO, TEXTO_TIPO, useTema } from '@/lib/theme';
@@ -32,7 +31,6 @@ export default function Transacoes() {
   const [busca, setBusca] = useState('');
   const { aoRolar } = useBarraAbas();
   const botao = useBotaoFlutuante();
-  const dica = useDica('movimentacoes');
 
   const { dados, carregando, atualizando, erro, atualizar } = useDados(() => {
     const { inicio, fim } = calcularPeriodo(periodo);
@@ -71,6 +69,7 @@ export default function Transacoes() {
           visivel={botao.visivel}
           rotulo="Nova movimentação"
           acimaDaBarra
+          larguraConteudo={960}
           onPress={() => router.push('/transacao')}
         />
       }
@@ -88,11 +87,6 @@ export default function Transacoes() {
       />
 
       {erro ? <MensagemErro texto={erro} /> : null}
-      {dica.mostrar && filtradas.length > 0 ? (
-        <Text style={{ color: cores.suave, fontSize: 13 }}>
-          Dica: deslize um item para a esquerda para editar ou excluir.
-        </Text>
-      ) : null}
       {carregando && !dados ? (
         <Carregando />
       ) : (
@@ -104,8 +98,6 @@ export default function Transacoes() {
               mov={item}
               onEditar={() => editar(item.id)}
               onExcluir={() => excluir(item.id)}
-              dica={dica.mostrar && index === 0}
-              onDicaConcluida={dica.concluir}
             />
           )}
           keyboardShouldPersistTaps="handled"
