@@ -32,22 +32,26 @@ const LOGO_SVG = `<svg class="logo" viewBox="0 0 809.29 923.28" xmlns="http://ww
   <polygon points="809.29 113.99 809.29 171.76 541.81 323.52 540.32 599.76 404.64 677.58 268.94 599.76 267.48 323.52 0 171.76 0 113.99 113.99 0 227.99 113.99 290.65 113.99 404.64 0 518.64 113.99 581.3 113.99 695.29 0 809.29 113.99"/>
 </svg>`;
 
+type JanelaWeb = { focus: () => void; print: () => void };
 type ElementoWeb = {
   style: Record<string, string>;
   srcdoc: string;
   onload: (() => void) | null;
   remove: () => void;
-  contentWindow: {
-    focus: () => void;
-    print: () => void;
-    addEventListener: (evento: string, fn: () => void) => void;
-  } | null;
+  contentWindow: JanelaWeb | null;
 };
+
+/** Iframe do último relatório impresso; é removido só na próxima exportação. */
+let iframeAnterior: ElementoWeb | null = null;
 
 /**
  * Na web, o `Print.printAsync` do expo-print imprime a página atual e ignora o HTML.
  * Por isso o relatório é carregado num iframe invisível e impresso de lá: o navegador
  * abre a janela de impressão com a opção "Salvar como PDF", com o mesmo modelo do celular.
+ *
+ * A promessa termina assim que a janela de impressão é chamada (salvar ou cancelar não
+ * travam o botão). O iframe não é removido durante a impressão, o que congelava a página
+ * em alguns navegadores; ele é descartado na exportação seguinte.
  */
 function imprimirNoNavegador(html: string): Promise<void> {
   const doc = (globalThis as unknown as {
@@ -55,33 +59,53 @@ function imprimirNoNavegador(html: string): Promise<void> {
   }).document;
   if (!doc) return Promise.reject(new Error('Impressão indisponível neste navegador.'));
 
+  iframeAnterior?.remove();
+  iframeAnterior = null;
+
   return new Promise((resolve, reject) => {
     const iframe = doc.createElement('iframe');
-    Object.assign(iframe.style, { position: 'fixed', right: '0', bottom: '0', width: '0', height: '0', border: '0' });
+    Object.assign(iframe.style, {
+      position: 'fixed',
+      right: '0',
+      bottom: '0',
+      width: '0',
+      height: '0',
+      border: '0',
+      visibility: 'hidden',
+      pointerEvents: 'none',
+    });
 
-    let terminou = false;
-    const limpar = () => {
-      if (terminou) return;
-      terminou = true;
-      setTimeout(() => iframe.remove(), 500);
-      resolve();
-    };
-
+    let carregado = false;
     iframe.onload = () => {
+      if (carregado) return; // evita imprimir duas vezes se o evento repetir
+      carregado = true;
       const janela = iframe.contentWindow;
       if (!janela) {
         iframe.remove();
         reject(new Error('Não foi possível gerar o PDF.'));
         return;
       }
-      janela.addEventListener('afterprint', limpar);
-      janela.focus();
-      janela.print();
-      // Alguns navegadores não disparam "afterprint"; garante a limpeza.
-      setTimeout(limpar, 60_000);
+      // Fora do onload, para o navegador terminar de montar o documento.
+      setTimeout(() => {
+        try {
+          janela.focus();
+          janela.print(); // em navegadores que bloqueiam, só retorna depois de salvar/cancelar
+        } catch (e) {
+          reject(e instanceof Error ? e : new Error('Não foi possível gerar o PDF.'));
+          return;
+        }
+        resolve();
+      }, 50);
     };
+
     iframe.srcdoc = html;
     doc.body.appendChild(iframe);
+    iframeAnterior = iframe;
+
+    // Se o relatório não carregar, libera o botão em vez de ficar carregando para sempre.
+    setTimeout(() => {
+      if (!carregado) reject(new Error('Não foi possível abrir a impressão. Tente novamente.'));
+    }, 10_000);
   });
 }
 
