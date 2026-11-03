@@ -1,6 +1,17 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { Alert, Image, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Switch,
+  Text,
+  View,
+} from 'react-native';
 
 import { CampoData } from '@/components/CampoData';
 import {
@@ -14,6 +25,7 @@ import {
 } from '@/components/ui';
 import {
   avisoDeOrcamento,
+  criarRecorrencia,
   buscarMovimentacao,
   criarMovimentacao,
   editarMovimentacao,
@@ -49,6 +61,12 @@ export default function FormularioTransacao() {
   const [valor, setValor] = useState('');
   const [data, setData] = useState(hojeISO());
   const [descricao, setDescricao] = useState('');
+
+  // Recorrência (só ao cadastrar): desligada por padrão.
+  const [recorrente, setRecorrente] = useState(false);
+  const [diaRecorrencia, setDiaRecorrencia] = useState('');
+  const [diaDigitado, setDiaDigitado] = useState('');
+  const [modalRecorrencia, setModalRecorrencia] = useState(false);
 
   // Comprovante: o que já está salvo e o que o usuário acabou de escolher.
   const [comprovanteOriginal, setComprovanteOriginal] = useState<string | null>(null);
@@ -144,6 +162,35 @@ export default function FormularioTransacao() {
     setComprovanteUrl(null);
   }
 
+  function abrirRecorrencia() {
+    setDiaDigitado(diaRecorrencia || String(Number(data.split('-')[2])));
+    setModalRecorrencia(true);
+  }
+
+  function alternarRecorrente(valor: boolean) {
+    if (valor) abrirRecorrencia();
+    else {
+      setRecorrente(false);
+      setDiaRecorrencia('');
+    }
+  }
+
+  function confirmarRecorrencia() {
+    const dia = Number(diaDigitado);
+    if (!Number.isInteger(dia) || dia < 1 || dia > 31) {
+      Alert.alert('Dia inválido', 'Escolha um dia entre 1 e 31.');
+      return;
+    }
+    setDiaRecorrencia(String(dia));
+    setRecorrente(true);
+    setModalRecorrencia(false);
+  }
+
+  function cancelarRecorrencia() {
+    setModalRecorrencia(false);
+    if (!diaRecorrencia) setRecorrente(false);
+  }
+
   async function salvar() {
     const valorNumero = lerValor(valor);
     const dataISO = data;
@@ -176,10 +223,33 @@ export default function FormularioTransacao() {
         await removerComprovante(comprovanteOriginal).catch(() => undefined);
       }
 
+      // A recorrência começa no mês seguinte: este mês já é a movimentação salva agora.
+      if (recorrente && !idMovimentacao && !pendente) {
+        const [ano, mes] = dataISO.split('-').map(Number);
+        try {
+          await criarRecorrencia({
+            categoria_id: categoriaId,
+            conta_id: contaId || null,
+            valor: valorNumero,
+            descricao: descricao.trim() || null,
+            dia_do_mes: Number(diaRecorrencia),
+            ativa: true,
+            inicio: paraISO(new Date(ano, mes, 1)),
+          });
+        } catch (e) {
+          Alert.alert(
+            'Recorrência não criada',
+            `A movimentação foi salva, mas a recorrência não: ${e instanceof Error ? e.message : 'erro desconhecido'}`,
+          );
+        }
+      }
+
       if (pendente) {
         Alert.alert(
           'Sem conexão',
-          'A movimentação foi salva no aparelho e será enviada quando houver internet.',
+          recorrente
+            ? 'A movimentação foi salva no aparelho e será enviada quando houver internet. A recorrência precisa de internet: crie-a depois em Organização.'
+            : 'A movimentação foi salva no aparelho e será enviada quando houver internet.',
           [{ text: 'OK', onPress: () => router.back() }],
         );
         return;
@@ -259,7 +329,7 @@ export default function FormularioTransacao() {
 
       {contas.length > 0 ? (
         <>
-          <Text style={{ color: cores.suave, fontWeight: '600' }}>Conta</Text>
+          <Text style={{ color: cores.suave, fontWeight: '600' }}>Conta bancária</Text>
           <Chips
             opcoes={[{ id: 0, texto: 'Nenhuma' }, ...contas.map((c) => ({ id: c.id, texto: c.nome }))]}
             valor={contaId}
@@ -275,6 +345,28 @@ export default function FormularioTransacao() {
         autoCapitalize="sentences"
         placeholder="Ex.: Mercado da semana"
       />
+
+      {!idMovimentacao ? (
+        <View style={[estilos.recorrente, { borderColor: cores.borda, backgroundColor: cores.card }]}>
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text style={{ color: cores.texto, fontWeight: '600' }}>Repetir todo mês</Text>
+            {recorrente ? (
+              <Pressable onPress={abrirRecorrencia} hitSlop={8}>
+                <Text style={{ color: cores.primaria, fontSize: 13 }}>
+                  Todo dia {diaRecorrencia}, a partir do próximo mês · alterar
+                </Text>
+              </Pressable>
+            ) : (
+              <Text style={{ color: cores.suave, fontSize: 13 }}>Lançar automaticamente nos próximos meses</Text>
+            )}
+          </View>
+          <Switch
+            value={recorrente}
+            onValueChange={alternarRecorrente}
+            trackColor={{ true: cores.primaria, false: cores.borda }}
+          />
+        </View>
+      ) : null}
 
       <Text style={{ color: cores.suave, fontWeight: '600' }}>Comprovante (opcional)</Text>
       {imagemAnexada || comprovantePath ? (
@@ -316,6 +408,38 @@ export default function FormularioTransacao() {
       {idMovimentacao ? <Botao texto="Excluir movimentação" variante="perigo" onPress={excluir} /> : null}
 
       <Modal
+        visible={modalRecorrencia}
+        transparent
+        animationType="fade"
+        onRequestClose={cancelarRecorrencia}
+      >
+        <KeyboardAvoidingView
+          style={estilos.fundoModal}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+          <View style={[estilos.caixaModal, { backgroundColor: cores.card, borderColor: cores.borda }]}>
+            <Text style={{ color: cores.texto, fontSize: 18, fontWeight: '700' }}>Movimentação recorrente</Text>
+            <Text style={{ color: cores.suave, lineHeight: 20 }}>
+              Esta movimentação será lançada automaticamente todo mês, com a mesma categoria, valor,
+              conta e descrição, a partir do próximo mês.
+            </Text>
+            <Campo
+              rotulo="Dia do mês"
+              value={diaDigitado}
+              onChangeText={(texto) => setDiaDigitado(texto.replace(/\D/g, '').slice(0, 2))}
+              keyboardType="number-pad"
+              obrigatorio
+            />
+            <Text style={{ color: cores.suave, fontSize: 12 }}>
+              Em meses mais curtos, o lançamento acontece no último dia do mês.
+            </Text>
+            <Botao texto="Confirmar" onPress={confirmarRecorrencia} />
+            <Botao texto="Cancelar" variante="contorno" onPress={cancelarRecorrencia} />
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
+
+      <Modal
         visible={verComprovante}
         transparent
         animationType="fade"
@@ -333,6 +457,16 @@ export default function FormularioTransacao() {
 
 const estilos = StyleSheet.create({
   miniatura: { width: '100%', height: 180, borderRadius: 14, borderWidth: 1 },
+  recorrente: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    borderWidth: 1,
+    borderRadius: 14,
+    padding: 14,
+  },
+  fundoModal: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: 'rgba(0,0,0,0.6)' },
+  caixaModal: { borderWidth: 1, borderRadius: 20, padding: 20, gap: 14 },
   fundoImagem: { flex: 1, backgroundColor: 'rgba(0,0,0,0.92)', justifyContent: 'center' },
   imagemGrande: { width: '100%', height: '90%' },
 });

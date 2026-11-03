@@ -14,7 +14,13 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import type { StyleProp, TextInputProps, ViewStyle } from 'react-native';
+import type {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  StyleProp,
+  TextInputProps,
+  ViewStyle,
+} from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { mascararMoeda } from '@/lib/format';
@@ -47,6 +53,10 @@ type TelaProps = {
   /** Quando false, não envolve o conteúdo em ScrollView (use com FlatList). */
   rolavel?: boolean;
   bordas?: ('top' | 'bottom')[];
+  /** Chamado a cada rolagem (além de esconder a barra de abas). */
+  onRolar?: (evento: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  /** Elemento fixo sobre o conteúdo (ex.: botão flutuante). */
+  flutuante?: ReactNode;
 };
 
 export function Tela({
@@ -57,6 +67,8 @@ export function Tela({
   onAtualizar,
   rolavel = true,
   bordas = ['top'],
+  onRolar,
+  flutuante,
 }: TelaProps) {
   const { cores } = useTema();
   const { aoRolar, mostrar } = useBarraAbas();
@@ -80,7 +92,10 @@ export function Tela({
       {rolavel ? (
         <ScrollView
           contentContainerStyle={estilos.conteudo}
-          onScroll={aoRolar}
+          onScroll={(evento) => {
+            aoRolar(evento);
+            onRolar?.(evento);
+          }}
           scrollEventThrottle={16}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode={MODO_FECHAR_TECLADO}
@@ -103,6 +118,7 @@ export function Tela({
           {children}
         </Pressable>
       )}
+      {flutuante}
     </SafeAreaView>
   );
 }

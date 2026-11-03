@@ -79,15 +79,19 @@ export function TransacaoDeslizavel({
   mov,
   onEditar,
   onExcluir,
+  dica,
+  onDicaConcluida,
 }: {
   mov: Movimentacao;
   onEditar: () => void;
   onExcluir: () => void;
+  dica?: boolean;
+  onDicaConcluida?: () => void;
 }) {
   if (mov.pendente) return <TransacaoItem mov={mov} />;
 
   return (
-    <ItemDeslizavel onEditar={onEditar} onExcluir={onExcluir}>
+    <ItemDeslizavel onEditar={onEditar} onExcluir={onExcluir} dica={dica} onDicaConcluida={onDicaConcluida}>
       <TransacaoItem mov={mov} onPress={onEditar} />
     </ItemDeslizavel>
   );

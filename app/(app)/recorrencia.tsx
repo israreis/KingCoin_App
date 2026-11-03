@@ -168,7 +168,7 @@ export default function FormularioRecorrencia() {
 
       {contas.length > 0 ? (
         <>
-          <Text style={{ color: cores.suave, fontWeight: '600' }}>Conta</Text>
+          <Text style={{ color: cores.suave, fontWeight: '600' }}>Conta bancária</Text>
           <Chips
             opcoes={[{ id: 0, texto: 'Nenhuma' }, ...contas.map((c) => ({ id: c.id, texto: c.nome }))]}
             valor={contaId}

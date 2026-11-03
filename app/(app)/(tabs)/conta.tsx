@@ -151,13 +151,8 @@ export default function Conta() {
         />
       </Cartao>
 
-      <Secao titulo="Organização" />
+      <Secao titulo="Ajuda" />
       <Cartao>
-        <Linha icone="pie-chart-outline" texto="Orçamentos por categoria" onPress={() => router.push('/orcamentos')} />
-        <Linha icone="repeat-outline" texto="Movimentações recorrentes" onPress={() => router.push('/recorrencias')} />
-        <Linha icone="pricetags-outline" texto="Categorias" onPress={() => router.push('/categorias')} />
-        <Linha icone="card-outline" texto="Contas" onPress={() => router.push('/contas')} />
-        <Linha icone="document-text-outline" texto="Relatórios (PDF e Excel)" onPress={() => router.push('/relatorios')} />
         <Linha icone="help-circle-outline" texto="Ajuda e tutoriais" onPress={() => router.push('/ajuda')} />
       </Cartao>
 

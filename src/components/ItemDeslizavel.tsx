@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { Animated, PanResponder, Pressable, StyleSheet, View } from 'react-native';
 
@@ -12,10 +12,13 @@ type Props = {
   children: ReactNode;
   onEditar: () => void;
   onExcluir: () => void;
+  /** Anima o item uma vez para mostrar que ele pode ser deslizado. */
+  dica?: boolean;
+  onDicaConcluida?: () => void;
 };
 
 /** Deslize o item para a esquerda para revelar os botões de editar e excluir. */
-export function ItemDeslizavel({ children, onEditar, onExcluir }: Props) {
+export function ItemDeslizavel({ children, onEditar, onExcluir, dica, onDicaConcluida }: Props) {
   const { cores } = useTema();
   const posicao = useRef(new Animated.Value(0)).current;
   const aberto = useRef(false);
@@ -44,6 +47,20 @@ export function ItemDeslizavel({ children, onEditar, onExcluir }: Props) {
       onPanResponderTerminate: () => animar(aberto.current),
     }),
   ).current;
+
+  useEffect(() => {
+    if (!dica) return;
+    const animacao = Animated.sequence([
+      Animated.delay(700),
+      Animated.timing(posicao, { toValue: -LARGURA_TOTAL * 0.75, duration: 450, useNativeDriver: true }),
+      Animated.delay(900),
+      Animated.timing(posicao, { toValue: 0, duration: 350, useNativeDriver: true }),
+    ]);
+    animacao.start(({ finished }) => {
+      if (finished) onDicaConcluida?.();
+    });
+    return () => animacao.stop();
+  }, [dica, posicao, onDicaConcluida]);
 
   // Os botões só aparecem quando o item é deslizado (evita cantos coloridos atrás do cartão).
   const opacidadeAcoes = posicao.interpolate({

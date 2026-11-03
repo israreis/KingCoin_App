@@ -25,9 +25,9 @@ export default function TabsLayout() {
         <NativeTabs.Trigger.Icon sf="chart.bar" md="bar_chart" />
         <NativeTabs.Trigger.Label>Dashboard</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="metas">
-        <NativeTabs.Trigger.Icon sf="flag" md="flag" />
-        <NativeTabs.Trigger.Label>Metas</NativeTabs.Trigger.Label>
+      <NativeTabs.Trigger name="organizacao">
+        <NativeTabs.Trigger.Icon sf="square.grid.2x2" md="apps" />
+        <NativeTabs.Trigger.Label>Organização</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="conta">
         <NativeTabs.Trigger.Icon sf="person" md="person" />

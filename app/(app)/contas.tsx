@@ -31,7 +31,7 @@ export default function Contas() {
 
   async function salvar() {
     const texto = nome.trim();
-    if (!texto) return mostrarErro(new Error('Dê um nome para a conta.'));
+    if (!texto) return mostrarErro(new Error('Dê um nome para a conta bancária.'));
 
     setSalvando(true);
     try {
@@ -51,7 +51,7 @@ export default function Contas() {
     <Tela atualizando={atualizando} onAtualizar={atualizar} bordas={[]}>
       <Cartao>
         <Text style={{ color: cores.texto, fontWeight: '700', fontSize: 16 }}>
-          {editandoId ? 'Editar conta' : 'Nova conta'}
+          {editandoId ? 'Editar conta bancária' : 'Nova conta bancária'}
         </Text>
         <Campo
           rotulo="Nome"
@@ -67,7 +67,7 @@ export default function Contas() {
           onChangeText={setSaldoInicial}
           placeholder="0,00"
         />
-        <Botao texto={editandoId ? 'Salvar conta' : 'Adicionar conta'} onPress={salvar} carregando={salvando} />
+        <Botao texto={editandoId ? 'Salvar conta bancária' : 'Adicionar conta bancária'} onPress={salvar} carregando={salvando} />
         {editandoId ? <Botao texto="Cancelar" variante="contorno" onPress={limpar} /> : null}
       </Cartao>
 
@@ -78,7 +78,7 @@ export default function Contas() {
         <>
           <Secao titulo="Saldo por conta" />
           {dados.saldos.length === 0 ? (
-            <Vazio texto="Nenhuma conta ainda. Crie uma acima e escolha-a ao lançar movimentações." />
+            <Vazio texto="Nenhuma conta bancária ainda. Crie uma acima e escolha-a ao lançar movimentações." />
           ) : null}
 
           {dados.saldos.map((linha) => (

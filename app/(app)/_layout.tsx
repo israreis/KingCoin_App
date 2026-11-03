@@ -39,7 +39,8 @@ export default function AppLayout() {
           <Stack.Screen name="recorrencias" options={{ title: 'Movimentações recorrentes' }} />
           <Stack.Screen name="recorrencia" options={{ title: 'Recorrência' }} />
           <Stack.Screen name="categorias" options={{ title: 'Categorias' }} />
-          <Stack.Screen name="contas" options={{ title: 'Contas' }} />
+          <Stack.Screen name="contas" options={{ title: 'Contas bancárias' }} />
+          <Stack.Screen name="metas" options={{ title: 'Metas' }} />
           <Stack.Screen name="editar-perfil" options={{ title: 'Editar dados' }} />
           <Stack.Screen name="alterar-email" options={{ title: 'Alterar e-mail' }} />
           <Stack.Screen name="alterar-senha" options={{ title: 'Alterar senha' }} />

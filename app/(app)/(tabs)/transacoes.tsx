@@ -1,12 +1,14 @@
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { FlatList, RefreshControl, View } from 'react-native';
+import { FlatList, RefreshControl, Text, View } from 'react-native';
 
+import { BotaoFlutuante, useBotaoFlutuante } from '@/components/BotaoFlutuante';
 import { TransacaoDeslizavel } from '@/components/TransacaoItem';
 import { BotaoIcone, CampoBusca, MODO_FECHAR_TECLADO, Carregando, Chips, MensagemErro, Tela, Vazio } from '@/components/ui';
 import { excluirMovimentacao, listarMovimentacoes } from '@/lib/api';
 import { confirmarExclusao, mostrarErro } from '@/lib/dialogos';
 import { useBarraAbas } from '@/lib/barraAbas';
+import { useDica } from '@/lib/dicas';
 import { normalizar } from '@/lib/format';
 import { PERIODOS, PERIODO_PADRAO, calcularPeriodo } from '@/lib/periodos';
 import { COR_TIPO, TEXTO_TIPO, useTema } from '@/lib/theme';
@@ -29,6 +31,8 @@ export default function Transacoes() {
   const [tipo, setTipo] = useState<FiltroTipo>('TODOS');
   const [busca, setBusca] = useState('');
   const { aoRolar } = useBarraAbas();
+  const botao = useBotaoFlutuante();
+  const dica = useDica('movimentacoes');
 
   const { dados, carregando, atualizando, erro, atualizar } = useDados(() => {
     const { inicio, fim } = calcularPeriodo(periodo);
@@ -60,11 +64,14 @@ export default function Transacoes() {
     <Tela
       titulo="Movimentações"
       rolavel={false}
-      acoes={
-        <View style={{ flexDirection: 'row', gap: 10 }}>
-          <BotaoIcone icone="download-outline" onPress={() => router.push('/relatorios')} />
-          <BotaoIcone icone="add-circle-outline" onPress={() => router.push('/transacao')} />
-        </View>
+      acoes={<BotaoIcone icone="download-outline" onPress={() => router.push('/relatorios')} />}
+      flutuante={
+        <BotaoFlutuante
+          visivel={botao.visivel}
+          rotulo="Nova movimentação"
+          acimaDaBarra
+          onPress={() => router.push('/transacao')}
+        />
       }
     >
       <Chips
@@ -80,22 +87,32 @@ export default function Transacoes() {
       />
 
       {erro ? <MensagemErro texto={erro} /> : null}
+      {dica.mostrar && filtradas.length > 0 ? (
+        <Text style={{ color: cores.suave, fontSize: 13 }}>
+          Dica: deslize um item para a esquerda para editar ou excluir.
+        </Text>
+      ) : null}
       {carregando && !dados ? (
         <Carregando />
       ) : (
         <FlatList
           data={filtradas}
           keyExtractor={(mov) => String(mov.id)}
-          renderItem={({ item }) => (
+          renderItem={({ item, index }) => (
             <TransacaoDeslizavel
               mov={item}
               onEditar={() => editar(item.id)}
               onExcluir={() => excluir(item.id)}
+              dica={dica.mostrar && index === 0}
+              onDicaConcluida={dica.concluir}
             />
           )}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode={MODO_FECHAR_TECLADO}
-          onScroll={aoRolar}
+          onScroll={(evento) => {
+            aoRolar(evento);
+            botao.aoRolar();
+          }}
           scrollEventThrottle={16}
           ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
           ListEmptyComponent={

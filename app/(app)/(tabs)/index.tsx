@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { BarraProgresso } from '@/components/graficos';
+import { MetaDeslizavel } from '@/components/MetaCartao';
 import { TransacaoDeslizavel } from '@/components/TransacaoItem';
 import { Botao, Cartao, Carregando, Chips, MensagemErro, Secao, Tela, Vazio } from '@/components/ui';
 import {
@@ -15,9 +15,10 @@ import {
 } from '@/lib/api';
 import { confirmarExclusao, mostrarErro } from '@/lib/dialogos';
 import { useAuth } from '@/lib/auth';
+import { useDica } from '@/lib/dicas';
 import { moeda, paraISO } from '@/lib/format';
 import { PERIODOS, PERIODO_PADRAO, calcularPeriodo, periodoAnterior, textoPeriodo } from '@/lib/periodos';
-import { gastosPorCategoria, progressoMeta, resumo, statusOrcamento, totaisPorTipo } from '@/lib/saldos';
+import { gastosPorCategoria, resumo, statusOrcamento, totaisPorTipo } from '@/lib/saldos';
 import type { Resumo } from '@/lib/saldos';
 import { COR_TIPO, useTema } from '@/lib/theme';
 import { useDados } from '@/lib/useDados';
@@ -47,6 +48,7 @@ export default function Carteira() {
   const { session } = useAuth();
   const router = useRouter();
   const [periodo, setPeriodo] = useState<PeriodoId>(PERIODO_PADRAO);
+  const dica = useDica('carteira');
 
   const { dados, carregando, atualizando, erro, atualizar } = useDados(async () => {
     // Lança as movimentações recorrentes vencidas antes de carregar os números.
@@ -179,14 +181,23 @@ export default function Carteira() {
           {dados.ultimas.length === 0 ? (
             <Vazio texto="Nenhuma movimentação nos últimos 30 dias." />
           ) : (
-            dados.ultimas.map((mov) => (
-              <TransacaoDeslizavel
-                key={mov.id}
-                mov={mov}
-                onEditar={() => editar(mov.id)}
-                onExcluir={() => excluir(mov.id)}
-              />
-            ))
+            <>
+              {dica.mostrar ? (
+                <Text style={{ color: cores.suave, fontSize: 13 }}>
+                  Dica: deslize um item para a esquerda para editar ou excluir.
+                </Text>
+              ) : null}
+              {dados.ultimas.map((mov, indice) => (
+                <TransacaoDeslizavel
+                  key={mov.id}
+                  mov={mov}
+                  onEditar={() => editar(mov.id)}
+                  onExcluir={() => excluir(mov.id)}
+                  dica={dica.mostrar && indice === 0}
+                  onDicaConcluida={dica.concluir}
+                />
+              ))}
+            </>
           )}
 
           <Secao titulo={`Movimentações · ${textoPeriodo(periodo)}`} />
@@ -214,14 +225,14 @@ export default function Carteira() {
           {dados.metas.length === 0 ? (
             <Vazio texto="Você ainda não criou metas." />
           ) : (
-            dados.metas.slice(0, 3).map((meta) => (
-              <Cartao key={meta.id}>
-                <View style={estilos.metaTopo}>
-                  <Text style={{ color: cores.texto, fontWeight: '600' }}>{meta.nome}</Text>
-                  <Text style={{ color: cores.suave }}>{Math.round(progressoMeta(meta))}%</Text>
-                </View>
-                <BarraProgresso porcentagem={progressoMeta(meta)} />
-              </Cartao>
+            dados.metas.slice(0, 3).map((meta, indice) => (
+              <MetaDeslizavel
+                key={meta.id}
+                meta={meta}
+                onAlterada={atualizar}
+                dica={dica.mostrar && dados.ultimas.length === 0 && indice === 0}
+                onDicaConcluida={dica.concluir}
+              />
             ))
           )}
         </>
@@ -236,5 +247,4 @@ const estilos = StyleSheet.create({
   variacao: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   linha: { flexDirection: 'row', gap: 12 },
   metade: { flex: 1 },
-  metaTopo: { flexDirection: 'row', justifyContent: 'space-between' },
 });
