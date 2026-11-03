@@ -16,7 +16,6 @@ export type Movimentacao = {
   valor: number;
   descricao: string | null;
   categoria_id: number;
-  conta_id: number | null;
   comprovante_path: string | null;
   categorias: Categoria;
   /** Criada sem internet e ainda não enviada ao servidor. */
@@ -25,7 +24,6 @@ export type Movimentacao = {
 
 export type NovaMovimentacao = {
   categoria_id: number;
-  conta_id: number | null;
   data: string;
   valor: number;
   descricao: string | null;
@@ -61,21 +59,9 @@ export type Orcamento = {
   categorias: Categoria;
 };
 
-export type Conta = {
-  id: number;
-  nome: string;
-  saldo_inicial: number;
-};
-
-export type NovaConta = {
-  nome: string;
-  saldo_inicial: number;
-};
-
 export type Recorrencia = {
   id: number;
   categoria_id: number;
-  conta_id: number | null;
   valor: number;
   descricao: string | null;
   dia_do_mes: number;
@@ -86,7 +72,6 @@ export type Recorrencia = {
 
 export type NovaRecorrencia = {
   categoria_id: number;
-  conta_id: number | null;
   valor: number;
   descricao: string | null;
   dia_do_mes: number;

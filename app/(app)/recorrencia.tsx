@@ -17,12 +17,11 @@ import {
   editarRecorrencia,
   excluirRecorrencia,
   listarCategorias,
-  listarContas,
 } from '@/lib/api';
 import { confirmarExclusao } from '@/lib/dialogos';
 import { lerValor, numeroParaCampo } from '@/lib/format';
 import { COR_TIPO, TEXTO_TIPO, useTema } from '@/lib/theme';
-import type { Categoria, Conta, Tipo } from '@/types';
+import type { Categoria, Tipo } from '@/types';
 
 const TIPOS: Tipo[] = ['RECEITA', 'DESPESA', 'ECONOMIA'];
 
@@ -33,10 +32,8 @@ export default function FormularioRecorrencia() {
   const idRecorrencia = id ? Number(id) : null;
 
   const [categorias, setCategorias] = useState<Categoria[]>([]);
-  const [contas, setContas] = useState<Conta[]>([]);
   const [tipo, setTipo] = useState<Tipo>('DESPESA');
   const [categoriaId, setCategoriaId] = useState<number | null>(null);
-  const [contaId, setContaId] = useState<number>(0);
   const [valor, setValor] = useState('');
   const [descricao, setDescricao] = useState('');
   const [dia, setDia] = useState('1');
@@ -51,17 +48,15 @@ export default function FormularioRecorrencia() {
 
     async function carregar() {
       try {
-        const [listaCategorias, listaContas] = await Promise.all([listarCategorias(), listarContas()]);
+        const listaCategorias = await listarCategorias();
         if (!ativo) return;
         setCategorias(listaCategorias);
-        setContas(listaContas);
 
         if (idRecorrencia) {
           const item = await buscarRecorrencia(idRecorrencia);
           if (!ativo) return;
           setTipo(item.categorias.tipo);
           setCategoriaId(item.categoria_id);
-          setContaId(item.conta_id ?? 0);
           setValor(numeroParaCampo(item.valor));
           setDescricao(item.descricao ?? '');
           setDia(String(item.dia_do_mes));
@@ -105,7 +100,6 @@ export default function FormularioRecorrencia() {
     try {
       const dados = {
         categoria_id: categoriaId,
-        conta_id: contaId || null,
         valor: valorNumero,
         descricao: descricao.trim() || null,
         dia_do_mes: diaNumero,
@@ -165,17 +159,6 @@ export default function FormularioRecorrencia() {
       <Text style={{ color: cores.suave, fontSize: 12 }}>
         Em meses mais curtos, o lançamento acontece no último dia do mês.
       </Text>
-
-      {contas.length > 0 ? (
-        <>
-          <Text style={{ color: cores.suave, fontWeight: '600' }}>Conta bancária</Text>
-          <Chips
-            opcoes={[{ id: 0, texto: 'Nenhuma' }, ...contas.map((c) => ({ id: c.id, texto: c.nome }))]}
-            valor={contaId}
-            onChange={setContaId}
-          />
-        </>
-      ) : null}
 
       <Campo
         rotulo="Descrição (opcional)"

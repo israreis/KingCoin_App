@@ -17,7 +17,7 @@ const esperar = () => new Promise((resolver) => setTimeout(resolver, 0));
 const erroDeRede = () => Object.assign(new Error('Sem conexão'), { rede: true });
 
 function nova(valor: number): NovaMovimentacao {
-  return { categoria_id: 1, conta_id: null, data: '2026-11-03', valor, descricao: `v${valor}`, comprovante_path: null };
+  return { categoria_id: 1, data: '2026-11-03', valor, descricao: `v${valor}`, comprovante_path: null };
 }
 
 beforeEach(async () => {

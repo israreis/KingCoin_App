@@ -1,4 +1,4 @@
-import type { Categoria, Conta, Meta, Tipo } from '@/types';
+import type { Categoria, Meta, Tipo } from '@/types';
 
 import { MESES_ABREV, isoParaData } from './format';
 
@@ -141,7 +141,7 @@ export function insightsDoMes(movs: ComDescricao[], hoje: Date = new Date()) {
   };
 }
 
-// --- Orçamentos e contas -----------------------------------------------------
+// --- Orçamentos -----------------------------------------------------
 
 /** Soma das despesas por categoria (id da categoria -> total). */
 export function gastosPorCategoria(
@@ -164,26 +164,3 @@ export function statusOrcamento(gasto: number, limite: number) {
   return { porcentagem, nivel };
 }
 
-/** Saldo de cada conta (saldo inicial + receitas - despesas). `null` = movimentações sem conta. */
-export function saldoPorConta(
-  contas: Conta[],
-  movs: (ComTipo & { conta_id: number | null })[],
-) {
-  const linhas = contas.map((conta) => ({
-    id: conta.id as number | null,
-    nome: conta.nome,
-    saldoInicial: conta.saldo_inicial,
-    receitas: 0,
-    despesas: 0,
-  }));
-  const semConta = { id: null as number | null, nome: 'Sem conta', saldoInicial: 0, receitas: 0, despesas: 0 };
-
-  for (const mov of movs) {
-    const linha = linhas.find((l) => l.id === mov.conta_id) ?? semConta;
-    if (mov.categorias.tipo === 'RECEITA') linha.receitas += mov.valor;
-    else if (mov.categorias.tipo === 'DESPESA') linha.despesas += mov.valor;
-  }
-
-  const todas = semConta.receitas + semConta.despesas > 0 ? [...linhas, semConta] : linhas;
-  return todas.map((l) => ({ ...l, saldo: l.saldoInicial + l.receitas - l.despesas }));
-}

@@ -31,7 +31,6 @@ import {
   editarMovimentacao,
   excluirMovimentacao,
   listarCategorias,
-  listarContas,
 } from '@/lib/api';
 import {
   enviarComprovante,
@@ -43,7 +42,7 @@ import type { OrigemImagem } from '@/lib/comprovantes';
 import { confirmarExclusao, mostrarErro } from '@/lib/dialogos';
 import { hojeISO, lerValor, numeroParaCampo, paraISO } from '@/lib/format';
 import { COR_TIPO, TEXTO_TIPO, useTema } from '@/lib/theme';
-import type { Categoria, Conta, Tipo } from '@/types';
+import type { Categoria, Tipo } from '@/types';
 
 const TIPOS: Tipo[] = ['RECEITA', 'DESPESA', 'ECONOMIA'];
 
@@ -54,10 +53,8 @@ export default function FormularioTransacao() {
   const idMovimentacao = id ? Number(id) : null;
 
   const [categorias, setCategorias] = useState<Categoria[]>([]);
-  const [contas, setContas] = useState<Conta[]>([]);
   const [tipo, setTipo] = useState<Tipo>('DESPESA');
   const [categoriaId, setCategoriaId] = useState<number | null>(null);
-  const [contaId, setContaId] = useState<number>(0); // 0 = sem conta
   const [valor, setValor] = useState('');
   const [data, setData] = useState(hojeISO());
   const [descricao, setDescricao] = useState('');
@@ -84,17 +81,15 @@ export default function FormularioTransacao() {
 
     async function carregar() {
       try {
-        const [listaCategorias, listaContas] = await Promise.all([listarCategorias(), listarContas()]);
+        const listaCategorias = await listarCategorias();
         if (!ativo) return;
         setCategorias(listaCategorias);
-        setContas(listaContas);
 
         if (idMovimentacao) {
           const mov = await buscarMovimentacao(idMovimentacao);
           if (!ativo) return;
           setTipo(mov.categorias.tipo);
           setCategoriaId(mov.categoria_id);
-          setContaId(mov.conta_id ?? 0);
           setValor(numeroParaCampo(mov.valor));
           setData(mov.data);
           setDescricao(mov.descricao ?? '');
@@ -207,7 +202,6 @@ export default function FormularioTransacao() {
 
       const dados = {
         categoria_id: categoriaId,
-        conta_id: contaId || null,
         valor: valorNumero,
         data: dataISO,
         descricao: descricao.trim() || null,
@@ -229,7 +223,6 @@ export default function FormularioTransacao() {
         try {
           await criarRecorrencia({
             categoria_id: categoriaId,
-            conta_id: contaId || null,
             valor: valorNumero,
             descricao: descricao.trim() || null,
             dia_do_mes: Number(diaRecorrencia),
@@ -327,17 +320,6 @@ export default function FormularioTransacao() {
         onChange={atalhoData}
       />
 
-      {contas.length > 0 ? (
-        <>
-          <Text style={{ color: cores.suave, fontWeight: '600' }}>Conta bancária</Text>
-          <Chips
-            opcoes={[{ id: 0, texto: 'Nenhuma' }, ...contas.map((c) => ({ id: c.id, texto: c.nome }))]}
-            valor={contaId}
-            onChange={setContaId}
-          />
-        </>
-      ) : null}
-
       <Campo
         rotulo="Descrição (opcional)"
         value={descricao}
@@ -420,8 +402,8 @@ export default function FormularioTransacao() {
           <View style={[estilos.caixaModal, { backgroundColor: cores.card, borderColor: cores.borda }]}>
             <Text style={{ color: cores.texto, fontSize: 18, fontWeight: '700' }}>Movimentação recorrente</Text>
             <Text style={{ color: cores.suave, lineHeight: 20 }}>
-              Esta movimentação será lançada automaticamente todo mês, com a mesma categoria, valor,
-              conta e descrição, a partir do próximo mês.
+              Esta movimentação será lançada automaticamente todo mês, com a mesma categoria, valor e
+              descrição, a partir do próximo mês.
             </Text>
             <Campo
               rotulo="Dia do mês"

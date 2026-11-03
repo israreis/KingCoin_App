@@ -33,7 +33,7 @@ const TUTORIAIS: { icone: keyof typeof Ionicons.glyphMap; titulo: string; texto:
     icone: 'document-text-outline',
     titulo: 'Exportar relatórios',
     texto:
-      'Em Conta > Relatórios (ou no ícone de download em Movimentações), escolha o período e exporte em PDF ou Excel para compartilhar ou salvar.',
+      'Em Organização > Relatórios (ou no ícone de download em Movimentações), escolha o período e exporte em PDF ou Excel para compartilhar ou salvar.',
   },
   {
     icone: 'moon-outline',

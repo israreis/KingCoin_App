@@ -40,14 +40,6 @@ alter table public.categorias drop constraint if exists categorias_nome_tipo_key
 create unique index if not exists categorias_unicas_idx
   on public.categorias (coalesce(user_id, '00000000-0000-0000-0000-000000000000'::uuid), nome, tipo);
 
-create table if not exists public.contas (
-  id             bigint generated always as identity primary key,
-  user_id        uuid not null default auth.uid() references auth.users (id) on delete cascade,
-  nome           text not null,
-  saldo_inicial  numeric(12, 2) not null default 0,
-  criado_em      timestamptz not null default now()
-);
-
 create table if not exists public.movimentacoes (
   id               bigint generated always as identity primary key,
   user_id          uuid not null default auth.uid() references auth.users (id) on delete cascade,
@@ -58,8 +50,6 @@ create table if not exists public.movimentacoes (
   criado_em        timestamptz not null default now()
 );
 
-alter table public.movimentacoes
-  add column if not exists conta_id bigint references public.contas (id) on delete set null;
 alter table public.movimentacoes
   add column if not exists comprovante_path text;
 
@@ -92,7 +82,6 @@ create table if not exists public.recorrencias (
   id                 bigint generated always as identity primary key,
   user_id            uuid not null default auth.uid() references auth.users (id) on delete cascade,
   categoria_id       integer not null references public.categorias (id),
-  conta_id           bigint references public.contas (id) on delete set null,
   valor              numeric(10, 2) not null check (valor > 0),
   descricao          text,
   dia_do_mes         smallint not null check (dia_do_mes between 1 and 31),
@@ -101,6 +90,11 @@ create table if not exists public.recorrencias (
   ultimo_mes_gerado  date,
   criado_em          timestamptz not null default now()
 );
+
+-- Contas bancárias foram removidas do app: limpa o que versões anteriores criaram.
+alter table public.movimentacoes drop column if exists conta_id;
+alter table public.recorrencias drop column if exists conta_id;
+drop table if exists public.contas;
 
 -- ---------------------------------------------------------------------------
 -- Categorias padrão (as mesmas do KingCoin web)
@@ -200,8 +194,8 @@ begin
       exit when dia_efetivo > p_hoje;
 
       if dia_efetivo >= r.inicio then
-        insert into public.movimentacoes (user_id, categoria_id, conta_id, data, valor, descricao)
-        values (r.user_id, r.categoria_id, r.conta_id, dia_efetivo, r.valor, r.descricao);
+        insert into public.movimentacoes (user_id, categoria_id, data, valor, descricao)
+        values (r.user_id, r.categoria_id, dia_efetivo, r.valor, r.descricao);
         total := total + 1;
       end if;
 
@@ -240,7 +234,6 @@ grant execute on function public.gerar_recorrencias(date) to authenticated;
 
 alter table public.profiles       enable row level security;
 alter table public.categorias     enable row level security;
-alter table public.contas         enable row level security;
 alter table public.movimentacoes  enable row level security;
 alter table public.metas          enable row level security;
 alter table public.orcamentos     enable row level security;
@@ -277,11 +270,6 @@ create policy "categorias: editar próprias"
 create policy "categorias: apagar próprias"
   on public.categorias for delete to authenticated
   using (user_id = auth.uid());
-
-drop policy if exists "contas: acesso do dono" on public.contas;
-create policy "contas: acesso do dono"
-  on public.contas for all to authenticated
-  using (user_id = auth.uid()) with check (user_id = auth.uid());
 
 drop policy if exists "movimentacoes: acesso do dono" on public.movimentacoes;
 create policy "movimentacoes: acesso do dono"

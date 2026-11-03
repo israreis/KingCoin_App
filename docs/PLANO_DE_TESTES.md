@@ -44,7 +44,6 @@ Leitura técnica de cada funcionalidade, para orientar onde testar com mais cuid
 | 7 | Seletor de data nativo | Implementado | Visual diferente no iOS (calendário) e no Android (diálogo) **[A]** | Média |
 | 8 | Máscara de moeda | Implementado | Limite de 10 dígitos (até 99.999.999,99) | Média |
 | 9 | Comprovante (foto) | Implementado | Exige internet; conferir se a imagem antiga é apagada ao trocar | Média |
-| 10 | Contas | Implementado | Saldo = inicial + receitas − despesas (economia não entra) | Média |
 | 11 | Categorias personalizadas | Implementado | Não é possível excluir categoria com movimentações (comportamento esperado) | Média |
 | 12 | Orçamentos | Implementado | Aviso só ao criar despesa no mês atual; editar uma despesa não dispara aviso | Média |
 | 13 | Recorrências | Implementado | Lançadas ao abrir a Carteira; dia 31 vira último dia do mês | Alta |
@@ -136,7 +135,6 @@ Leitura técnica de cada funcionalidade, para orientar onde testar com mais cuid
 | TRA-12 | Deslizar e rolar | Rolar a lista na vertical rapidamente | Rola sem abrir itens por engano | | |
 | TRA-13 | Busca | Digitar parte da descrição, depois o nome da categoria, depois com/sem acento | Filtra corretamente nos três casos | | |
 | TRA-14 | Filtro por tipo | Tocar em Receita/Despesa/Economia/Todas | Lista filtra | | |
-| TRA-15 | Conta | Com contas criadas, escolher uma ao lançar | Movimentação contabilizada na conta | | |
 | TRA-16 | Comprovante pela câmera | Anexar → Tirar foto | Miniatura aparece; tocar abre em tela cheia | | |
 | TRA-17 | Comprovante da galeria | Anexar → Escolher da galeria → salvar → reabrir | Imagem carrega ao editar | | |
 | TRA-18 | Trocar/remover comprovante | Editar → Trocar ou Remover → salvar | Nova imagem ou nenhuma; a antiga some do Storage | | |
@@ -153,7 +151,7 @@ Leitura técnica de cada funcionalidade, para orientar onde testar com mais cuid
 | MET-05 | Editar e excluir | Tocar → editar → salvar; deslizar → excluir | Funciona como nas movimentações | | |
 | MET-06 | Validação | Criar meta sem nome ou com valor 0 | Mensagens de erro | | |
 
-## 7. Orçamentos, recorrências, categorias e contas
+## 7. Orçamentos, recorrências e categorias
 
 | ID | Cenário | Passos | Esperado | Resultado | Obs. |
 |---|---|---|---|---|---|
@@ -170,9 +168,6 @@ Leitura técnica de cada funcionalidade, para orientar onde testar com mais cuid
 | CAT-02 | Renomear | Lápis → novo nome → Salvar | Nome atualizado inclusive nas movimentações | | |
 | CAT-03 | Excluir em uso | Excluir categoria com movimentações | Mensagem "Este item está em uso" | | |
 | CAT-04 | Padrão protegida | Categorias padrão | Mostram cadeado, sem editar/excluir | | |
-| CON-01 | Criar conta | Contas → nome, saldo inicial 100,00 → Adicionar | Saldo R$ 100,00 | | |
-| CON-02 | Saldo por conta | Lançar receita e despesa nessa conta | Saldo = inicial + receitas − despesas | | |
-| CON-03 | Excluir conta com movimentações | Excluir | Movimentações continuam e vão para "Sem conta" | | |
 
 ## 8. Dashboard e relatórios
 

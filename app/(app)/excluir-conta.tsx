@@ -64,7 +64,7 @@ export default function ExcluirConta() {
           O que será apagado
         </Text>
         <Text style={{ color: cores.suave, lineHeight: 21 }}>
-          Movimentações, metas, orçamentos, recorrências, categorias, contas, foto de perfil e
+          Movimentações, metas, orçamentos, recorrências, categorias, foto de perfil e
           comprovantes da conta {email}. Não é possível recuperar depois.
         </Text>
       </Cartao>

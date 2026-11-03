@@ -5,7 +5,6 @@ import {
   progressoMeta,
   receitasDespesasPorMes,
   resumo,
-  saldoPorConta,
   statusOrcamento,
   totaisDoMesPorCategoria,
   totaisPorTipo,
@@ -17,14 +16,13 @@ type Mov = {
   data: string;
   descricao: string | null;
   categoria_id: number;
-  conta_id: number | null;
   categorias: { nome: string; tipo: Tipo };
 };
 
 let id = 0;
-function mov(tipo: Tipo, valor: number, data: string, nome = 'Outros', conta_id: number | null = null): Mov {
+function mov(tipo: Tipo, valor: number, data: string, nome = 'Outros'): Mov {
   id += 1;
-  return { valor, data, descricao: `${nome} ${id}`, categoria_id: nome.length, conta_id, categorias: { nome, tipo } };
+  return { valor, data, descricao: `${nome} ${id}`, categoria_id: nome.length, categorias: { nome, tipo } };
 }
 
 describe('totaisPorTipo', () => {
@@ -191,33 +189,3 @@ describe('orçamentos', () => {
   });
 });
 
-describe('saldoPorConta', () => {
-  const contas = [
-    { id: 1, nome: 'Banco', saldo_inicial: 100 },
-    { id: 2, nome: 'Carteira', saldo_inicial: 0 },
-  ];
-
-  it('soma saldo inicial, receitas e despesas de cada conta; economia não entra', () => {
-    const movs = [
-      mov('RECEITA', 50, '2026-11-01', 'X', 1),
-      mov('DESPESA', 20, '2026-11-02', 'X', 1),
-      mov('ECONOMIA', 999, '2026-11-03', 'X', 1),
-      mov('DESPESA', 10, '2026-11-04', 'X', null),
-    ];
-    const linhas = saldoPorConta(contas, movs);
-
-    expect(linhas.find((l) => l.id === 1)).toMatchObject({ saldo: 130, receitas: 50, despesas: 20 });
-    expect(linhas.find((l) => l.id === 2)).toMatchObject({ saldo: 0 });
-    expect(linhas.find((l) => l.id === null)).toMatchObject({ nome: 'Sem conta', saldo: -10 });
-  });
-
-  it('não mostra "Sem conta" quando todas as movimentações têm conta', () => {
-    const linhas = saldoPorConta(contas, [mov('RECEITA', 5, '2026-11-01', 'X', 2)]);
-    expect(linhas.map((l) => l.nome)).toEqual(['Banco', 'Carteira']);
-  });
-
-  it('movimentação de conta apagada vai para "Sem conta"', () => {
-    const linhas = saldoPorConta(contas, [mov('RECEITA', 7, '2026-11-01', 'X', 99)]);
-    expect(linhas.find((l) => l.id === null)?.saldo).toBe(7);
-  });
-});

@@ -2,10 +2,8 @@ import * as ImagePicker from 'expo-image-picker';
 
 import type {
   Categoria,
-  Conta,
   Meta,
   Movimentacao,
-  NovaConta,
   NovaMeta,
   NovaMovimentacao,
   NovaRecorrencia,
@@ -22,7 +20,7 @@ import { calcularPeriodo } from './periodos';
 import { supabase } from './supabase';
 
 const CAMPOS_CATEGORIA = 'id, nome, tipo, user_id';
-const CAMPOS_MOVIMENTACAO = `id, data, valor, descricao, categoria_id, conta_id, comprovante_path, categorias(${CAMPOS_CATEGORIA})`;
+const CAMPOS_MOVIMENTACAO = `id, data, valor, descricao, categoria_id, comprovante_path, categorias(${CAMPOS_CATEGORIA})`;
 
 async function usuarioAtual(): Promise<string> {
   const { data } = await supabase.auth.getSession();
@@ -155,7 +153,11 @@ export async function buscarMovimentacao(id: number): Promise<Movimentacao> {
 }
 
 async function inserirMovimentacao(dados: NovaMovimentacao): Promise<void> {
-  const { error } = await supabase.from('movimentacoes').insert(dados);
+  // Campos explícitos: itens antigos da fila offline podem ter colunas que não existem mais.
+  const { categoria_id, data, valor, descricao, comprovante_path } = dados;
+  const { error } = await supabase
+    .from('movimentacoes')
+    .insert({ categoria_id, data, valor, descricao, comprovante_path });
   falhar(error);
 }
 
@@ -332,39 +334,9 @@ export async function avisoDeOrcamento(
   return null;
 }
 
-// --- Contas ----------------------------------------------------------------
-
-async function buscarContasServidor(): Promise<Conta[]> {
-  const { data, error } = await supabase
-    .from('contas')
-    .select('id, nome, saldo_inicial')
-    .order('nome');
-  falhar(error);
-  return (data ?? []) as Conta[];
-}
-
-export async function listarContas(): Promise<Conta[]> {
-  return comCache(await chaveCache('contas'), buscarContasServidor);
-}
-
-export async function criarConta(dados: NovaConta): Promise<void> {
-  const { error } = await supabase.from('contas').insert(dados);
-  falhar(error);
-}
-
-export async function editarConta(id: number, dados: NovaConta): Promise<void> {
-  const { error } = await supabase.from('contas').update(dados).eq('id', id);
-  falhar(error);
-}
-
-export async function excluirConta(id: number): Promise<void> {
-  const { error } = await supabase.from('contas').delete().eq('id', id);
-  falhar(error);
-}
-
 // --- Movimentações recorrentes ------------------------------------------------
 
-const CAMPOS_RECORRENCIA = `id, categoria_id, conta_id, valor, descricao, dia_do_mes, inicio, ativa, categorias(${CAMPOS_CATEGORIA})`;
+const CAMPOS_RECORRENCIA = `id, categoria_id, valor, descricao, dia_do_mes, inicio, ativa, categorias(${CAMPOS_CATEGORIA})`;
 
 async function buscarRecorrenciasServidor(): Promise<Recorrencia[]> {
   const { data, error } = await supabase

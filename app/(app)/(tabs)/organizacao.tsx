@@ -14,7 +14,6 @@ const ITENS: {
   { icone: 'pie-chart-outline', titulo: 'Orçamentos', descricao: 'Limite mensal de gastos por categoria', rota: '/orcamentos' },
   { icone: 'repeat-outline', titulo: 'Movimentações recorrentes', descricao: 'Salário, aluguel e assinaturas lançados todo mês', rota: '/recorrencias' },
   { icone: 'pricetags-outline', titulo: 'Categorias', descricao: 'Crie e organize suas categorias', rota: '/categorias' },
-  { icone: 'card-outline', titulo: 'Contas bancárias', descricao: 'Saldo separado por banco, cartão ou dinheiro', rota: '/contas' },
   { icone: 'document-text-outline', titulo: 'Relatórios', descricao: 'Exporte suas movimentações em PDF ou Excel', rota: '/relatorios' },
 ];
 

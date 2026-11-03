@@ -4,7 +4,7 @@ App mobile de controle financeiro pessoal, versão React Native do [KingCoin](ht
 
 ## Funcionalidades
 
-- Movimentações (receitas, despesas e economia) com busca, filtros, comprovante em foto e contas
+- Movimentações (receitas, despesas e economia) com busca, filtros e comprovante em foto
 - Movimentações recorrentes, orçamentos por categoria e categorias personalizadas
 - Metas com aportes rápidos
 - Dashboard com insights do mês e gráficos
