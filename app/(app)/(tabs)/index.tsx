@@ -21,8 +21,10 @@ import { gastosPorCategoria, resumo, statusOrcamento, totaisPorTipo } from '@/li
 import type { Resumo } from '@/lib/saldos';
 import { COR_TIPO, useTema } from '@/lib/theme';
 import { useDesktop } from '@/lib/layout';
+import { vidro } from '@/components/vidro';
 import { useDados } from '@/lib/useDados';
 import { useDica } from '@/lib/dicas';
+import { chaveAvisoOrcamento, useAvisosOcultos } from '@/lib/avisosOcultos';
 import type { PeriodoId } from '@/types';
 
 const TRANSACOES_DO_PERIODO = 10;
@@ -49,6 +51,7 @@ export default function Carteira() {
   const { session } = useAuth();
   const router = useRouter();
   const dica = useDica('carteira');
+  const avisos = useAvisosOcultos();
   const desktop = useDesktop();
   const [periodo, setPeriodo] = useState<PeriodoId>(PERIODO_PADRAO);
 
@@ -76,10 +79,14 @@ export default function Carteira() {
         : await listarMovimentacoes({ inicio: mes.inicio, fim: mes.fim });
     const gastos = gastosPorCategoria(movsMes);
     const alertasOrcamento = orcamentos
-      .map((o) => ({
-        nome: o.categorias.nome,
-        ...statusOrcamento(gastos.get(o.categoria_id) ?? 0, o.valor_limite),
-      }))
+      .map((o) => {
+        const status = statusOrcamento(gastos.get(o.categoria_id) ?? 0, o.valor_limite);
+        return {
+          nome: o.categorias.nome,
+          ...status,
+          chave: chaveAvisoOrcamento(o.id, status.nivel, mes.inicio.slice(0, 7)),
+        };
+      })
       .filter((o) => o.nivel !== 'ok');
 
     const totaisAtual = totaisPorTipo(doPeriodo);
@@ -110,6 +117,9 @@ export default function Carteira() {
         mostrarErro(e);
       }
     });
+
+  // Avisos que o usuário já ocultou não voltam a aparecer.
+  const alertasVisiveis = (dados?.alertasOrcamento ?? []).filter((a) => !avisos.ocultos.has(a.chave));
 
   return (
     <Tela
@@ -176,14 +186,23 @@ export default function Carteira() {
           </Cartao>
           </Grade>
 
-          {dados.alertasOrcamento.length > 0 ? (
+          {alertasVisiveis.length > 0 ? (
             <Pressable onPress={() => router.push('/orcamentos')}>
               <Cartao estilo={{ borderColor: '#f59e0b' }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                   <Ionicons name="warning-outline" size={18} color="#f59e0b" />
-                  <Text style={{ color: cores.texto, fontWeight: '700' }}>Orçamentos em atenção</Text>
+                  <Text style={{ color: cores.texto, fontWeight: '700', flex: 1 }}>Orçamentos em atenção</Text>
+                  <Pressable
+                    onPress={() => avisos.ocultar(alertasVisiveis.map((a) => a.chave))}
+                    hitSlop={10}
+                    accessibilityRole="button"
+                    accessibilityLabel="Ocultar aviso"
+                    style={(estado) => [{ padding: 4, borderRadius: 999 }, vidro(estado)]}
+                  >
+                    <Ionicons name="close" size={20} color={cores.suave} />
+                  </Pressable>
                 </View>
-                {dados.alertasOrcamento.slice(0, 3).map((alerta) => (
+                {alertasVisiveis.slice(0, 3).map((alerta) => (
                   <Text key={alerta.nome} style={{ color: cores.suave }}>
                     {alerta.nome}: {Math.round(alerta.porcentagem)}% do limite
                   </Text>

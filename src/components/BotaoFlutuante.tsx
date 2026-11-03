@@ -37,10 +37,13 @@ export function BotaoFlutuante({
   rotulo,
   acimaDaBarra = false,
   larguraConteudo = LARGURA_CONTEUDO,
+  secundario,
 }: {
   visivel: boolean;
   onPress: () => void;
   rotulo: string;
+  /** Botão menor exibido logo abaixo do principal (ex.: relatórios). */
+  secundario?: { icone: keyof typeof Ionicons.glyphMap; rotulo: string; onPress: () => void };
   /** true nas telas com barra de abas, para o botão ficar acima dela. */
   acimaDaBarra?: boolean;
   /** Na web, alinha o botão à borda direita do conteúdo com esta largura máxima. */
@@ -95,12 +98,43 @@ export function BotaoFlutuante({
       >
         <Ionicons name="add" size={34} color="#ffffff" />
       </Pressable>
+      {secundario ? (
+        <Pressable
+          onPress={secundario.onPress}
+          accessibilityRole="button"
+          accessibilityLabel={secundario.rotulo}
+          style={(estado) => [
+            estilos.secundario,
+            {
+              backgroundColor: cores.card,
+              borderColor: cores.borda,
+              transform: [{ scale: estado.pressed ? 0.92 : 1 }],
+            },
+            vidro(estado),
+          ]}
+        >
+          <Ionicons name={secundario.icone} size={22} color={cores.primaria} />
+        </Pressable>
+      ) : null}
     </Animated.View>
   );
 }
 
 const estilos = StyleSheet.create({
-  envoltorio: { position: 'absolute' },
+  envoltorio: { position: 'absolute', alignItems: 'center', gap: 12 },
+  secundario: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 6,
+  },
   botao: {
     width: 64,
     height: 64,

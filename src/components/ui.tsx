@@ -133,6 +133,12 @@ export function Tela({
           {cabecalho}
           {children}
         </ScrollView>
+      ) : Platform.OS === 'web' ? (
+        // Na web não há teclado para fechar, e o Pressable roubava o foco do campo de busca.
+        <View style={[estilos.conteudoFixo, larguraWeb]}>
+          {cabecalho}
+          {children}
+        </View>
       ) : (
         <Pressable style={[estilos.conteudoFixo, larguraWeb]} onPress={Keyboard.dismiss} accessible={false}>
           {cabecalho}

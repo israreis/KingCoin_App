@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { FlatList, RefreshControl, Text, View } from 'react-native';
+import { FlatList, Platform, RefreshControl, Text, View } from 'react-native';
 
 import { BotaoFlutuante, useBotaoFlutuante } from '@/components/BotaoFlutuante';
 import { TransacaoDeslizavel } from '@/components/TransacaoItem';
@@ -60,15 +60,25 @@ export default function Transacoes() {
       }
     });
 
+  // Na web o atalho de relatórios fica abaixo do botão de adicionar; no celular, no topo.
   return (
     <Tela
       titulo="Movimentações"
       rolavel={false}
-      acoes={<BotaoIcone icone="download-outline" onPress={() => router.push('/relatorios')} />}
+      acoes={
+        Platform.OS === 'web' ? undefined : (
+          <BotaoIcone icone="download-outline" onPress={() => router.push('/relatorios')} />
+        )
+      }
       flutuante={
         <BotaoFlutuante
           visivel={botao.visivel}
           rotulo="Nova movimentação"
+          secundario={
+            Platform.OS === 'web'
+              ? { icone: 'download-outline', rotulo: 'Relatórios', onPress: () => router.push('/relatorios') }
+              : undefined
+          }
           acimaDaBarra
           onPress={() => router.push('/transacao')}
         />
