@@ -25,6 +25,66 @@ function escapar(texto: string): string {
     .replace(/"/g, '&quot;');
 }
 
+/** Logo do KingCoin em SVG, embutido no PDF (funciona no celular e no navegador). */
+const LOGO_SVG = `<svg class="logo" viewBox="0 0 809.29 923.28" xmlns="http://www.w3.org/2000/svg" fill="#1a9a70">
+  <polygon points="156.26 669.57 347.34 781.62 347.34 923.28 0 923.28 0 301.67 154.35 391.44 156.26 669.57"/>
+  <polygon points="654.93 391.44 809.28 301.67 809.28 923.28 461.94 923.28 461.94 781.62 653.02 669.57 654.93 391.44"/>
+  <polygon points="809.29 113.99 809.29 171.76 541.81 323.52 540.32 599.76 404.64 677.58 268.94 599.76 267.48 323.52 0 171.76 0 113.99 113.99 0 227.99 113.99 290.65 113.99 404.64 0 518.64 113.99 581.3 113.99 695.29 0 809.29 113.99"/>
+</svg>`;
+
+type ElementoWeb = {
+  style: Record<string, string>;
+  srcdoc: string;
+  onload: (() => void) | null;
+  remove: () => void;
+  contentWindow: {
+    focus: () => void;
+    print: () => void;
+    addEventListener: (evento: string, fn: () => void) => void;
+  } | null;
+};
+
+/**
+ * Na web, o `Print.printAsync` do expo-print imprime a página atual e ignora o HTML.
+ * Por isso o relatório é carregado num iframe invisível e impresso de lá: o navegador
+ * abre a janela de impressão com a opção "Salvar como PDF", com o mesmo modelo do celular.
+ */
+function imprimirNoNavegador(html: string): Promise<void> {
+  const doc = (globalThis as unknown as {
+    document?: { createElement: (tag: string) => ElementoWeb; body: { appendChild: (el: ElementoWeb) => void } };
+  }).document;
+  if (!doc) return Promise.reject(new Error('Impressão indisponível neste navegador.'));
+
+  return new Promise((resolve, reject) => {
+    const iframe = doc.createElement('iframe');
+    Object.assign(iframe.style, { position: 'fixed', right: '0', bottom: '0', width: '0', height: '0', border: '0' });
+
+    let terminou = false;
+    const limpar = () => {
+      if (terminou) return;
+      terminou = true;
+      setTimeout(() => iframe.remove(), 500);
+      resolve();
+    };
+
+    iframe.onload = () => {
+      const janela = iframe.contentWindow;
+      if (!janela) {
+        iframe.remove();
+        reject(new Error('Não foi possível gerar o PDF.'));
+        return;
+      }
+      janela.addEventListener('afterprint', limpar);
+      janela.focus();
+      janela.print();
+      // Alguns navegadores não disparam "afterprint"; garante a limpeza.
+      setTimeout(limpar, 60_000);
+    };
+    iframe.srcdoc = html;
+    doc.body.appendChild(iframe);
+  });
+}
+
 async function compartilhar(uri: string, mimeType: string, uti: string) {
   if (!(await Sharing.isAvailableAsync())) {
     throw new Error('O compartilhamento de arquivos não está disponível neste aparelho.');
@@ -52,9 +112,14 @@ export async function exportarPdf({ movimentacoes, inicio, fim, usuario }: Param
   <html>
     <head>
       <meta charset="utf-8" />
+      <title>Relatório KingCoin ${dataBR(inicio)} a ${dataBR(fim)}</title>
       <style>
-        body { font-family: Helvetica, Arial, sans-serif; color: #0c1a14; padding: 24px; }
-        h1 { color: #1a9a70; margin: 0 0 4px; }
+        @page { size: A4; margin: 16mm; }
+        * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        body { font-family: Helvetica, Arial, sans-serif; color: #0c1a14; padding: 24px; margin: 0; }
+        .topo { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+        .logo { width: 40px; height: 46px; }
+        h1 { color: #1a9a70; margin: 0; }
         .sub { color: #5d7468; margin-bottom: 20px; font-size: 13px; }
         table { width: 100%; border-collapse: collapse; font-size: 12px; }
         th { background: #1a9a70; color: #fff; text-align: left; padding: 8px; }
@@ -66,7 +131,7 @@ export async function exportarPdf({ movimentacoes, inicio, fim, usuario }: Param
       </style>
     </head>
     <body>
-      <h1>KingCoin</h1>
+      <div class="topo">${LOGO_SVG}<h1>KingCoin</h1></div>
       <div class="sub">Relatório de ${dataBR(inicio)} a ${dataBR(fim)}</div>
       <table>
         <thead>
@@ -86,7 +151,7 @@ export async function exportarPdf({ movimentacoes, inicio, fim, usuario }: Param
 
   // Na web abre a impressão do navegador, onde dá para salvar como PDF.
   if (Platform.OS === 'web') {
-    await Print.printAsync({ html });
+    await imprimirNoNavegador(html);
     return;
   }
 
