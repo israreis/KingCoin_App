@@ -1,6 +1,6 @@
 # KingCoin App
 
-App de controle financeiro pessoal para **iPhone, Android e navegador**, a partir de um único código. Usa **Expo (SDK 58)** e **Supabase** como backend (login, banco Postgres e arquivos). Substitui a versão web em Django ([KingCoin](https://github.com/israreis/KingCoin)): as três plataformas usam o mesmo banco e o mesmo login.
+App de controle financeiro pessoal para **iPhone, Android e navegador**, a partir de um único código. Usa **Expo (SDK 58)** e **Supabase** como backend (login, banco Postgres e arquivos). 
 
 ## Funcionalidades
 
