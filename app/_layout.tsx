@@ -9,7 +9,7 @@ import { Carregando } from '@/components/ui';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { BiometriaProvider } from '@/lib/biometria';
 import '@/lib/notificacoes';
-import { supabaseConfigurado } from '@/lib/supabase';
+import { chaveSecretaNoApp, supabaseConfigurado } from '@/lib/supabase';
 import { TemaProvider, useTema } from '@/lib/theme';
 
 function Guarda() {
@@ -39,11 +39,12 @@ function Guarda() {
     return (
       <View style={{ flex: 1, backgroundColor: cores.fundo, justifyContent: 'center', padding: 24 }}>
         <Text style={{ color: cores.texto, fontSize: 20, fontWeight: '700', marginBottom: 8 }}>
-          Supabase não configurado
+          {chaveSecretaNoApp ? 'Chave do Supabase incorreta' : 'Supabase não configurado'}
         </Text>
         <Text style={{ color: cores.suave, lineHeight: 22 }}>
-          Copie o arquivo .env.example para .env, preencha EXPO_PUBLIC_SUPABASE_URL e
-          EXPO_PUBLIC_SUPABASE_ANON_KEY e reinicie com `npx expo start -c`.
+          {chaveSecretaNoApp
+            ? 'O .env está com a chave secreta (service_role / sb_secret_). Ela dá acesso total ao banco e não pode ficar no app. Troque EXPO_PUBLIC_SUPABASE_ANON_KEY pela chave anon / publishable e reinicie com `npx expo start -c`.'
+            : 'Copie o arquivo .env.example para .env, preencha EXPO_PUBLIC_SUPABASE_URL e EXPO_PUBLIC_SUPABASE_ANON_KEY e reinicie com `npx expo start -c`.'}
         </Text>
       </View>
     );

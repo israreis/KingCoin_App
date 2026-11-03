@@ -7,8 +7,24 @@ import { Platform } from 'react-native';
 const url = process.env.EXPO_PUBLIC_SUPABASE_URL ?? '';
 const anonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '';
 
-/** Falso quando o arquivo .env ainda não foi preenchido. */
-export const supabaseConfigurado = url.length > 0 && anonKey.length > 0;
+/**
+ * true quando a chave do .env é a secreta (service_role / sb_secret_), que ignora
+ * as regras de segurança do banco e nunca pode ir para dentro do app.
+ */
+export const chaveSecretaNoApp = (() => {
+  if (anonKey.startsWith('sb_secret_')) return true;
+  try {
+    const payload = anonKey.split('.')[1];
+    if (!payload) return false;
+    const json = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+    return json?.role === 'service_role';
+  } catch {
+    return false;
+  }
+})();
+
+/** Falso quando o arquivo .env ainda não foi preenchido ou usa a chave errada. */
+export const supabaseConfigurado = url.length > 0 && anonKey.length > 0 && !chaveSecretaNoApp;
 
 export const supabase = createClient(
   url || 'https://placeholder.supabase.co',
