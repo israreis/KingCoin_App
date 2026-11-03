@@ -148,6 +148,8 @@ export function TelaFormulario({
             paddingTop: (margemTopo ? insets.top : 0) + ESPACO_TELA,
             paddingBottom: insets.bottom + 40,
           },
+          // Telas de entrada no navegador: centralizadas na vertical, com respiro.
+          margemTopo && Platform.OS === 'web' ? estilos.entradaWeb : null,
         ]}
         keyboardShouldPersistTaps="handled"
           keyboardDismissMode={MODO_FECHAR_TECLADO}
@@ -545,6 +547,7 @@ export function BotaoIcone({
 
 const estilos = StyleSheet.create({
   tela: { flex: 1 },
+  entradaWeb: { flexGrow: 1, justifyContent: 'center', paddingTop: 56, paddingBottom: 56 },
   conteudo: { paddingHorizontal: ESPACO_TELA, paddingTop: ESPACO_TELA, paddingBottom: 130, gap: 16 },
   conteudoFixo: { flex: 1, paddingHorizontal: ESPACO_TELA, paddingTop: ESPACO_TELA, gap: 16 },
   cabecalho: {

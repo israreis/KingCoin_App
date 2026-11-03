@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Camada_1" data-name="Camada 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1548.09 315.49">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fffcf0;
+        font-family: Unbounded-Light, Unbounded;
+        font-size: 190.86px;
+        font-variation-settings: 'wght' 300;
+        font-weight: 300;
+      }
+
+      .cls-2 {
+        fill: #23b785;
+      }
+    </style>
+  </defs>
+  <text class="cls-1" transform="translate(407.91 229.79)"><tspan x="0" y="0">KINGCOIN</tspan></text>
+  <g>
+    <g>
+      <polygon class="cls-2" points="53.4 228.8 118.69 267.08 118.69 315.49 0 315.49 0 103.08 52.74 133.76 53.4 228.8"/>
+      <polygon class="cls-2" points="223.79 133.76 276.54 103.08 276.54 315.49 157.85 315.49 157.85 267.08 223.14 228.8 223.79 133.76"/>
+    </g>
+    <polygon class="cls-2" points="276.54 38.95 276.54 58.69 185.14 110.55 184.63 204.94 138.27 231.53 91.9 204.94 91.4 110.55 0 58.69 0 38.95 38.95 0 77.9 38.95 99.32 38.95 138.27 0 177.22 38.95 198.63 38.95 237.59 0 276.54 38.95"/>
+  </g>
+</svg>

@@ -66,7 +66,7 @@ Publicação gratuita (escolha um):
 - **Netlify**: comando de build `npx expo export --platform web`, pasta `dist`; o `public/_redirects` já trata as rotas. Cadastre as mesmas variáveis.
 - **EAS Hosting**: `npx expo export --platform web` e depois `npx eas-cli deploy`.
 
-Na web, biometria e lembretes ficam escondidos, o comprovante é escolhido como arquivo, o Excel é baixado direto e o PDF abre a janela de impressão (escolha "Salvar como PDF").
+Na web, quem abre o endereço principal sem login vê primeiro a landing page (`public/landing/`); os botões dela levam ao cadastro e ao login do app. Biometria e lembretes ficam escondidos, o comprovante é escolhido como arquivo, o Excel é baixado direto e o PDF abre a janela de impressão (escolha "Salvar como PDF").
 
 ## Expo Go x development build
 

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KingCoin - Início</title>
+  <meta name="description" content="KingCoin: organize suas finanças pessoais no iPhone, no Android e no navegador.">
+  <meta name="theme-color" content="#000805">
+  <link rel="icon" href="/landing/img/favicon.svg" type="image/svg+xml">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/landing/tailwind-config.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@200..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/landing/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="bg-[#000805]">
+
+  <header class="fixed top-4 left-0 w-full z-50 px-4 navbarFadeDown">
+    <div class="max-w-7xl mx-auto glass rounded-full px-6 py-3 shadow-lg flex items-center justify-between">
+      <a href="#hero">
+        <div class="flex items-center ml-7">
+          <img src="/landing/img/kingcoin-logo.svg" alt="KingCoin" class="h-6 w-auto sm:h-7 md:h-8 lgx:h-9 transition-all duration-300">
+        </div>
+      </a>
+
+      <div class="hidden lgx:flex justify-center">
+        <nav class="flex space-x-6 text-lg font-medium text-gray-200">
+          <a href="#hero" class="nav-link">Início</a>
+          <a href="#sobre-nos" class="nav-link">Sobre Nós</a>
+          <a href="#solucao" class="nav-link">Solução</a>
+          <a href="#como-funciona" class="nav-link">Como funciona</a>
+        </nav>
+      </div>
+
+      <div class="hidden lgx:flex items-center space-x-3 mr-7">
+        <a href="/register" class="px-5 py-2 text-base font-medium rounded-full bg-green-400 text-black hover:bg-green-500 transition">Cadastre-se</a>
+        <a href="/login" class="px-5 py-2 text-base font-medium rounded-full border border-green-400 text-green-400 hover:bg-green-400 hover:text-black transition">Entrar</a>
+      </div>
+
+      <div class="lgx:hidden flex items-center space-x-3">
+        <button id="menu-btn" class="focus:outline-none" aria-label="Abrir menu">
+          <svg id="icon-open" class="w-7 h-7 text-gray-200 block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <svg id="icon-close" class="w-7 h-7 text-gray-200 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="mobile-menu" class="menu-hidden lgx:hidden mt-2 mx-4 glass rounded-3xl px-6 py-6 shadow-lg space-y-4 text-center text-gray-100">
+      <a href="#hero" class="block text-base font-medium rounded-full px-3 py-2 transition hover:text-green-400 hover:bg-white/10 hover:backdrop-blur-md">Início</a>
+      <a href="#sobre-nos" class="block text-base font-medium rounded-full px-3 py-2 transition hover:text-green-400 hover:bg-white/10 hover:backdrop-blur-md">Sobre Nós</a>
+      <a href="#solucao" class="block text-base font-medium rounded-full px-3 py-2 transition hover:text-green-400 hover:bg-white/10 hover:backdrop-blur-md">Solução</a>
+      <a href="#como-funciona" class="block text-base font-medium rounded-full px-3 py-2 transition hover:text-green-400 hover:bg-white/10 hover:backdrop-blur-md">Como funciona</a>
+      <div class="pt-4 border-t border-white/10 space-y-3">
+        <a href="/register" class="block w-full text-center px-5 py-2 text-base font-medium rounded-full bg-green-400 text-black hover:bg-green-500 transition">Cadastre-se</a>
+        <a href="/login" class="block w-full text-center px-5 py-2 text-base font-medium rounded-full border border-green-400 text-green-400 hover:bg-green-400 hover:text-black transition">Entrar</a>
+      </div>
+    </div>
+  </header>
+
+  <section id="hero" class="relative flex flex-col items-center justify-center h-[90vh] text-center px-4 space-y-6 overflow-hidden">
+    <div class="absolute inset-0 w-full h-full">
+      <video autoplay muted loop playsinline class="w-full h-full object-cover">
+        <source src="/landing/videos/hero.mp4" type="video/mp4">
+        Seu navegador não suporta vídeos em HTML5.
+      </video>
+      <div class="absolute inset-0 bg-[#000805]/70 pointer-events-none"></div>
+      <div class="absolute inset-0 pointer-events-none hidden xl:block" style="background-image: linear-gradient(to right, #000805 0%, transparent 50%, #000805 100%);"></div>
+      <div class="absolute inset-x-0 bottom-0 h-40 pointer-events-none" style="background-image: linear-gradient(to top, #000805 0%, transparent 100%);"></div>
+    </div>
+
+    <div class="relative flex flex-col items-center justify-center z-20 px-6 mt-12">
+      <div class="heroFadeUp hero-delay-1 flex items-center space-x-3 mb-6">
+        <p class="flex items-center text-xs sm:text-sm md:text-base text-gray-200 whitespace-nowrap">
+          <img src="/landing/img/kingcoin-logo.svg" alt="KingCoin" class="h-4 sm:h-5 md:h-6 mr-2 logo-hover">
+          no iPhone, no Android e no navegador
+        </p>
+      </div>
+
+      <h1 class="heroFadeUp hero-delay-2 text-3xl sm:text-5xl md:text-6xl font-normal leading-snug gradient-text text-white max-w-4xl mx-auto">
+        Nós somos o futuro<br class="block sm:hidden" />
+        da organização<br class="block sm:hidden" />
+        financeira pessoal
+      </h1>
+
+      <p class="heroFadeUp hero-delay-3 text-base sm:text-lg md:text-xl text-gray-400 max-w-md sm:max-w-2xl mt-4 leading-relaxed">
+        O jeito mais moderno e seguro de controlar suas finanças pessoais chegou.
+        Cadastre-se e comece a se organizar financeiramente hoje mesmo!
+      </p>
+
+      <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center mt-6 w-full sm:w-auto">
+        <a href="/register" class="heroFadeUp hero-delay-4 px-6 py-3 text-sm sm:text-lg font-medium rounded-full bg-green-400 text-black hover:bg-green-500 transition w-full max-w-xs mx-auto sm:max-w-none sm:w-auto text-center whitespace-nowrap">
+          Quero me organizar financeiramente
+        </a>
+        <a href="/login" class="heroFadeUp hero-delay-4 px-6 py-3 text-base sm:text-lg font-medium rounded-full border border-green-400 text-green-400 hover:bg-green-400 hover:text-black transition w-full max-w-xs mx-auto sm:max-w-none sm:w-auto text-center">
+          Já tenho conta
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="sobre-nos" class="min-h-screen py-16 px-4 flex items-center justify-center">
+    <div class="scrollFade max-w-7xl w-full flex flex-col lgx:flex-row items-center justify-center space-y-12 lgx:space-y-0 lgx:space-x-12">
+      <div class="flex-1 w-full lgx:w-1/2 flex flex-col items-center lgx:items-start text-left space-y-6">
+        <p class="mini-title mb-2">Quem somos?</p>
+        <h2 class="text-4xl sm:text-5xl md:text-6xl lgx:text-6xl font-normal gradient-text text-left">
+          Descubra um pouco mais sobre o KingCoin
+        </h2>
+        <p class="text-base sm:text-lg md:text-xl text-gray-400 max-w-md mx-auto lgx:mx-0 lgx:max-w-none text-left">
+          Somos o futuro da gestão de finanças pessoais. Nascemos da vontade de inovar e proporcionar o melhor
+          software de organização financeira para você, valorizando conceitos como a simplicidade, objetividade e
+          a direção. Nossa missão é simples: oferecer uma ferramenta direta e eficiente que elimine a fricção
+          entre você e sua organização financeira. Acreditamos que o tempo é valioso e a energia deve ser
+          direcionada para o que realmente importa. Com a nossa solução, você não perde mais tempo com
+          configurações complexas, planilhas infinitas ou menus escondidos. Tudo está ao seu alcance, de forma
+          intuitiva e fácil. Comece a gerenciar suas finanças de uma forma que realmente faz sentido. Com nosso
+          software, o futuro da sua organização financeira começa agora.
+        </p>
+        <a href="/register" class="mt-4 px-6 py-3 text-sm sm:text-base font-medium rounded-full bg-green-400 text-black hover:bg-green-500 transition mx-auto lgx:mx-0">
+          Me organizar financeiramente
+        </a>
+      </div>
+
+      <div class="flex-1 w-full lgx:w-1/2 p-4 lgx:p-0 flex justify-center lgx:justify-end">
+        <img src="/landing/img/ilustracao.png" alt="Representação visual do nosso software de organização financeira" loading="lazy"
+          class="w-full max-w-lg lgx:max-w-none aspect-[1/1.1] sm:aspect-[1.1/1.2] lgx:aspect-[1/1.15] object-cover rounded-[50px]" />
+      </div>
+    </div>
+  </section>
+
+  <section id="solucao" class="py-20 px-6 section-bg relative">
+    <div class="max-w-7xl mx-auto scrollFade text-center">
+      <p class="mini-title mb-6">Descubra o que oferecemos</p>
+      <h2 class="text-3xl sm:text-4xl md:text-5xl font-normal gradient-text mb-12">
+        Solução simples, rápida e intuitiva. Perfeita para você!
+      </h2>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="glass-card p-6 rounded-2xl flex flex-col items-start hover:border-green-400 transition scrollFade">
+          <div class="icon-wrapper mb-4"><img src="/landing/img/receitas.svg" alt="" class="w-6 h-6"></div>
+          <h3 class="text-xl font-semibold text-white mb-2">Gestão de receitas</h3>
+          <p class="text-gray-400 text-sm mb-4">Controle todas as entradas financeiras de forma simples e rápida.</p>
+          <a href="/register" class="learn-more">Começar agora →</a>
+        </div>
+
+        <div class="glass-card p-6 rounded-2xl flex flex-col items-start hover:border-green-400 transition scrollFade">
+          <div class="icon-wrapper mb-4"><img src="/landing/img/despesas.svg" alt="" class="w-6 h-6"></div>
+          <h3 class="text-xl font-semibold text-white mb-2">Gestão de despesas</h3>
+          <p class="text-gray-400 text-sm mb-4">Acompanhe seus gastos, defina orçamentos e saiba para onde vai seu dinheiro.</p>
+          <a href="/register" class="learn-more">Começar agora →</a>
+        </div>
+
+        <div class="glass-card p-6 rounded-2xl flex flex-col items-start hover:border-green-400 transition scrollFade">
+          <div class="icon-wrapper mb-4"><img src="/landing/img/graficos.svg" alt="" class="w-6 h-6"></div>
+          <h3 class="text-xl font-semibold text-white mb-2">Visualização com gráficos</h3>
+          <p class="text-gray-400 text-sm mb-4">Insights do mês e gráficos claros para entender seus números.</p>
+          <a href="/register" class="learn-more">Começar agora →</a>
+        </div>
+
+        <div class="glass-card p-6 rounded-2xl flex flex-col items-start hover:border-green-400 transition scrollFade">
+          <div class="icon-wrapper mb-4"><img src="/landing/img/relatorios.svg" alt="" class="w-6 h-6"></div>
+          <h3 class="text-xl font-semibold text-white mb-2">Relatórios precisos</h3>
+          <p class="text-gray-400 text-sm mb-4">Exporte suas movimentações em PDF ou Excel quando precisar.</p>
+          <a href="/register" class="learn-more">Começar agora →</a>
+        </div>
+
+        <div class="glass-card p-6 rounded-2xl flex flex-col items-start hover:border-green-400 transition scrollFade">
+          <div class="icon-wrapper mb-4"><img src="/landing/img/interface.svg" alt="" class="w-6 h-6"></div>
+          <h3 class="text-xl font-semibold text-white mb-2">Em qualquer tela</h3>
+          <p class="text-gray-400 text-sm mb-4">A mesma conta e os mesmos dados no iPhone, no Android e no navegador.</p>
+          <a href="/register" class="learn-more">Começar agora →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="como-funciona" class="py-20 px-6 section-bg relative">
+    <div class="max-w-7xl mx-auto text-center scrollFade">
+      <p class="mini-title mb-6">COMO FUNCIONA</p>
+      <h2 class="text-3xl sm:text-4xl md:text-5xl font-normal gradient-text mb-12">
+        Comece a se organizar <br> em três passos
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+        <div class="feedback-card scrollFade">
+          <p class="text-green-400 text-4xl font-semibold mb-4">1</p>
+          <h3 class="text-gray-100 text-xl font-semibold mb-2">Crie sua conta</h3>
+          <p class="text-gray-400">Cadastro gratuito com e-mail ou Google, em menos de um minuto.</p>
+        </div>
+        <div class="feedback-card scrollFade">
+          <p class="text-green-400 text-4xl font-semibold mb-4">2</p>
+          <h3 class="text-gray-100 text-xl font-semibold mb-2">Registre suas movimentações</h3>
+          <p class="text-gray-400">Receitas, despesas e economias. As recorrentes, como salário e aluguel, entram sozinhas todo mês.</p>
+        </div>
+        <div class="feedback-card scrollFade">
+          <p class="text-green-400 text-4xl font-semibold mb-4">3</p>
+          <h3 class="text-gray-100 text-xl font-semibold mb-2">Acompanhe e planeje</h3>
+          <p class="text-gray-400">Veja o saldo previsto, crie metas, defina orçamentos e receba alertas antes de estourar.</p>
+        </div>
+      </div>
+
+      <a href="/register" class="inline-block mt-12 px-6 py-3 text-sm sm:text-base font-medium rounded-full bg-green-400 text-black hover:bg-green-500 transition">
+        Criar minha conta
+      </a>
+    </div>
+  </section>
+
+  <section id="footer-box" class="footer-container py-16 px-8">
+    <footer id="footer" class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+        <div>
+          <h3 class="text-2xl font-semibold mb-4 text-white">KingCoin</h3>
+          <p class="text-gray-300 mb-6">
+            A forma inteligente e rápida de gerenciar suas finanças. Crie uma conta e conheça agora as
+            funcionalidades do software.
+          </p>
+          <div class="flex space-x-4">
+            <a href="https://www.linkedin.com/in/israreis/" class="social-icon" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            <a href="https://github.com/israreis/KingCoin_App" class="social-icon" aria-label="GitHub"><i class="fab fa-github"></i></a>
+          </div>
+        </div>
+
+        <div class="flex flex-col space-y-3 text-white">
+          <a href="#hero">Início</a>
+          <a href="#sobre-nos">Sobre nós</a>
+          <a href="#solucao">Funcionalidades</a>
+          <a href="#como-funciona">Como funciona</a>
+        </div>
+
+        <div class="flex flex-col space-y-3 text-white">
+          <a href="/login">Entrar</a>
+          <a href="/register">Criar conta</a>
+        </div>
+      </div>
+
+      <div class="border-t border-green-900/40 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
+        <p>© 2026 KingCoin. Todos os direitos reservados.</p>
+        <p>Desenvolvido por <a href="https://www.linkedin.com/in/israreis/" class="text-green-500 hover:text-green-400 transition">Israel dos Reis</a></p>
+      </div>
+    </footer>
+  </section>
+
+  <script type="module" src="/landing/landing.js"></script>
+</body>
+</html>

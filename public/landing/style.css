@@ -1,0 +1,376 @@
+
+body {
+  font-family: 'Archivo', sans-serif;
+}
+
+/* Efeito NavBar */
+.glass {
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  background-color: rgba(0, 8, 5, 100);
+  border: 1px solid rgba(35, 183, 133, 0.20);
+}
+
+/* Animação NAVBAR */
+.navbarFadeDown {
+  opacity: 0;
+  transform: translateY(-40px);
+  animation: navbarFadeDown 0.9s ease forwards;
+}
+
+@keyframes navbarFadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* HERO */
+.heroFadeUp {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: heroFadeUp 0.9s ease forwards;
+}
+
+.hero-delay-1 { animation-delay: 0.3s; }
+.hero-delay-2 { animation-delay: 0.6s; }
+.hero-delay-3 { animation-delay: 0.9s; }
+.hero-delay-4 { animation-delay: 1.2s; }
+
+@keyframes heroFadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Logo Hover */
+.logo-hover {
+  transition: transform 0.3s ease;
+}
+
+.logo-hover:hover {
+  transform: scale(1.08);
+}
+
+/* Gradiente no Texto */
+.gradient-text {
+  background-image: linear-gradient(to right, #797870, #E6E4D9);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Avatares */
+.-space-x-3 > * {
+  margin-left: -0.75rem;
+}
+
+/* Links */
+a {
+  transition: all 0.3s ease;
+}
+
+a:hover {
+  cursor: pointer;
+}
+
+/* Header transparente */
+header {
+  background: transparent;
+}
+
+/* Scroll Fade */
+.scrollFade {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.scrollFade.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Links Navbar */
+.nav-link {
+  position: relative;
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
+  transition: all 0.3s ease;
+}
+.nav-link:hover {
+  background-color: #22c55e;
+  color: black;
+}
+
+/* Menu Mobile */
+.menu-hidden {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: all 0.4s ease;
+}
+.menu-show {
+  max-height: 600px;
+  opacity: 1;
+  transition: all 0.4s ease;
+}
+
+/* Fundo da Seção */
+.section-bg {
+  background: linear-gradient(180deg, #000000 0%, #001a12 100%);
+  background-image: none;
+  background-size: cover;
+  background-position: center;
+}
+
+/* Título pequeno acima do principal */
+.mini-title {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #23b785;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  position: relative;
+  display: inline-block;
+  animation: glowPulse 3s ease-in-out infinite;
+  text-shadow: 0 0 8px rgba(35, 183, 133, 0.4);
+}
+
+/* Efeito de brilho pulsante */
+@keyframes glowPulse {
+  0%, 100% {
+    text-shadow: 0 0 8px rgba(35, 183, 133, 0.4);
+  }
+  50% {
+    text-shadow: 0 0 14px rgba(35, 183, 133, 0.8);
+  }
+}
+
+/* ===================================== */
+/* Cards - Efeito Degradê Verde Sutil */
+/* ===================================== */
+.glass-card {
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  background: linear-gradient(145deg, #00110b 0%, #002016 100%);
+  transition: all 0.3s ease;
+  box-shadow: 0 0 20px rgba(35, 183, 133, 0.05);
+  border-radius: 35px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.glass-card:hover {
+  border-color: #00e096;
+  transform: translateY(-6px);
+  box-shadow: 0 0 25px rgba(35, 183, 133, 0.15);
+}
+
+/* Ícone Wrapper */
+.icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(35, 183, 133, 0.1);
+  align-self: flex-start;
+  position: relative;
+  overflow: hidden; /* Garante que o brilho do ::before não vaze */
+}
+
+/* Efeito de brilho em volta do círculo do ícone */
+.icon-wrapper::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border-radius: 50%;
+  /* Gradiente radial usando a cor base verde para o brilho sutil */
+  background: radial-gradient(circle, rgba(35, 183, 133, 0.8) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  transform: scale(0.8);
+  z-index: -1;
+}
+
+/* Ativa o brilho no hover do card */
+.glass-card:hover .icon-wrapper::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Estilo para os ícones SVG dentro do wrapper */
+.icon-wrapper img {
+  /* Filtro para colorir o SVG na cor #23b785
+     Esta sequência de filtros é a tentativa mais comum e eficiente para
+     forçar uma cor verde sólida em SVGs monocromáticos. */
+  filter: 
+    brightness(0) 
+    saturate(100%) 
+    invert(34%) 
+    sepia(90%) 
+    saturate(1500%) 
+    hue-rotate(90deg);
+}
+
+/* Link “Saber mais” */
+.learn-more {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #23b785;
+  transition: color 0.3s ease;
+  align-self: flex-start;
+}
+
+.learn-more:hover {
+  color: #1aa172;
+}
+
+
+/* ===================================== */
+/* Sessão de Feedbacks - Efeito Degradê Verde Sutil */
+/* ===================================== */
+
+/* Mini-título verde (mesmo estilo das outras seções) */
+#feedbacks .mini-title {
+  color: #23b785;              /* verde padrão do tema */
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+#feedbacks {
+  position: relative;
+}
+
+/* Cards de feedback */
+#feedbacks .feedback-card {
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  background: linear-gradient(145deg, #00110b 0%, #002016 100%);
+  transition: all 0.3s ease;
+  box-shadow: 0 0 20px rgba(35, 183, 133, 0.05);
+  border-radius: 35px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+#feedbacks .feedback-card:hover {
+  border-color: #00e096;
+  transform: translateY(-6px);
+  box-shadow: 0 0 25px rgba(35, 183, 133, 0.15);
+}
+
+/* Texto dos feedbacks */
+#feedbacks p {
+  line-height: 1.6;
+  color: #d1d5db; /* tom suave, similar ao da seção funcionalidades */
+}
+
+/* Avatar dos usuários */
+#feedbacks img {
+  transition: transform 0.3s ease;
+  border: 2px solid rgba(35, 183, 133, 0.4);
+}
+
+#feedbacks img:hover {
+  transform: scale(1.1);
+}
+
+/* Nome e cargo */
+#feedbacks h4 {
+  color: #e5e7eb;
+  font-weight: 600;
+}
+
+#feedbacks span {
+  color: #9ca3af;
+  font-size: 0.9rem;
+}
+
+
+/* ===================================== */
+/* Footer Box - com efeito degradê verde sutil */
+/* ===================================== */
+.footer-container {
+  background: linear-gradient(145deg, #00110b 0%, #002016 100%);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border-top-left-radius: 60px;
+  border-top-right-radius: 60px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  box-shadow: 0 0 25px rgba(35, 183, 133, 0.08);
+  width: 100%;
+  color: #ffffff;
+}
+
+/* ===================================== */
+/* Footer interno */
+/* ===================================== */
+#footer {
+  color: #ffffff;
+}
+
+#footer a {
+  color: #ffffff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+#footer a:hover {
+  color: #23b785;
+}
+
+/* Ícones sociais */
+.social-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(35, 183, 133, 0.1);
+  border: 1px solid rgba(35, 183, 133, 0.4);
+  transition: all 0.3s ease;
+  color: #23b785;
+  font-size: 1.1rem;
+}
+
+.social-icon:hover {
+  background: rgba(35, 183, 133, 0.2);
+  transform: translateY(-3px);
+}
+
+/* Texto e layout */
+#footer p {
+  line-height: 1.6;
+}
+
+#footer .border-t {
+  border-color: rgba(35, 183, 133, 0.15);
+}
+
+.logo-text {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  text-transform: uppercase;
+}

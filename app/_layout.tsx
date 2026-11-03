@@ -16,15 +16,24 @@ function Guarda() {
   const { session, carregando } = useAuth();
   const { cores, escuro } = useTema();
   const segmentos = useSegments();
+  const caminho = usePathname();
   const router = useRouter();
 
   useEffect(() => {
     if (carregando || !supabaseConfigurado) return;
 
     const emAutenticacao = segmentos[0] === '(auth)';
+
+    // No navegador, quem abre o site sem login vê primeiro a landing page.
+    if (Platform.OS === 'web' && !session && caminho === '/') {
+      (globalThis as unknown as { location: { replace: (url: string) => void } }).location.replace(
+        '/landing/index.html',
+      );
+      return;
+    }
     if (!session && !emAutenticacao) router.replace('/login');
     else if (session && emAutenticacao) router.replace('/');
-  }, [session, carregando, segmentos, router]);
+  }, [session, carregando, segmentos, caminho, router]);
 
   if (!supabaseConfigurado) {
     return (
