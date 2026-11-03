@@ -170,7 +170,7 @@ export function Cabecalho({
   const { cores } = useTema();
   const irVoltar = useVoltar();
   return (
-    <View style={estilos.cabecalho}>
+    <View style={[estilos.cabecalho, Platform.OS === 'web' ? estilos.cabecalhoWeb : null]}>
       <View style={estilos.tituloLinha}>
         {voltar ? (
           <Pressable
@@ -713,6 +713,8 @@ const estilos = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 4,
   },
+  // Na web, mais respiro entre o título da página e o conteúdo.
+  cabecalhoWeb: { marginBottom: 20 },
   tituloLinha: { flexDirection: 'row', alignItems: 'center', gap: 10, flexShrink: 1 },
   titulo: { fontSize: 26, fontWeight: '700', flexShrink: 1 },
   grade: { flexDirection: 'row', flexWrap: 'wrap', gap: 16, alignItems: 'flex-start' },
