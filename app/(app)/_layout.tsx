@@ -1,7 +1,8 @@
-import { Stack } from 'expo-router';
+import { Stack, usePathname } from 'expo-router';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { DockWeb, abaDoCaminho } from '@/components/DockWeb';
 import { useAuth } from '@/lib/auth';
 import { BarraAbasProvider } from '@/lib/barraAbas';
 import { TelaBloqueio, useBiometria } from '@/lib/biometria';
@@ -14,6 +15,8 @@ export default function AppLayout() {
   const { bloqueado } = useBiometria();
   const offline = useOffline();
   const insets = useSafeAreaInsets();
+  // Na web a barra de navegação também aparece nas telas abertas por cima das abas.
+  const abaAtiva = abaDoCaminho(usePathname());
 
   if (!session) return null;
 
@@ -49,6 +52,8 @@ export default function AppLayout() {
           <Stack.Screen name="alterar-senha" options={{ title: 'Alterar senha' }} />
           <Stack.Screen name="excluir-conta" options={{ title: 'Excluir conta' }} />
         </Stack>
+
+        {Platform.OS === 'web' && abaAtiva ? <DockWeb ativa={abaAtiva} /> : null}
 
         {offline ? (
           <View pointerEvents="none" style={[estilos.aviso, { bottom: insets.bottom + 96 }]}>

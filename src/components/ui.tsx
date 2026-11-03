@@ -233,6 +233,15 @@ export function TelaFormulario({
   const { cores } = useTema();
   const insets = useSafeAreaInsets();
   const desktop = useDesktop();
+  const { mostrar } = useBarraAbas();
+
+  // Ao abrir o formulário, a barra de navegação (web) volta a aparecer.
+  useFocusEffect(
+    useCallback(() => {
+      mostrar();
+    }, [mostrar]),
+  );
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: cores.fundo }}
@@ -244,7 +253,7 @@ export function TelaFormulario({
           {
             // No celular o cabeçalho nativo já reserva a área do topo.
             paddingTop: (margemTopo || Platform.OS === 'web' ? insets.top : 0) + ESPACO_TELA,
-            paddingBottom: insets.bottom + 40,
+            paddingBottom: insets.bottom + (Platform.OS === 'web' && !margemTopo ? 120 : 40),
           },
           // Telas de entrada no navegador: centralizadas na vertical, com respiro.
           margemTopo ? estilos.entradaCentralizada : null,

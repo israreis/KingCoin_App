@@ -73,7 +73,8 @@ export function BotaoFlutuante({
         estilos.envoltorio,
         {
           right: direita,
-          bottom: insets.bottom + (acimaDaBarra ? (web ? 104 : 88) : 24),
+          // Na web a barra de navegação aparece em todas as telas.
+          bottom: insets.bottom + (web ? 104 : acimaDaBarra ? 88 : 24),
           opacity: animacao,
           transform: [
             { translateY: animacao.interpolate({ inputRange: [0, 1], outputRange: [120, 0] }) },

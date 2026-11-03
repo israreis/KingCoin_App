@@ -20,11 +20,41 @@ export type PropsDockWeb = {
   state: { index: number; routes: { key: string; name: string }[] };
 };
 
+/** Telas abertas por cima das abas e a aba a que cada uma pertence (para destacar na barra). */
+const ABA_DA_TELA: Record<string, string> = {
+  metas: 'index',
+  meta: 'index',
+  transacao: 'transacoes',
+  orcamentos: 'organizacao',
+  orcamento: 'organizacao',
+  recorrencias: 'organizacao',
+  recorrencia: 'organizacao',
+  categorias: 'organizacao',
+  categoria: 'organizacao',
+  relatorios: 'organizacao',
+  ajuda: 'conta',
+  'editar-perfil': 'conta',
+  'alterar-email': 'conta',
+  'alterar-senha': 'conta',
+  'excluir-conta': 'conta',
+};
+
+/** Nome da aba ativa a partir do caminho da página; `null` quando o caminho já é uma aba. */
+export function abaDoCaminho(caminho: string): string | null {
+  const tela = caminho.replace(/^\/+/, '').split('/')[0];
+  return ABA_DA_TELA[tela] ?? null;
+}
+
+/** Barra usada pelas abas (Tabs). */
+export function DockAbas({ state }: PropsDockWeb) {
+  return <DockWeb ativa={state.routes[state.index]?.name ?? 'index'} />;
+}
+
 /**
  * Barra de navegação da versão web: pílula de vidro líquido fixa embaixo,
  * no mesmo estilo da barra do app. Some ao rolar para baixo e volta ao subir.
  */
-export function DockWeb({ state }: PropsDockWeb) {
+export function DockWeb({ ativa: abaAtiva }: { ativa: string }) {
   const { cores, escuro } = useTema();
   const router = useRouter();
   const { visivel } = useBarraAbas();
@@ -59,18 +89,17 @@ export function DockWeb({ state }: PropsDockWeb) {
         transition: 'transform 0.5s cubic-bezier(0.22, 1.18, 0.36, 1), opacity 0.3s ease',
       },
     },
-    state.routes.map((rota, indice) => {
-      const aba = ABAS[rota.name];
-      if (!aba) return null;
-      const ativa = indice === state.index;
+    Object.entries(ABAS).map(([nome, aba]) => {
+      const ativa = nome === abaAtiva;
       return (
         <Pressable
-          key={rota.key}
+          key={nome}
           accessibilityRole="tab"
           accessibilityLabel={aba.titulo}
           accessibilityState={{ selected: ativa }}
           onPress={() => {
-            if (!ativa) router.navigate(aba.rota as never);
+            // Numa tela aberta por cima (ex.: Orçamentos), tocar na própria aba volta para ela.
+            router.navigate(aba.rota as never);
           }}
           style={(estado) => {
             const sobre = (estado as { hovered?: boolean }).hovered;

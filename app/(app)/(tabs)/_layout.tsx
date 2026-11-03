@@ -2,7 +2,7 @@ import { Tabs } from 'expo-router';
 import { NativeTabs } from 'expo-router/native-tabs';
 import { Platform } from 'react-native';
 
-import { DockWeb } from '@/components/DockWeb';
+import { DockAbas } from '@/components/DockWeb';
 import type { PropsDockWeb } from '@/components/DockWeb';
 
 import { useBarraAbas } from '@/lib/barraAbas';
@@ -20,7 +20,7 @@ export default function TabsLayout() {
   if (Platform.OS === 'web') {
     return (
       <Tabs
-        tabBar={(props) => <DockWeb {...(props as unknown as PropsDockWeb)} />}
+        tabBar={(props) => <DockAbas {...(props as unknown as PropsDockWeb)} />}
         screenOptions={{ headerShown: false }}
       >
         <Tabs.Screen name="index" options={{ title: 'Carteira' }} />
