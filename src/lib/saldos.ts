@@ -1,6 +1,6 @@
 import type { Categoria, Meta, Tipo } from '@/types';
 
-import { MESES_ABREV, isoParaData } from './format';
+import { MESES_ABREV, isoParaData, normalizar, paraISO } from './format';
 
 type ComTipo = { valor: number; categorias: Pick<Categoria, 'nome' | 'tipo'> };
 
@@ -103,41 +103,147 @@ export function receitasDespesasPorMes(movs: ComData[], qtd = 6, hoje: Date = ne
   return { labels, receitas, despesas };
 }
 
-type ComDescricao = ComData & { descricao: string | null };
+type ComDescricao = ComData & { descricao: string | null; categoria_id: number };
 
-/** Números de apoio do mês atual: maiores gastos, média diária e projeção até o fim do mês. */
-export function insightsDoMes(movs: ComDescricao[], hoje: Date = new Date()) {
-  const doMes = movs.filter((mov) => {
-    const data = isoParaData(mov.data);
-    return data.getFullYear() === hoje.getFullYear() && data.getMonth() === hoje.getMonth();
-  });
+type RecorrenciaBase = {
+  categoria_id: number;
+  valor: number;
+  descricao: string | null;
+  dia_do_mes: number;
+  inicio: string;
+  ativa: boolean;
+  categorias: Pick<Categoria, 'tipo'>;
+};
 
+/** Categorias que, por natureza, são pagas uma vez por mês. */
+const CATEGORIAS_FIXAS = new Set(['aluguel', 'moradia', 'condominio', 'financiamento']);
+
+/** Meses anteriores usados para reconhecer gastos repetidos e calcular o ritmo histórico. */
+const MESES_DE_HISTORICO = 3;
+
+const mesmoMes = (data: Date, referencia: Date) =>
+  data.getFullYear() === referencia.getFullYear() && data.getMonth() === referencia.getMonth();
+
+const valorParecido = (a: number, b: number) => Math.abs(a - b) <= Math.max(a, b) * 0.1;
+
+/**
+ * Despesa fixa = paga uma vez por mês: categoria fixa (aluguel, moradia...),
+ * gerada por uma recorrência, ou repetida no mês anterior com a mesma descrição
+ * e valor parecido (assinaturas, mensalidades).
+ */
+export function ehDespesaFixa(
+  mov: ComDescricao,
+  todas: ComDescricao[],
+  recorrencias: RecorrenciaBase[] = [],
+): boolean {
+  if (mov.categorias.tipo !== 'DESPESA') return false;
+  if (CATEGORIAS_FIXAS.has(normalizar(mov.categorias.nome))) return true;
+
+  const descricao = normalizar(mov.descricao?.trim() ?? '');
+  const daRecorrencia = recorrencias.some(
+    (r) =>
+      r.categorias.tipo === 'DESPESA' &&
+      r.categoria_id === mov.categoria_id &&
+      Math.abs(r.valor - mov.valor) < 0.01 &&
+      normalizar(r.descricao?.trim() ?? '') === descricao,
+  );
+  if (daRecorrencia) return true;
+  if (!descricao) return false;
+
+  const data = isoParaData(mov.data);
+  const mesAnterior = new Date(data.getFullYear(), data.getMonth() - 1, 1);
+  return todas.some(
+    (outra) =>
+      outra !== mov &&
+      outra.categorias.tipo === 'DESPESA' &&
+      outra.categoria_id === mov.categoria_id &&
+      mesmoMes(isoParaData(outra.data), mesAnterior) &&
+      normalizar(outra.descricao?.trim() ?? '') === descricao &&
+      valorParecido(outra.valor, mov.valor),
+  );
+}
+
+/**
+ * Insights do mês separando despesas fixas (contam uma vez) de variáveis (projetadas).
+ * O ritmo dos gastos variáveis combina este mês com a média dos meses anteriores:
+ * no começo do mês pesa mais o histórico, no fim pesa mais o mês atual.
+ */
+export function insightsDoMes(
+  movs: ComDescricao[],
+  recorrencias: RecorrenciaBase[] = [],
+  hoje: Date = new Date(),
+) {
+  const diasNoMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0).getDate();
+  const diasPassados = Math.max(1, hoje.getDate());
+  const diasRestantes = diasNoMes - hoje.getDate();
+
+  const doMes = movs.filter((mov) => mesmoMes(isoParaData(mov.data), hoje));
   const despesas = doMes.filter((mov) => mov.categorias.tipo === 'DESPESA');
-  const receitasMes = doMes
-    .filter((mov) => mov.categorias.tipo === 'RECEITA')
-    .reduce((soma, mov) => soma + mov.valor, 0);
-  const despesasMes = despesas.reduce((soma, mov) => soma + mov.valor, 0);
+  const fixas = despesas.filter((mov) => ehDespesaFixa(mov, movs, recorrencias));
+  const variaveis = despesas.filter((mov) => !fixas.includes(mov));
 
-  const maiorGasto = despesas.reduce<ComDescricao | null>(
+  const soma = (lista: ComDescricao[]) => lista.reduce((total, mov) => total + mov.valor, 0);
+  const receitasMes = soma(doMes.filter((mov) => mov.categorias.tipo === 'RECEITA'));
+  const despesasFixas = soma(fixas);
+  const despesasVariaveis = soma(variaveis);
+
+  // Ritmo histórico: gastos variáveis dos meses anteriores que tiveram movimentações.
+  let variaveisHistorico = 0;
+  let diasHistorico = 0;
+  for (let atras = 1; atras <= MESES_DE_HISTORICO; atras++) {
+    const mes = new Date(hoje.getFullYear(), hoje.getMonth() - atras, 1);
+    const doMesAnterior = movs.filter((mov) => mesmoMes(isoParaData(mov.data), mes));
+    if (doMesAnterior.length === 0) continue;
+    diasHistorico += new Date(mes.getFullYear(), mes.getMonth() + 1, 0).getDate();
+    variaveisHistorico += soma(
+      doMesAnterior.filter((mov) => mov.categorias.tipo === 'DESPESA' && !ehDespesaFixa(mov, movs, recorrencias)),
+    );
+  }
+
+  const ritmoAtual = despesasVariaveis / diasPassados;
+  const usouHistorico = diasHistorico > 0;
+  const peso = diasPassados / diasNoMes;
+  const mediaDiariaVariavel = usouHistorico
+    ? peso * ritmoAtual + (1 - peso) * (variaveisHistorico / diasHistorico)
+    : ritmoAtual;
+
+  // Recorrências que ainda vão cair neste mês.
+  const hojeIso = paraISO(hoje);
+  let receitasPendentes = 0;
+  let despesasPendentes = 0;
+  for (const r of recorrencias) {
+    if (!r.ativa || r.categorias.tipo === 'ECONOMIA') continue;
+    const dia = Math.min(r.dia_do_mes, diasNoMes);
+    const data = paraISO(new Date(hoje.getFullYear(), hoje.getMonth(), dia));
+    if (data <= hojeIso || r.inicio > data) continue;
+    if (r.categorias.tipo === 'RECEITA') receitasPendentes += r.valor;
+    else despesasPendentes += r.valor;
+  }
+
+  const despesasPrevistas =
+    despesasFixas + despesasPendentes + despesasVariaveis + mediaDiariaVariavel * diasRestantes;
+  const receitasPrevistas = receitasMes + receitasPendentes;
+
+  const maiorGasto = (variaveis.length > 0 ? variaveis : despesas).reduce<ComDescricao | null>(
     (maior, mov) => (!maior || mov.valor > maior.valor ? mov : maior),
     null,
   );
-  const categoriaTop = totaisDoMesPorCategoria(movs, 'DESPESA', hoje)[0] ?? null;
-
-  const diasPassados = Math.max(1, hoje.getDate());
-  const diasNoMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0).getDate();
-  const mediaDiaria = despesasMes / diasPassados;
-  const despesasProjetadas = mediaDiaria * diasNoMes;
+  const categoriaTop = totaisDoMesPorCategoria(variaveis, 'DESPESA', hoje)[0] ?? null;
 
   return {
     temDespesas: despesas.length > 0,
     receitasMes,
-    despesasMes,
+    despesasMes: despesasFixas + despesasVariaveis,
+    despesasFixas,
+    despesasVariaveis,
+    despesasPendentes,
+    receitasPendentes,
+    mediaDiariaVariavel,
+    despesasPrevistas,
+    saldoProjetado: receitasPrevistas - despesasPrevistas,
     maiorGasto,
     categoriaTop,
-    mediaDiaria,
-    despesasProjetadas,
-    saldoProjetado: receitasMes - despesasProjetadas,
+    usouHistorico,
   };
 }
 

@@ -3,7 +3,7 @@ import { Text, View } from 'react-native';
 
 import { BarraProgresso, GraficoBarras, GraficoLinha, GraficoRosca } from '@/components/graficos';
 import { Cartao, Carregando, MensagemErro, Secao, Tela, Vazio } from '@/components/ui';
-import { listarMetas, listarMovimentacoes } from '@/lib/api';
+import { listarMetas, listarMovimentacoes, listarRecorrencias } from '@/lib/api';
 import { moeda } from '@/lib/format';
 import {
   evolucaoCarteira,
@@ -64,11 +64,15 @@ export default function Dashboard() {
   const { cores } = useTema();
 
   const { dados, carregando, atualizando, erro, atualizar } = useDados(async () => {
-    const [movs, metas] = await Promise.all([listarMovimentacoes(), listarMetas()]);
+    const [movs, metas, recorrencias] = await Promise.all([
+      listarMovimentacoes(),
+      listarMetas(),
+      listarRecorrencias().catch(() => []),
+    ]);
     return {
       evolucao: evolucaoCarteira(movs),
       mensal: receitasDespesasPorMes(movs),
-      insights: insightsDoMes(movs),
+      insights: insightsDoMes(movs, recorrencias),
       despesas: totaisDoMesPorCategoria(movs, 'DESPESA'),
       receitas: totaisDoMesPorCategoria(movs, 'RECEITA'),
       metas,
@@ -87,34 +91,54 @@ export default function Dashboard() {
         <>
           <Secao titulo="Insights do mês" />
           <Cartao>
-            {dados.insights.temDespesas ? (
+            {dados.insights.temDespesas || dados.insights.receitasMes > 0 ? (
               <>
+                <LinhaInsight rotulo="Despesas fixas do mês" valor={moeda(dados.insights.despesasFixas)} />
+                <LinhaInsight rotulo="Gastos variáveis até agora" valor={moeda(dados.insights.despesasVariaveis)} />
                 <LinhaInsight
-                  rotulo="Maior gasto"
-                  valor={`${dados.insights.maiorGasto?.descricao?.trim() || dados.insights.maiorGasto?.categorias.nome} · ${moeda(dados.insights.maiorGasto?.valor ?? 0)}`}
+                  rotulo="Gasto variável médio por dia"
+                  valor={moeda(dados.insights.mediaDiariaVariavel)}
                 />
+                {dados.insights.maiorGasto ? (
+                  <LinhaInsight
+                    rotulo="Maior gasto"
+                    valor={`${dados.insights.maiorGasto.descricao?.trim() || dados.insights.maiorGasto.categorias.nome} · ${moeda(dados.insights.maiorGasto.valor)}`}
+                  />
+                ) : null}
                 {dados.insights.categoriaTop ? (
                   <LinhaInsight
-                    rotulo="Categoria que mais pesa"
+                    rotulo="Categoria variável que mais pesa"
                     valor={`${dados.insights.categoriaTop.nome} · ${moeda(dados.insights.categoriaTop.valor)}`}
                   />
                 ) : null}
-                <LinhaInsight rotulo="Gasto médio por dia" valor={moeda(dados.insights.mediaDiaria)} />
-                <LinhaInsight
-                  rotulo="Despesas previstas no mês"
-                  valor={moeda(dados.insights.despesasProjetadas)}
-                />
+                {dados.insights.despesasPendentes > 0 ? (
+                  <LinhaInsight
+                    rotulo="Recorrentes ainda a pagar"
+                    valor={moeda(dados.insights.despesasPendentes)}
+                  />
+                ) : null}
+                {dados.insights.receitasPendentes > 0 ? (
+                  <LinhaInsight
+                    rotulo="Recorrentes ainda a receber"
+                    valor={moeda(dados.insights.receitasPendentes)}
+                  />
+                ) : null}
+                <LinhaInsight rotulo="Despesas previstas no mês" valor={moeda(dados.insights.despesasPrevistas)} />
                 <LinhaInsight
                   rotulo="Saldo previsto no fim do mês"
                   valor={moeda(dados.insights.saldoProjetado)}
                   cor={dados.insights.saldoProjetado >= 0 ? COR_TIPO.RECEITA : COR_TIPO.DESPESA}
                 />
-                <Text style={{ color: cores.suave, fontSize: 11 }}>
-                  A previsão assume que você continuará gastando no mesmo ritmo.
+                <Text style={{ color: cores.suave, fontSize: 11, lineHeight: 16 }}>
+                  Despesas fixas (aluguel, moradia, recorrentes e gastos que se repetem todo mês) contam
+                  uma vez só. A previsão projeta apenas os gastos variáveis
+                  {dados.insights.usouHistorico
+                    ? ', combinando o ritmo deste mês com a média dos meses anteriores.'
+                    : ', pelo ritmo deste mês.'}
                 </Text>
               </>
             ) : (
-              <Vazio texto="Sem despesas neste mês para analisar." />
+              <Vazio texto="Sem movimentações neste mês para analisar." />
             )}
           </Cartao>
 

@@ -1,4 +1,5 @@
 import {
+  ehDespesaFixa,
   evolucaoCarteira,
   gastosPorCategoria,
   insightsDoMes,
@@ -125,37 +126,109 @@ describe('receitasDespesasPorMes', () => {
 });
 
 describe('insightsDoMes', () => {
-  const hoje = new Date(2026, 10, 10); // novembro tem 30 dias
+  const hoje = new Date(2026, 10, 3); // 3 de novembro; novembro tem 30 dias
 
-  it('calcula maior gasto, categoria principal, média e projeção', () => {
-    const movs = [
-      mov('RECEITA', 1000, '2026-11-01', 'Salário'),
-      mov('DESPESA', 100, '2026-11-03', 'Lazer'),
-      mov('DESPESA', 30, '2026-11-04', 'Mercado'),
-      mov('DESPESA', 20, '2026-11-08', 'Mercado'),
-      mov('DESPESA', 5000, '2026-10-30', 'Aluguel'),
-    ];
-    const r = insightsDoMes(movs, hoje);
+  it('aluguel conta uma vez só (caso real: salário 6.000 e aluguel 1.850 no dia 3)', () => {
+    const movs = [mov('RECEITA', 6000, '2026-11-01', 'Salário'), mov('DESPESA', 1850, '2026-11-01', 'Aluguel')];
+    const r = insightsDoMes(movs, [], hoje);
 
-    expect(r.temDespesas).toBe(true);
-    expect(r.receitasMes).toBe(1000);
-    expect(r.despesasMes).toBe(150);
-    expect(r.maiorGasto?.valor).toBe(100);
-    expect(r.categoriaTop).toEqual({ nome: 'Lazer', valor: 100 });
-    expect(r.mediaDiaria).toBeCloseTo(15, 10);
-    expect(r.despesasProjetadas).toBeCloseTo(450, 10);
-    expect(r.saldoProjetado).toBeCloseTo(550, 10);
+    expect(r.despesasFixas).toBe(1850);
+    expect(r.despesasVariaveis).toBe(0);
+    expect(r.mediaDiariaVariavel).toBe(0);
+    expect(r.despesasPrevistas).toBe(1850);
+    expect(r.saldoProjetado).toBe(4150);
   });
 
-  it('sem despesas no mês não quebra', () => {
-    const r = insightsDoMes([mov('RECEITA', 100, '2026-11-01')], hoje);
-    expect(r).toMatchObject({ temDespesas: false, despesasMes: 0, maiorGasto: null, categoriaTop: null, mediaDiaria: 0 });
+  it('projeta só os gastos variáveis pelo ritmo do mês quando não há histórico', () => {
+    const dia10 = new Date(2026, 10, 10);
+    const movs = [
+      mov('RECEITA', 1000, '2026-11-01', 'Salário'),
+      mov('DESPESA', 500, '2026-11-01', 'Aluguel'),
+      mov('DESPESA', 100, '2026-11-03', 'Lazer'),
+      mov('DESPESA', 50, '2026-11-08', 'Mercado'),
+    ];
+    const r = insightsDoMes(movs, [], dia10);
+
+    expect(r.usouHistorico).toBe(false);
+    expect(r.mediaDiariaVariavel).toBeCloseTo(15, 10);
+    expect(r.despesasPrevistas).toBeCloseTo(500 + 150 + 15 * 20, 10);
+    expect(r.saldoProjetado).toBeCloseTo(1000 - 950, 10);
+    expect(r.maiorGasto?.valor).toBe(100);
+    expect(r.categoriaTop).toEqual({ nome: 'Lazer', valor: 100 });
+  });
+
+  it('combina o ritmo do mês com a média dos meses anteriores', () => {
+    const dia10 = new Date(2026, 10, 10);
+    const movs = [
+      mov('DESPESA', 300, '2026-09-15', 'Mercado'),
+      mov('DESPESA', 310, '2026-10-15', 'Mercado'),
+      mov('DESPESA', 1850, '2026-10-01', 'Aluguel'),
+      mov('DESPESA', 150, '2026-11-05', 'Lazer'),
+    ];
+    const r = insightsDoMes(movs, [], dia10);
+    const ritmoHistorico = 610 / 61; // setembro (30) + outubro (31), sem o aluguel
+    const esperado = (10 / 30) * 15 + (20 / 30) * ritmoHistorico;
+
+    expect(r.usouHistorico).toBe(true);
+    expect(r.mediaDiariaVariavel).toBeCloseTo(esperado, 10);
+    expect(r.despesasPrevistas).toBeCloseTo(150 + esperado * 20, 10);
+  });
+
+  it('soma as recorrências que ainda vão cair no mês e ignora as já vencidas ou pausadas', () => {
+    const recorrencias = [
+      { categoria_id: 1, valor: 6000, descricao: null, dia_do_mes: 5, inicio: '2026-01-01', ativa: true, categorias: { tipo: 'RECEITA' as Tipo } },
+      { categoria_id: 2, valor: 90, descricao: 'Internet', dia_do_mes: 20, inicio: '2026-01-01', ativa: true, categorias: { tipo: 'DESPESA' as Tipo } },
+      { categoria_id: 3, valor: 999, descricao: null, dia_do_mes: 2, inicio: '2026-01-01', ativa: true, categorias: { tipo: 'DESPESA' as Tipo } },
+      { categoria_id: 4, valor: 777, descricao: null, dia_do_mes: 25, inicio: '2026-01-01', ativa: false, categorias: { tipo: 'DESPESA' as Tipo } },
+      { categoria_id: 5, valor: 555, descricao: null, dia_do_mes: 25, inicio: '2026-12-01', ativa: true, categorias: { tipo: 'DESPESA' as Tipo } },
+    ];
+    const r = insightsDoMes([mov('DESPESA', 10, '2026-11-01', 'Mercado')], recorrencias, hoje);
+
+    expect(r.receitasPendentes).toBe(6000);
+    expect(r.despesasPendentes).toBe(90);
+  });
+
+  it('sem movimentações no mês não quebra', () => {
+    const r = insightsDoMes([], [], hoje);
+    expect(r).toMatchObject({ temDespesas: false, despesasMes: 0, maiorGasto: null, categoriaTop: null, mediaDiariaVariavel: 0 });
   });
 
   it('no dia 1 a média usa um dia, sem dividir por zero', () => {
-    const r = insightsDoMes([mov('DESPESA', 31, '2026-12-01')], new Date(2026, 11, 1));
-    expect(r.mediaDiaria).toBe(31);
-    expect(r.despesasProjetadas).toBe(31 * 31);
+    const r = insightsDoMes([mov('DESPESA', 31, '2026-12-01', 'Mercado')], [], new Date(2026, 11, 1));
+    expect(r.mediaDiariaVariavel).toBe(31);
+    expect(r.despesasPrevistas).toBe(31 * 31);
+  });
+});
+
+describe('ehDespesaFixa', () => {
+  it('reconhece categorias fixas, mesmo com acento ou maiúsculas', () => {
+    expect(ehDespesaFixa(mov('DESPESA', 1, '2026-11-01', 'ALUGUEL'), [])).toBe(true);
+    expect(ehDespesaFixa(mov('DESPESA', 1, '2026-11-01', 'Condomínio'), [])).toBe(true);
+  });
+
+  it('reconhece a despesa gerada por uma recorrência', () => {
+    const netflix = { ...mov('DESPESA', 55.9, '2026-11-10', 'Lazer'), descricao: 'Netflix' };
+    const rec = { categoria_id: netflix.categoria_id, valor: 55.9, descricao: 'Netflix', dia_do_mes: 10, inicio: '2026-01-01', ativa: true, categorias: { tipo: 'DESPESA' as Tipo } };
+    expect(ehDespesaFixa(netflix, [], [rec])).toBe(true);
+  });
+
+  it('reconhece gasto repetido no mês anterior com valor parecido', () => {
+    const atual = { ...mov('DESPESA', 99, '2026-11-05', 'Educação'), descricao: 'Academia' };
+    const anterior = { ...mov('DESPESA', 95, '2026-10-05', 'Educação'), descricao: 'academia' };
+    expect(ehDespesaFixa(atual, [atual, anterior])).toBe(true);
+  });
+
+  it('não marca como fixa quando o valor mudou muito ou não houve no mês anterior', () => {
+    const atual = { ...mov('DESPESA', 300, '2026-11-05', 'Mercado'), descricao: 'Mercado' };
+    const anteriorDiferente = { ...mov('DESPESA', 120, '2026-10-05', 'Mercado'), descricao: 'Mercado' };
+    const doisMesesAtras = { ...mov('DESPESA', 300, '2026-09-05', 'Mercado'), descricao: 'Mercado' };
+    expect(ehDespesaFixa(atual, [atual, anteriorDiferente, doisMesesAtras])).toBe(false);
+  });
+
+  it('receita e despesa sem descrição não são fixas por repetição', () => {
+    expect(ehDespesaFixa(mov('RECEITA', 6000, '2026-11-01', 'Aluguel'), [])).toBe(false);
+    const semDescricao = { ...mov('DESPESA', 50, '2026-11-05', 'Lazer'), descricao: null };
+    expect(ehDespesaFixa(semDescricao, [{ ...semDescricao, data: '2026-10-05' }])).toBe(false);
   });
 });
 
