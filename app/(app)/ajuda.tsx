@@ -38,14 +38,14 @@ const TUTORIAIS: { icone: keyof typeof Ionicons.glyphMap; titulo: string; texto:
   {
     icone: 'moon-outline',
     titulo: 'Tema claro e escuro',
-    texto: 'Em Conta > Preferências você alterna entre o tema escuro e o claro.',
+    texto: 'Em Perfil > Preferências você alterna entre o tema escuro e o claro.',
   },
 ];
 
 export default function Ajuda() {
   const { cores } = useTema();
   return (
-    <TelaFormulario titulo="Ajuda" voltar>
+    <TelaFormulario titulo="Ajuda">
       {TUTORIAIS.map((item) => (
         <Cartao key={item.titulo}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>

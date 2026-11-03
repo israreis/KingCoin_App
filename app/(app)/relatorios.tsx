@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { Alert } from '@/lib/alerta';
 import { CampoData } from '@/components/CampoData';
@@ -56,7 +56,7 @@ export default function Relatorios() {
   }
 
   return (
-    <TelaFormulario titulo="Relatórios" voltar>
+    <TelaFormulario titulo="Relatórios">
       <Text style={{ color: cores.suave }}>
         Escolha o período e exporte as suas movimentações em PDF ou Excel.
       </Text>
@@ -88,21 +88,27 @@ export default function Relatorios() {
         />
       </Cartao>
 
+      <View style={{ flexDirection: 'row', gap: 12 }}>
+      <View style={{ flex: 1 }}>
       <Botao
-        texto="Exportar PDF"
+        texto="PDF"
         icone="document-text-outline"
         onPress={() => exportar('pdf')}
         carregando={exportando === 'pdf'}
         desabilitado={exportando !== null}
       />
+      </View>
+      <View style={{ flex: 1 }}>
       <Botao
-        texto="Exportar Excel"
+        texto="Excel"
         icone="grid-outline"
         variante="contorno"
         onPress={() => exportar('excel')}
         carregando={exportando === 'excel'}
         desabilitado={exportando !== null}
       />
+      </View>
+      </View>
     </TelaFormulario>
   );
 }

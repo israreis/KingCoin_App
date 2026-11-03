@@ -1,9 +1,9 @@
 import { useRouter } from 'expo-router';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { BotaoFlutuante, useBotaoFlutuante } from '@/components/BotaoFlutuante';
 import { MetaDeslizavel } from '@/components/MetaCartao';
-import { Carregando, Grade, MensagemErro, Tela, Vazio } from '@/components/ui';
+import { Carregando, MensagemErro, Tela, Vazio } from '@/components/ui';
 import { listarMetas } from '@/lib/api';
 import { useTema } from '@/lib/theme';
 import { useDados } from '@/lib/useDados';
@@ -45,7 +45,7 @@ export default function Metas() {
         </Text>
       ) : null}
 
-      <Grade minimo={340}>
+      <View style={{ gap: 14 }}>
       {dados?.map((meta, indice) => (
         <MetaDeslizavel
           key={meta.id}
@@ -55,7 +55,7 @@ export default function Metas() {
           onDicaConcluida={dica.concluir}
         />
       ))}
-      </Grade>
+      </View>
     </Tela>
   );
 }

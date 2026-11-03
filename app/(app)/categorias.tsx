@@ -1,9 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Botao, Campo, Cartao, Carregando, Chips, MensagemErro, Secao, Tela } from '@/components/ui';
-import { criarCategoria, excluirCategoria, listarCategorias, renomearCategoria } from '@/lib/api';
+import { BotaoFlutuante, useBotaoFlutuante } from '@/components/BotaoFlutuante';
+import { BotoesAcao } from '@/components/BotoesAcao';
+import { ACOES_NO_CARTAO, DeslizavelNoCelular } from '@/components/ItemDeslizavel';
+import { iconeDaCategoria } from '@/components/TransacaoItem';
+import { Cartao, Carregando, MensagemErro, Secao, Tela, Vazio } from '@/components/ui';
+import { excluirCategoria, listarCategorias } from '@/lib/api';
 import { confirmarExclusao, mostrarErro } from '@/lib/dialogos';
 import { COR_TIPO, TEXTO_TIPO, useTema } from '@/lib/theme';
 import { useDados } from '@/lib/useDados';
@@ -11,42 +15,25 @@ import type { Categoria, Tipo } from '@/types';
 
 const TIPOS: Tipo[] = ['RECEITA', 'DESPESA', 'ECONOMIA'];
 
+/** Só as categorias criadas pelo usuário (as padrão do app não aparecem aqui). */
 export default function Categorias() {
   const { cores } = useTema();
+  const router = useRouter();
+  const botao = useBotaoFlutuante();
   const { dados, carregando, atualizando, erro, atualizar } = useDados(listarCategorias, []);
 
-  const [nome, setNome] = useState('');
-  const [tipo, setTipo] = useState<Tipo>('DESPESA');
-  const [editando, setEditando] = useState<Categoria | null>(null);
-  const [salvando, setSalvando] = useState(false);
+  const proprias = (dados ?? []).filter((c) => c.user_id !== null);
 
-  function limpar() {
-    setNome('');
-    setEditando(null);
-  }
-
-  async function salvar() {
-    const texto = nome.trim();
-    if (!texto) return mostrarErro(new Error('Dê um nome para a categoria.'));
-
-    setSalvando(true);
-    try {
-      if (editando) await renomearCategoria(editando.id, texto);
-      else await criarCategoria(texto, tipo);
-      limpar();
-      atualizar();
-    } catch (e) {
-      mostrarErro(e);
-    } finally {
-      setSalvando(false);
-    }
-  }
+  const editar = (categoria: Categoria) =>
+    router.push({
+      pathname: '/categoria',
+      params: { id: String(categoria.id), nome: categoria.nome, tipo: categoria.tipo },
+    });
 
   function excluir(categoria: Categoria) {
     confirmarExclusao(`Excluir "${categoria.nome}"`, async () => {
       try {
         await excluirCategoria(categoria.id);
-        if (editando?.id === categoria.id) limpar();
         atualizar();
       } catch (e) {
         mostrarErro(e);
@@ -55,80 +42,71 @@ export default function Categorias() {
   }
 
   return (
-    <Tela titulo="Categorias" voltar atualizando={atualizando} onAtualizar={atualizar}>
-      <Cartao>
-        <Text style={{ color: cores.texto, fontWeight: '700', fontSize: 16 }}>
-          {editando ? 'Renomear categoria' : 'Nova categoria'}
-        </Text>
-        {editando ? null : <Chips
-          opcoes={TIPOS.map((t) => ({ id: t, texto: TEXTO_TIPO[t], cor: COR_TIPO[t] }))}
-          valor={tipo}
-          onChange={setTipo}
-        />}
-        <Campo
-          rotulo="Nome"
-          value={nome}
-          onChangeText={setNome}
-          autoCapitalize="sentences"
-          placeholder="Ex.: Academia"
-          maxLength={40}
+    <Tela
+      titulo="Suas categorias"
+      voltar
+      atualizando={atualizando}
+      onAtualizar={atualizar}
+      onRolar={botao.aoRolar}
+      flutuante={
+        <BotaoFlutuante
+          visivel={botao.visivel}
+          rotulo="Nova categoria"
+          onPress={() => router.push('/categoria')}
         />
-        <Botao texto={editando ? 'Salvar nome' : 'Adicionar categoria'} onPress={salvar} carregando={salvando} />
-        {editando ? <Botao texto="Cancelar" variante="contorno" onPress={limpar} /> : null}
-      </Cartao>
+      }
+    >
+      <Text style={{ color: cores.suave }}>
+        Crie categorias além das que já vêm no KingCoin. Só é possível excluir uma categoria que não
+        tenha movimentações.
+      </Text>
 
       {erro ? <MensagemErro texto={erro} /> : null}
       {carregando && !dados ? <Carregando /> : null}
 
-      {dados
-        ? TIPOS.map((t) => {
-            const doTipo = dados.filter((c) => c.tipo === t);
+      {dados && proprias.length === 0 ? (
+        <Vazio texto="Você ainda não criou categorias. Toque em + para criar a primeira." />
+      ) : null}
+
+      {proprias.length > 0
+        ? TIPOS.map((tipo) => {
+            const doTipo = proprias.filter((c) => c.tipo === tipo);
+            if (doTipo.length === 0) return null;
+            const cor = COR_TIPO[tipo];
             return (
-              <View key={t} style={{ gap: 10 }}>
-                <Secao titulo={TEXTO_TIPO[t]} />
-                <Cartao>
-                  {doTipo.map((categoria) => {
-                    const propria = categoria.user_id !== null;
-                    return (
-                      <View
-                        key={categoria.id}
-                        style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 4 }}
-                      >
-                        <View
-                          style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: COR_TIPO[t] }}
-                        />
-                        <Text style={{ color: cores.texto, flex: 1 }}>{categoria.nome}</Text>
-                        {propria ? (
-                          <>
-                            <Pressable
-                              hitSlop={8}
-                              onPress={() => {
-                                setEditando(categoria);
-                                setNome(categoria.nome);
-                              }}
-                            >
-                              <Ionicons name="create-outline" size={20} color={cores.primaria} />
-                            </Pressable>
-                            <Pressable hitSlop={8} onPress={() => excluir(categoria)}>
-                              <Ionicons name="trash-outline" size={20} color={cores.perigo} />
-                            </Pressable>
-                          </>
-                        ) : (
-                          <Ionicons name="lock-closed-outline" size={16} color={cores.suave} />
-                        )}
-                      </View>
-                    );
-                  })}
-                </Cartao>
+              <View key={tipo} style={estilos.lista}>
+                <Secao titulo={TEXTO_TIPO[tipo]} />
+                {doTipo.map((categoria) => (
+                  <DeslizavelNoCelular
+                    key={categoria.id}
+                    onEditar={() => editar(categoria)}
+                    onExcluir={() => excluir(categoria)}
+                  >
+                    <Pressable onPress={() => editar(categoria)}>
+                      <Cartao estilo={estilos.linha}>
+                        <View style={[estilos.icone, { backgroundColor: `${cor}26` }]}>
+                          <Ionicons name={iconeDaCategoria(categoria.nome)} size={22} color={cor} />
+                        </View>
+                        <Text style={{ color: cores.texto, fontSize: 15, fontWeight: '600', flex: 1 }} numberOfLines={1}>
+                          {categoria.nome}
+                        </Text>
+                        {ACOES_NO_CARTAO ? (
+                          <BotoesAcao onEditar={() => editar(categoria)} onExcluir={() => excluir(categoria)} />
+                        ) : null}
+                      </Cartao>
+                    </Pressable>
+                  </DeslizavelNoCelular>
+                ))}
               </View>
             );
           })
         : null}
-
-      <Text style={{ color: cores.suave, fontSize: 12 }}>
-        As categorias com cadeado são padrão do KingCoin. Só é possível excluir categorias sem
-        movimentações.
-      </Text>
     </Tela>
   );
 }
+
+const estilos = StyleSheet.create({
+  lista: { gap: 14 },
+  linha: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  icone: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
+});

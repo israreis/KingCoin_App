@@ -62,7 +62,7 @@ type TelaProps = {
   flutuante?: ReactNode;
   /** Largura máxima do conteúdo no navegador (computador). */
   larguraMaxima?: number;
-  /** Mostra a seta de voltar antes do logo (telas abertas a partir de outra). */
+  /** Tela aberta por cima das abas: no celular usa o cabeçalho nativo com seta de voltar. */
   voltar?: boolean;
 };
 
@@ -102,7 +102,7 @@ export function Tela({
       {acoes}
     </>
   ) : (
-    <Cabecalho titulo={titulo} acoes={acoes} voltar={voltar} />
+    <Cabecalho titulo={titulo} acoes={acoes} />
   );
 
   return (
@@ -157,32 +157,21 @@ export function useVoltar() {
   }, [router]);
 }
 
-/** Cabeçalho padrão das telas: logo + título (e, opcionalmente, seta de voltar e ações). */
+/**
+ * Cabeçalho padrão das telas: logo + título e ações. Sem seta de voltar: na web a
+ * navegação é pela barra inferior e pelos botões Cancelar; no celular há o cabeçalho nativo.
+ */
 export function Cabecalho({
   titulo,
   acoes,
-  voltar = false,
 }: {
   titulo: string;
   acoes?: ReactNode;
-  voltar?: boolean;
 }) {
   const { cores } = useTema();
-  const irVoltar = useVoltar();
   return (
     <View style={[estilos.cabecalho, Platform.OS === 'web' ? estilos.cabecalhoWeb : null]}>
       <View style={estilos.tituloLinha}>
-        {voltar ? (
-          <Pressable
-            onPress={irVoltar}
-            hitSlop={10}
-            accessibilityRole="button"
-            accessibilityLabel="Voltar"
-            style={(estado) => [estilos.botaoIcone, vidro(estado)]}
-          >
-            <Ionicons name="chevron-back" size={24} color={cores.texto} />
-          </Pressable>
-        ) : null}
         <LogoKingCoin tamanho={26} cor={cores.primaria} />
         <Text style={[estilos.titulo, { color: cores.texto }]} numberOfLines={1}>
           {titulo}
@@ -235,13 +224,11 @@ export function TelaFormulario({
   children,
   margemTopo = false,
   titulo,
-  voltar = false,
 }: {
   children: ReactNode;
   margemTopo?: boolean;
   /** Cabeçalho igual ao das telas principais (logo + título). */
   titulo?: string;
-  voltar?: boolean;
 }) {
   const { cores } = useTema();
   const insets = useSafeAreaInsets();
@@ -275,7 +262,7 @@ export function TelaFormulario({
           keyboardDismissMode={MODO_FECHAR_TECLADO}
       >
         {!titulo ? null : Platform.OS === 'web' ? (
-          <Cabecalho titulo={titulo} voltar={voltar} />
+          <Cabecalho titulo={titulo} />
         ) : (
           <Stack.Screen options={{ title: titulo }} />
         )}

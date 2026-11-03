@@ -39,9 +39,10 @@ export default function AppLayout() {
           <Stack.Screen name="ajuda" options={{ title: 'Ajuda' }} />
           <Stack.Screen name="orcamentos" options={{ title: 'Orçamentos' }} />
           <Stack.Screen name="orcamento" options={{ title: 'Orçamento' }} />
-          <Stack.Screen name="recorrencias" options={{ title: 'Movimentações recorrentes' }} />
+          <Stack.Screen name="recorrencias" options={{ title: 'Recorrências' }} />
           <Stack.Screen name="recorrencia" options={{ title: 'Recorrência' }} />
-          <Stack.Screen name="categorias" options={{ title: 'Categorias' }} />
+          <Stack.Screen name="categorias" options={{ title: 'Suas categorias' }} />
+          <Stack.Screen name="categoria" options={{ title: 'Categoria' }} />
           <Stack.Screen name="metas" options={{ title: 'Metas' }} />
           <Stack.Screen name="editar-perfil" options={{ title: 'Editar dados' }} />
           <Stack.Screen name="alterar-email" options={{ title: 'Alterar e-mail' }} />

@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
-import { Animated, PanResponder, Pressable, StyleSheet, View } from 'react-native';
+import { Animated, PanResponder, Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import { DRIVER_NATIVO } from '@/lib/layout';
 import { useTema } from '@/lib/theme';
@@ -112,3 +112,12 @@ const estilos = StyleSheet.create({
   },
   acao: { width: LARGURA_ACAO, alignItems: 'center', justifyContent: 'center' },
 });
+
+/** Na web os botões de editar/excluir ficam dentro do cartão; no celular, deslize. */
+export const ACOES_NO_CARTAO = Platform.OS === 'web';
+
+/** Envolve o cartão com o deslizar só no celular; na web devolve o cartão como está. */
+export function DeslizavelNoCelular({ children, ...resto }: Props) {
+  if (ACOES_NO_CARTAO) return <>{children}</>;
+  return <ItemDeslizavel {...resto}>{children}</ItemDeslizavel>;
+}
