@@ -7,11 +7,6 @@
     "scheme": "kingcoin",
     "userInterfaceStyle": "automatic",
     "icon": "./assets/icon.png",
-    "splash": {
-      "image": "./assets/icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#000805"
-    },
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.israreis.kingcoin",
@@ -37,7 +32,6 @@
         }
       ],
       "expo-sharing",
-      "expo-splash-screen",
       "expo-status-bar",
       [
         "expo-local-authentication",
@@ -48,7 +42,16 @@
       "expo-notifications",
       "expo-apple-authentication",
       "expo-web-browser",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/icon.png",
+          "imageWidth": 160,
+          "resizeMode": "contain",
+          "backgroundColor": "#000805"
+        }
+      ]
     ]
   }
 }
