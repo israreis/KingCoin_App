@@ -1,6 +1,15 @@
 # KingCoin App
 
-App de controle financeiro pessoal para **iPhone, Android e navegador**, a partir de um único código. Usa **Expo (SDK 58)** e **Supabase** como backend (login, banco Postgres e arquivos). 
+App de controle financeiro pessoal para **iPhone, Android e navegador**, a partir de um único código. Usa **Expo (SDK 58)** e **Supabase** como backend (login, banco Postgres e arquivos).
+
+## Status do projeto
+
+| Versão | Situação |
+| --- | --- |
+| **Mobile (iOS e Android)** | Versão principal. Funcionalidades completas e testadas. |
+| **Web** | 🚧 **Em reformulação.** Já funciona com a mesma conta e o mesmo banco do app, mas o layout e algumas interações ainda estão sendo ajustados. |
+
+> Projeto em desenvolvimento ativo. A versão web pode mudar de visual e comportamento entre um commit e outro.
 
 ## Funcionalidades
 
@@ -52,6 +61,8 @@ Escaneie o QR code com o Expo Go. O celular precisa estar na mesma rede do compu
 Nunca coloque a chave `service_role` no app: a chave anon é pública e quem protege os dados é o Row Level Security do `schema.sql`.
 
 ## Versão web
+
+> 🚧 **Em reformulação.** Login, Carteira, Movimentações, Metas, Dashboard, Organização (orçamentos, recorrências e categorias) e relatórios em PDF e Excel já funcionam. Em andamento: refinamento do layout para computador, consistência visual entre as telas e animações.
 
 ```bash
 npm run web          # abre no navegador em http://localhost:8081
