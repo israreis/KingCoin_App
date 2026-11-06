@@ -125,7 +125,11 @@ export function TelaAbertura({ pronto, onFim }: { pronto: boolean; onFim: () => 
 
 const estilos = StyleSheet.create({
   fundo: {
-    ...StyleSheet.absoluteFillObject,
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
     zIndex: 100,
     backgroundColor: COR_FUNDO_ABERTURA,
     alignItems: 'center',
