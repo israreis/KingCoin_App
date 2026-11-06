@@ -33,7 +33,16 @@ export default function TabsLayout() {
   }
 
   return (
-    <NativeTabs tintColor={cores.primaria} minimizeBehavior="never" hidden={!visivel}>
+    <NativeTabs
+      tintColor={cores.primaria}
+      minimizeBehavior="never"
+      hidden={!visivel}
+      // Android: sem estas cores a barra Material usa o padrão claro do sistema.
+      backgroundColor={cores.card}
+      iconColor={cores.suave}
+      indicatorColor={`${cores.primaria}33`}
+      labelStyle={{ color: cores.suave }}
+    >
       <NativeTabs.Trigger name="index">
         <NativeTabs.Trigger.Icon sf="creditcard" md="wallet" />
         <NativeTabs.Trigger.Label>Carteira</NativeTabs.Trigger.Label>

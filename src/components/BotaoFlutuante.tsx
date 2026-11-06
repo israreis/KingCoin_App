@@ -58,6 +58,17 @@ export function BotaoFlutuante({
     web && larguraConteudo && width > larguraConteudo
       ? (width - larguraConteudo) / 2 + (desktop ? 32 : 20)
       : 20;
+  // Web: a barra de navegação aparece em todas as telas.
+  // iOS: a barra de abas flutua por cima do conteúdo, então o botão sobe acima dela.
+  // Android: a barra de abas fica abaixo da tela (já ocupa a área do sistema), então o
+  // botão fica na mesma distância das telas sem abas (ex.: Orçamentos).
+  const distanciaDoFundo = web
+    ? insets.bottom + 104
+    : acimaDaBarra
+      ? Platform.OS === 'android'
+        ? 24
+        : insets.bottom + 88
+      : insets.bottom + 24;
   const animacao = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -76,8 +87,7 @@ export function BotaoFlutuante({
         estilos.envoltorio,
         {
           right: direita,
-          // Na web a barra de navegação aparece em todas as telas.
-          bottom: insets.bottom + (web ? 104 : acimaDaBarra ? 88 : 24),
+          bottom: distanciaDoFundo,
           opacity: animacao,
           transform: [
             { translateY: animacao.interpolate({ inputRange: [0, 1], outputRange: [120, 0] }) },
