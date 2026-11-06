@@ -96,6 +96,32 @@ function MolduraWeb({ children }: { children: ReactNode }) {
   );
 }
 
+/**
+ * Se uma tela der erro, mostra a mensagem em vez de fechar o app (em produção um erro
+ * não tratado encerra o app sem aviso). Ajuda a descobrir o problema no APK.
+ */
+export function ErrorBoundary({ error, retry }: { error: Error; retry: () => Promise<void> }) {
+  return (
+    <View style={{ flex: 1, backgroundColor: '#000805', justifyContent: 'center', padding: 24, gap: 12 }}>
+      <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '700' }}>Algo deu errado</Text>
+      <Text style={{ color: '#9fb5ab', lineHeight: 22 }} selectable>
+        {error.name}: {error.message}
+      </Text>
+      <Text style={{ color: '#5d7468', fontSize: 11 }} selectable numberOfLines={12}>
+        {error.stack ?? ''}
+      </Text>
+      <Text
+        onPress={() => {
+          retry().catch(() => {});
+        }}
+        style={{ color: '#23b785', fontWeight: '700', fontSize: 16, paddingVertical: 12 }}
+      >
+        Tentar novamente
+      </Text>
+    </View>
+  );
+}
+
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
