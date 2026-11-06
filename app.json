@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "KingCoin",
-    "slug": "kingcoin-app",
+    "slug": "kingcoin",
     "version": "1.0.0",
     "orientation": "portrait",
     "scheme": "kingcoin",
