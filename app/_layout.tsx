@@ -1,11 +1,11 @@
 import { Slot, usePathname, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Platform, Text, View } from 'react-native';
 import type { ReactNode } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { Carregando } from '@/components/ui';
+import { TelaAbertura } from '@/components/TelaAbertura';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { BiometriaProvider } from '@/lib/biometria';
 import '@/lib/notificacoes';
@@ -18,6 +18,13 @@ function Guarda() {
   const segmentos = useSegments();
   const caminho = usePathname();
   const router = useRouter();
+  const [aberturaConcluida, setAberturaConcluida] = useState(false);
+  const concluirAbertura = useCallback(() => setAberturaConcluida(true), []);
+
+  // Animação de carregamento por cima de tudo até o app estar pronto.
+  const abertura = aberturaConcluida ? null : (
+    <TelaAbertura pronto={!carregando || !supabaseConfigurado} onFim={concluirAbertura} />
+  );
 
   useEffect(() => {
     if (carregando || !supabaseConfigurado) return;
@@ -46,6 +53,7 @@ function Guarda() {
             ? 'O .env está com a chave secreta (service_role / sb_secret_). Ela dá acesso total ao banco e não pode ficar no app. Troque EXPO_PUBLIC_SUPABASE_ANON_KEY pela chave anon / publishable e reinicie com `npx expo start -c`.'
             : 'Copie o arquivo .env.example para .env, preencha EXPO_PUBLIC_SUPABASE_URL e EXPO_PUBLIC_SUPABASE_ANON_KEY e reinicie com `npx expo start -c`.'}
         </Text>
+        {abertura}
       </View>
     );
   }
@@ -53,13 +61,8 @@ function Guarda() {
   return (
     <>
       <StatusBar style={escuro ? 'light' : 'dark'} />
-      {carregando ? (
-        <View style={{ flex: 1, backgroundColor: cores.fundo }}>
-          <Carregando />
-        </View>
-      ) : (
-        <Slot />
-      )}
+      {carregando ? <View style={{ flex: 1, backgroundColor: cores.fundo }} /> : <Slot />}
+      {abertura}
     </>
   );
 }

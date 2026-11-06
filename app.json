@@ -10,12 +10,13 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.israreis.kingcoin",
-      "usesAppleSignIn": true
+      "usesAppleSignIn": true,
+      "icon": "./assets/icon.png"
     },
     "android": {
       "package": "com.israreis.kingcoin",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icon.png",
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000805"
       },
       "permissions": [
@@ -56,10 +57,14 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/icon.png",
-          "imageWidth": 160,
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 120,
           "resizeMode": "contain",
-          "backgroundColor": "#000805"
+          "backgroundColor": "#000805",
+          "dark": {
+            "image": "./assets/splash-icon.png",
+            "backgroundColor": "#000805"
+          }
         }
       ]
     ],
