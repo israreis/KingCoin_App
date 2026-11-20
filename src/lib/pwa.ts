@@ -29,7 +29,6 @@ export function configurarPwa() {
   if (!doc) return;
 
   garantir(doc, 'link[rel="manifest"]', 'link', { rel: 'manifest', href: '/manifest.webmanifest' });
-  garantir(doc, 'meta[name="theme-color"]', 'meta', { name: 'theme-color', content: '#000805' });
   garantir(doc, 'link[rel="apple-touch-icon"]', 'link', { rel: 'apple-touch-icon', href: '/pwa/apple-touch-icon.png' });
   garantir(doc, 'meta[name="apple-mobile-web-app-capable"]', 'meta', { name: 'apple-mobile-web-app-capable', content: 'yes' });
   garantir(doc, 'meta[name="mobile-web-app-capable"]', 'meta', { name: 'mobile-web-app-capable', content: 'yes' });
@@ -43,4 +42,20 @@ export function configurarPwa() {
   if (__DEV__) return;
   const sw = g.navigator?.serviceWorker;
   if (sw) sw.register('/sw.js', { scope: '/' }).catch(() => {});
+}
+
+/**
+ * Pinta o fundo da página (html e body) e a cor do tema com a cor do app. O Safari do iPhone
+ * colore as barras de cima e de baixo com o fundo da página: sem isso elas ficam brancas.
+ */
+export function aplicarCorDaPagina(cor: string, escuro: boolean) {
+  if (Platform.OS !== 'web') return;
+  type ComEstilo = { style: Record<string, string> };
+  const g = globalThis as unknown as { document?: Documento & { documentElement: ComEstilo; body: ComEstilo | null } };
+  const doc = g.document;
+  if (!doc) return;
+  doc.documentElement.style.backgroundColor = cor;
+  doc.documentElement.style.colorScheme = escuro ? 'dark' : 'light';
+  if (doc.body) doc.body.style.backgroundColor = cor;
+  garantir(doc, 'meta[name="theme-color"]', 'meta', { name: 'theme-color', content: cor });
 }

@@ -9,7 +9,7 @@ import { TelaAbertura } from '@/components/TelaAbertura';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { BiometriaProvider } from '@/lib/biometria';
 import '@/lib/notificacoes';
-import { configurarPwa } from '@/lib/pwa';
+import { aplicarCorDaPagina, configurarPwa } from '@/lib/pwa';
 import { chaveSecretaNoApp, supabaseConfigurado } from '@/lib/supabase';
 import { TemaProvider, useTema } from '@/lib/theme';
 
@@ -72,7 +72,12 @@ function Guarda() {
 
 /** No navegador, ocupa a tela toda com o fundo do tema (cada tela limita a própria largura). */
 function MolduraWeb({ children }: { children: ReactNode }) {
-  const { cores } = useTema();
+  const { cores, escuro } = useTema();
+
+  // Fundo da página com a cor do tema (barras do Safari no iPhone acompanham essa cor).
+  useEffect(() => {
+    aplicarCorDaPagina(cores.fundo, escuro);
+  }, [cores.fundo, escuro]);
 
   // Mesmo ícone da landing em todas as telas do app web.
   useEffect(() => {
