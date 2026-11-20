@@ -1,10 +1,10 @@
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { FlatList, Platform, RefreshControl, Text, View } from 'react-native';
+import { FlatList, RefreshControl, Text, View } from 'react-native';
 
 import { BotaoFlutuante, useBotaoFlutuante } from '@/components/BotaoFlutuante';
 import { TransacaoDeslizavel } from '@/components/TransacaoItem';
-import { BotaoIcone, CampoBusca, MODO_FECHAR_TECLADO, Carregando, Chips, MensagemErro, Tela, Vazio } from '@/components/ui';
+import { CampoBusca, MODO_FECHAR_TECLADO, Carregando, Chips, MensagemErro, Tela, Vazio } from '@/components/ui';
 import { excluirMovimentacao, listarMovimentacoes } from '@/lib/api';
 import { confirmarExclusao, mostrarErro } from '@/lib/dialogos';
 import { useBarraAbas } from '@/lib/barraAbas';
@@ -60,25 +60,16 @@ export default function Transacoes() {
       }
     });
 
-  // Na web o atalho de relatórios fica abaixo do botão de adicionar; no celular, no topo.
+  // Atalho de relatórios logo abaixo do botão de adicionar, do mesmo tamanho, em todas as versões.
   return (
     <Tela
       titulo="Movimentações"
       rolavel={false}
-      acoes={
-        Platform.OS === 'web' ? undefined : (
-          <BotaoIcone icone="download-outline" onPress={() => router.push('/relatorios')} />
-        )
-      }
       flutuante={
         <BotaoFlutuante
           visivel={botao.visivel}
           rotulo="Nova movimentação"
-          secundario={
-            Platform.OS === 'web'
-              ? { icone: 'download-outline', rotulo: 'Relatórios', onPress: () => router.push('/relatorios') }
-              : undefined
-          }
+          secundario={{ icone: 'download-outline', rotulo: 'Relatórios', onPress: () => router.push('/relatorios') }}
           acimaDaBarra
           onPress={() => router.push('/transacao')}
         />
@@ -129,7 +120,7 @@ export default function Transacoes() {
           ListEmptyComponent={
             <Vazio texto={busca ? 'Nada encontrado para essa busca.' : 'Nenhuma movimentação encontrada.'} />
           }
-          contentContainerStyle={{ paddingBottom: 130 }}
+          contentContainerStyle={{ paddingBottom: 240 }}
           refreshControl={
             <RefreshControl
               refreshing={atualizando}

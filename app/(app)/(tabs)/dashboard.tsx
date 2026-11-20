@@ -2,6 +2,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { useRouter } from 'expo-router';
+
+import { BotaoRedondo } from '@/components/BotaoFlutuante';
 import { BarraProgresso, GraficoBarras, GraficoLinha, GraficoRosca } from '@/components/graficos';
 import { Cartao, Carregando, Grade, MensagemErro, Secao, Tela, Vazio } from '@/components/ui';
 import { listarMetas, listarMovimentacoes, listarRecorrencias } from '@/lib/api';
@@ -87,11 +90,17 @@ export default function Dashboard() {
     };
   }, []);
 
+  const router = useRouter();
   const mensal = dados?.mensal;
   const ultimo = mensal ? mensal.labels.length - 1 : 0;
 
   return (
-    <Tela titulo="Dashboard" atualizando={atualizando} onAtualizar={atualizar}>
+    <Tela
+      titulo="Dashboard"
+      atualizando={atualizando}
+      onAtualizar={atualizar}
+      acoes={<BotaoRedondo icone="download-outline" rotulo="Relatórios" onPress={() => router.push('/relatorios')} />}
+    >
       {erro ? <MensagemErro texto={erro} /> : null}
       {carregando && !dados ? <Carregando /> : null}
 

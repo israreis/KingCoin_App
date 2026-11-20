@@ -31,6 +31,36 @@ export function useBotaoFlutuante() {
   return { visivel, aoRolar };
 }
 
+/**
+ * Botão redondo com contorno, do mesmo tamanho do botão de adicionar (ex.: baixar relatórios).
+ * Usado abaixo do botão flutuante e no topo do Dashboard.
+ */
+export function BotaoRedondo({
+  icone,
+  rotulo,
+  onPress,
+}: {
+  icone: keyof typeof Ionicons.glyphMap;
+  rotulo: string;
+  onPress: () => void;
+}) {
+  const { cores } = useTema();
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={rotulo}
+      style={(estado) => [
+        estilos.secundario,
+        { backgroundColor: cores.card, borderColor: cores.borda, transform: [{ scale: estado.pressed ? 0.92 : 1 }] },
+        vidro(estado),
+      ]}
+    >
+      <Ionicons name={icone} size={28} color={cores.primaria} />
+    </Pressable>
+  );
+}
+
 export function BotaoFlutuante({
   visivel,
   onPress,
@@ -69,8 +99,6 @@ export function BotaoFlutuante({
         ? 24
         : insets.bottom + 88
       : insets.bottom + 24;
-  // No computador (web), o botão secundário fica do mesmo tamanho do principal.
-  const secundarioGrande = web && desktop;
   const animacao = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -111,23 +139,7 @@ export function BotaoFlutuante({
         <Ionicons name="add" size={34} color="#ffffff" />
       </Pressable>
       {secundario ? (
-        <Pressable
-          onPress={secundario.onPress}
-          accessibilityRole="button"
-          accessibilityLabel={secundario.rotulo}
-          style={(estado) => [
-            estilos.secundario,
-            secundarioGrande && estilos.secundarioGrande,
-            {
-              backgroundColor: cores.card,
-              borderColor: cores.borda,
-              transform: [{ scale: estado.pressed ? 0.92 : 1 }],
-            },
-            vidro(estado),
-          ]}
-        >
-          <Ionicons name={secundario.icone} size={secundarioGrande ? 28 : 22} color={cores.primaria} />
-        </Pressable>
+        <BotaoRedondo icone={secundario.icone} rotulo={secundario.rotulo} onPress={secundario.onPress} />
       ) : null}
     </Animated.View>
   );
@@ -136,9 +148,9 @@ export function BotaoFlutuante({
 const estilos = StyleSheet.create({
   envoltorio: { position: 'absolute', alignItems: 'center', gap: 12 },
   secundario: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -148,7 +160,6 @@ const estilos = StyleSheet.create({
     shadowRadius: 10,
     elevation: 6,
   },
-  secundarioGrande: { width: 64, height: 64, borderRadius: 32 },
   botao: {
     width: 64,
     height: 64,
