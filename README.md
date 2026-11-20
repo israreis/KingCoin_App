@@ -17,6 +17,7 @@ App de controle financeiro pessoal para **iPhone, Android e navegador**, a parti
 - Dashboard com insights do mês e gráficos
 - Relatórios em PDF e Excel
 - Login com e-mail, Google ou Apple; biometria; lembretes por notificação
+- Exclusão da conta confirmada por código enviado ao e-mail (funciona também para contas Google/Apple)
 - Modo offline: abre com os últimos dados e envia depois as movimentações criadas sem internet
 
 ## Requisitos
@@ -35,9 +36,14 @@ App de controle financeiro pessoal para **iPhone, Android e navegador**, a parti
    - **Confirm email**: desative para testar sem confirmar cada cadastro (opcional).
    - **Secure password change** e **Secure email change**: ative.
    - **Minimum password length** = 8 e **Password requirements** com maiúsculas e símbolos.
-4. Em **Authentication > Emails**, mostre o código nos modelos **Reset Password** (recuperar senha) e **Magic Link** (confirmação para excluir a conta, que vale também para quem entra com Google ou Apple):
+4. Configure o envio de e-mails e mostre o código nos modelos. O Supabase só deixa editar os modelos com **SMTP próprio**:
+   - Numa conta Gmail dedicada ao projeto, ative a verificação em duas etapas e crie uma **senha de app** em `myaccount.google.com/apppasswords`.
+   - Em **Authentication > Emails > SMTP Settings**, ative *Custom SMTP*: host `smtp.gmail.com`, porta `465`, usuário e remetente = o Gmail do projeto, senha = a senha de app, nome do remetente `KingCoin` (o Gmail permite cerca de 500 e-mails/dia; para mais, use Brevo ou Resend).
+   - Em **Authentication > Emails**, nos modelos **Reset Password** (recuperar senha) e **Magic link or OTP** (confirmação para excluir a conta), troque o corpo para mostrar o código:
    ```html
-   <p>Seu código é: <b>{{ .Token }}</b></p>
+   <h2>Código de confirmação</h2>
+   <p>Use este código no KingCoin: <b style="font-size:24px;letter-spacing:4px">{{ .Token }}</b></p>
+   <p>Ele vale por pouco tempo e só pode ser usado uma vez.</p>
    ```
 5. Copie a **Project URL** e a chave **anon / publishable** em **Project Settings > API**.
 
@@ -50,6 +56,9 @@ Login com Google (opcional):
    - *URIs de redirecionamento autorizados*: **só** o callback do Supabase, `https://SEU-PROJETO.supabase.co/auth/v1/callback` (quem recebe a resposta do Google é o Supabase, não o site).
 4. No Supabase, em **Authentication > Sign In / Providers > Google**, ative e cole o *Client ID* e o *Client Secret* (o secret nunca vai para o app nem para o repositório).
 5. Em **Authentication > URL Configuration**: **Site URL** = endereço do site; em **Redirect URLs**, `https://SEU-ENDERECO-WEB/**`, `http://localhost:8081/**`, `kingcoin://**` e `exp://**` (o `/**` é obrigatório: o retorno na web passa por `/auth/callback`).
+
+6. Para liberar o login a qualquer conta Google, em **Público-alvo** clique em **Publicar app** (exige página inicial, Política de Privacidade e Termos preenchidos em **Branding**; o KingCoin já tem as páginas em `/landing/privacidade.html` e `/landing/termos.html`). Com os escopos básicos a publicação vale na hora.
+7. **Verificação de marca (opcional, para o logo e o nome aparecerem na tela do Google):** verifique o domínio no [Google Search Console](https://search.google.com/search-console) como propriedade *Prefixo do URL*, com a mesma conta que é **Proprietária** do projeto no Google Cloud. O arquivo de verificação fica em `public/googleab7c6d15e38e0d9a.html` — **não apague**. Depois, em **Central de verificação**, envie para análise (leva alguns dias úteis; se acabou de verificar o domínio, espere 24 h antes de enviar).
 
 Erros comuns: *redirect_uri_mismatch* no Google = o URI do passo 3 não é o callback do Supabase; "Endereço de retorno não autorizado" no app = falta o endereço em Redirect URLs; "Acesso bloqueado" = app em modo Teste e e-mail fora da lista de usuários de teste.
 
@@ -97,7 +106,9 @@ A versão web é uma **PWA**: dá para instalar pelo navegador, sem loja e sem A
 
 O app instalado abre em tela cheia, com ícone próprio, e entra direto na tela inicial se você já estiver logado (sem login, mostra a landing). Arquivos: `public/manifest.webmanifest` (nome, cores, ícones em `public/pwa/`), `public/sw.js` (service worker: guarda o app para abrir rápido e sem tela branca offline; dados do Supabase sempre vêm da rede) e `src/lib/pwa.ts` (liga o manifesto, as tags do iPhone e registra o service worker no build de produção). Ao mudar `sw.js`, troque `VERSAO` para limpar o cache antigo.
 
-Na web, quem abre o endereço principal sem login vê primeiro a landing page (`public/landing/`); os botões dela levam ao cadastro e ao login do app. Biometria e lembretes ficam escondidos, o comprovante é escolhido como arquivo, o Excel é baixado direto e o PDF abre a janela de impressão (escolha "Salvar como PDF").
+No iPhone, o fundo da página acompanha o tema (`aplicarCorDaPagina` em `src/lib/pwa.ts`) para as barras do Safari não ficarem brancas, e as barras de rolagem ficam escondidas na web.
+
+Na web, quem abre o endereço principal sem login vê primeiro a landing page (`public/landing/`, com Política de Privacidade e Termos de Uso em `privacidade.html` e `termos.html`); os botões dela levam ao cadastro e ao login do app. Biometria e lembretes ficam escondidos, o comprovante é escolhido como arquivo, o Excel é baixado direto e o PDF abre a janela de impressão (escolha "Salvar como PDF").
 
 ## Expo Go x development build
 
@@ -151,3 +162,9 @@ O roteiro de testes manuais, com avaliação de cada funcionalidade, está em [`
 - **`git pull` recusado por alterações no `package.json`**: rode `git checkout package.json` e repita o pull; depois `npm install` e `npx expo install --fix`.
 - **"Invalid path specified in request URL"**: a URL no `.env` deve terminar em `.supabase.co`, sem `/rest/v1`.
 - **"You need to be signed in to Expo CLI"**: rode `npx expo login` (contas criadas pelo GitHub podem usar um token em `EXPO_TOKEN`).
+- **Projeto do Supabase pausado**: projetos gratuitos pausam após 7 dias com pouco uso. Restaure em **Resume project** no painel (os dados voltam) e use o app pelo menos algumas vezes por semana.
+- **O código não chega / chega um link em vez do código**: confira o SMTP e os modelos de e-mail (passo 4 do Supabase).
+
+## Contato
+
+Dúvidas, sugestões ou pedidos sobre dados: [israreis.dev@gmail.com](mailto:israreis.dev@gmail.com).
