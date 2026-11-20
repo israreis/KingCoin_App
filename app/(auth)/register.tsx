@@ -1,5 +1,6 @@
 import { Link, useRouter } from 'expo-router';
 
+import { LoginSocial } from '@/components/LoginSocial';
 import { LogoInicio } from '@/components/LogoKingCoin';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
@@ -142,6 +143,8 @@ export default function Cadastro() {
         carregando={carregando}
         desabilitado={!podeEnviar}
       />
+
+      <LoginSocial onErro={setErro} />
 
       <Link href="/login" style={{ color: cores.primaria, fontWeight: '600', textAlign: 'center' }}>
         Já tenho conta

@@ -7,6 +7,13 @@
   <meta name="description" content="KingCoin: organize suas finanças pessoais no iPhone, no Android e no navegador.">
   <meta name="theme-color" content="#000805">
   <link rel="icon" href="/landing/img/favicon.svg" type="image/svg+xml">
+  <!-- PWA: instalar o KingCoin pelo navegador (abre no app se já estiver logado) -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/pwa/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="KingCoin">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="/landing/tailwind-config.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&display=swap" rel="stylesheet">
@@ -247,5 +254,8 @@
   </section>
 
   <script type="module" src="/landing/landing.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function () {});
+  </script>
 </body>
 </html>

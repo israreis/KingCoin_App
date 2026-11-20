@@ -1,10 +1,10 @@
-import { Link } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { Link, useLocalSearchParams } from 'expo-router';
+import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { LoginSocial } from '@/components/LoginSocial';
 import { LogoInicio } from '@/components/LogoKingCoin';
 import { Botao, Campo, CampoSenha, MensagemErro, TelaFormulario } from '@/components/ui';
-import { appleDisponivel, entrarComApple, entrarComGoogle } from '@/lib/oauth';
 import { supabase } from '@/lib/supabase';
 import { useTema } from '@/lib/theme';
 
@@ -18,27 +18,10 @@ export default function Login() {
   const { cores } = useTema();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-  const [erro, setErro] = useState<string | null>(null);
+  // Erro vindo do retorno do login com Google (/auth/callback)
+  const { erro: erroRetorno } = useLocalSearchParams<{ erro?: string }>();
+  const [erro, setErro] = useState<string | null>(typeof erroRetorno === 'string' ? erroRetorno : null);
   const [carregando, setCarregando] = useState(false);
-  const [social, setSocial] = useState<'google' | 'apple' | null>(null);
-  const [apple, setApple] = useState(false);
-
-  useEffect(() => {
-    appleDisponivel().then(setApple).catch(() => {});
-  }, []);
-
-  async function entrarSocial(provedor: 'google' | 'apple') {
-    setSocial(provedor);
-    setErro(null);
-    try {
-      if (provedor === 'google') await entrarComGoogle();
-      else await entrarComApple();
-    } catch (e) {
-      setErro(e instanceof Error ? e.message : 'Não foi possível entrar.');
-    } finally {
-      setSocial(null);
-    }
-  }
 
   async function entrar() {
     if (!email.trim() || !senha) {
@@ -80,23 +63,7 @@ export default function Login() {
 
       <Botao texto="Entrar" onPress={entrar} carregando={carregando} />
 
-      <Text style={{ color: cores.suave, textAlign: 'center' }}>ou</Text>
-      <Botao
-        texto="Continuar com Google"
-        icone="logo-google"
-        variante="contorno"
-        onPress={() => entrarSocial('google')}
-        carregando={social === 'google'}
-      />
-      {apple ? (
-        <Botao
-          texto="Continuar com Apple"
-          icone="logo-apple"
-          variante="contorno"
-          onPress={() => entrarSocial('apple')}
-          carregando={social === 'apple'}
-        />
-      ) : null}
+      <LoginSocial onErro={setErro} />
 
       <View style={estilos.links}>
         <Link href="/forgot-password" style={{ color: cores.primaria, fontWeight: '600' }}>

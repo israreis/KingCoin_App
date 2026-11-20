@@ -43,7 +43,14 @@ App de controle financeiro pessoal para **iPhone, Android e navegador**, a parti
    ```
 5. Copie a **Project URL** e a chave **anon / publishable** em **Project Settings > API**.
 
-Login com Google (opcional): crie um OAuth Client ID (tipo *Web*) no Google Cloud com o redirect `https://SEU-PROJETO.supabase.co/auth/v1/callback`, cole os dados em **Authentication > Providers > Google** e adicione `kingcoin://**` e `exp://**` em **Authentication > URL Configuration > Redirect URLs**.
+Login com Google (opcional):
+
+1. No [Google Cloud Console](https://console.cloud.google.com/), em **APIs e serviços > Tela de consentimento OAuth**, configure o app (nome KingCoin, e-mail de suporte) e publique.
+2. Em **Credenciais > Criar credenciais > ID do cliente OAuth**, tipo **Aplicativo da Web**. Em *URIs de redirecionamento autorizados*, coloque `https://SEU-PROJETO.supabase.co/auth/v1/callback`.
+3. No Supabase, em **Authentication > Providers > Google**, ative e cole o *Client ID* e o *Client Secret*.
+4. Em **Authentication > URL Configuration > Redirect URLs**, adicione `kingcoin://**`, `exp://**`, `http://localhost:8081/**` e `https://SEU-ENDERECO-WEB/**`.
+
+O botão "Continuar com Google" aparece no login e no cadastro, no celular e na web. Na web o retorno passa por `/auth/callback`, que espera a sessão e segue para o início (ou volta ao login com a mensagem de erro).
 
 ### 2. App
 
@@ -76,6 +83,16 @@ Publicação gratuita (escolha um):
 - **Vercel**: importe o repositório; o `vercel.json` já define o build e o redirecionamento das rotas. Cadastre `EXPO_PUBLIC_SUPABASE_URL` e `EXPO_PUBLIC_SUPABASE_ANON_KEY` nas variáveis de ambiente do projeto.
 - **Netlify**: comando de build `npx expo export --platform web`, pasta `dist`; o `public/_redirects` já trata as rotas. Cadastre as mesmas variáveis.
 - **EAS Hosting**: `npx expo export --platform web` e depois `npx eas-cli deploy`.
+
+### Instalar como app (PWA)
+
+A versão web é uma **PWA**: dá para instalar pelo navegador, sem loja e sem APK.
+
+- **Android (Chrome)**: menu ⋮ > **Instalar app** (ou o aviso que aparece na barra de endereço).
+- **iPhone (Safari)**: botão Compartilhar > **Adicionar à Tela de Início**.
+- **Computador (Chrome/Edge)**: ícone de instalar na barra de endereço.
+
+O app instalado abre em tela cheia, com ícone próprio, e entra direto na tela inicial se você já estiver logado (sem login, mostra a landing). Arquivos: `public/manifest.webmanifest` (nome, cores, ícones em `public/pwa/`), `public/sw.js` (service worker: guarda o app para abrir rápido e sem tela branca offline; dados do Supabase sempre vêm da rede) e `src/lib/pwa.ts` (liga o manifesto, as tags do iPhone e registra o service worker no build de produção). Ao mudar `sw.js`, troque `VERSAO` para limpar o cache antigo.
 
 Na web, quem abre o endereço principal sem login vê primeiro a landing page (`public/landing/`); os botões dela levam ao cadastro e ao login do app. Biometria e lembretes ficam escondidos, o comprovante é escolhido como arquivo, o Excel é baixado direto e o PDF abre a janela de impressão (escolha "Salvar como PDF").
 

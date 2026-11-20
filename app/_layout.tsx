@@ -9,6 +9,7 @@ import { TelaAbertura } from '@/components/TelaAbertura';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { BiometriaProvider } from '@/lib/biometria';
 import '@/lib/notificacoes';
+import { configurarPwa } from '@/lib/pwa';
 import { chaveSecretaNoApp, supabaseConfigurado } from '@/lib/supabase';
 import { TemaProvider, useTema } from '@/lib/theme';
 
@@ -30,6 +31,8 @@ function Guarda() {
     if (carregando || !supabaseConfigurado) return;
 
     const emAutenticacao = segmentos[0] === '(auth)';
+    // Retorno do login social: a própria tela espera a sessão e decide para onde ir.
+    if (segmentos[0] === 'auth') return;
 
     // No navegador, quem abre o site sem login vê primeiro a landing page.
     if (Platform.OS === 'web' && !session && caminho === '/') {
@@ -82,6 +85,7 @@ function MolduraWeb({ children }: { children: ReactNode }) {
       };
     }).document;
     if (Platform.OS !== 'web' || !doc) return;
+    configurarPwa();
     doc.querySelectorAll('link[rel~="icon"], link[rel="shortcut icon"]').forEach((el) => el.remove());
     const link = doc.createElement('link');
     link.setAttribute('rel', 'icon');
