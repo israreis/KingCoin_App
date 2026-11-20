@@ -37,7 +37,7 @@ App de controle financeiro pessoal para **iPhone, Android e navegador**, a parti
    - **Confirm email**: desative para testar sem confirmar cada cadastro (opcional).
    - **Secure password change** e **Secure email change**: ative.
    - **Minimum password length** = 8 e **Password requirements** com maiúsculas e símbolos.
-4. Em **Authentication > Emails > Reset Password**, mostre o código no e-mail:
+4. Em **Authentication > Emails**, mostre o código nos modelos **Reset Password** (recuperar senha) e **Magic Link** (confirmação para excluir a conta, que vale também para quem entra com Google ou Apple):
    ```html
    <p>Seu código é: <b>{{ .Token }}</b></p>
    ```
