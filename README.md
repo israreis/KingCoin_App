@@ -7,7 +7,7 @@ App de controle financeiro pessoal para **iPhone, Android e navegador**, a parti
 | Versão | Situação |
 | --- | --- |
 | **Mobile (iOS e Android)** | Versão principal. Funcionalidades completas e testadas. |
-| **Web** | 🚧 **Em reformulação.** Já funciona com a mesma conta e o mesmo banco do app, mas o layout e algumas interações ainda estão sendo ajustados. |
+| **Web** | 🚧 **Em reformulação.** Publicada em **[kingcoin-nine.vercel.app](https://kingcoin-nine.vercel.app)** e instalável como app (PWA). Já funciona com a mesma conta e o mesmo banco do app, mas o layout e algumas interações ainda estão sendo ajustados. |
 
 > Projeto em desenvolvimento ativo. A versão web pode mudar de visual e comportamento entre um commit e outro.
 
@@ -45,10 +45,15 @@ App de controle financeiro pessoal para **iPhone, Android e navegador**, a parti
 
 Login com Google (opcional):
 
-1. No [Google Cloud Console](https://console.cloud.google.com/), em **APIs e serviços > Tela de consentimento OAuth**, configure o app (nome KingCoin, e-mail de suporte) e publique.
-2. Em **Credenciais > Criar credenciais > ID do cliente OAuth**, tipo **Aplicativo da Web**. Em *URIs de redirecionamento autorizados*, coloque `https://SEU-PROJETO.supabase.co/auth/v1/callback`.
-3. No Supabase, em **Authentication > Providers > Google**, ative e cole o *Client ID* e o *Client Secret*.
-4. Em **Authentication > URL Configuration > Redirect URLs**, adicione `kingcoin://**`, `exp://**`, `http://localhost:8081/**` e `https://SEU-ENDERECO-WEB/**`.
+1. No [Google Cloud Console](https://console.cloud.google.com/), crie um projeto (ex.: `KingCoin`) e selecione-o no seletor do topo.
+2. Em **Google Auth Platform** (antes "Tela de consentimento OAuth"): preencha **Branding** (nome KingCoin, e-mail de suporte, domínios autorizados `SEU-PROJETO.supabase.co` e o domínio do site), **Público-alvo** como *Externo* (em modo Teste só entram os usuários de teste; publique quando estiver pronto) e, em **Acesso a dados**, os escopos `openid`, `userinfo.email` e `userinfo.profile`.
+3. Em **Clientes > Criar cliente**, tipo **Aplicativo da Web**:
+   - *Origens JavaScript autorizadas*: o endereço do site (ex.: `https://kingcoin-nine.vercel.app`) e `http://localhost:8081`.
+   - *URIs de redirecionamento autorizados*: **só** o callback do Supabase, `https://SEU-PROJETO.supabase.co/auth/v1/callback` (quem recebe a resposta do Google é o Supabase, não o site).
+4. No Supabase, em **Authentication > Sign In / Providers > Google**, ative e cole o *Client ID* e o *Client Secret* (o secret nunca vai para o app nem para o repositório).
+5. Em **Authentication > URL Configuration**: **Site URL** = endereço do site; em **Redirect URLs**, `https://SEU-ENDERECO-WEB/**`, `http://localhost:8081/**`, `kingcoin://**` e `exp://**` (o `/**` é obrigatório: o retorno na web passa por `/auth/callback`).
+
+Erros comuns: *redirect_uri_mismatch* no Google = o URI do passo 3 não é o callback do Supabase; "Endereço de retorno não autorizado" no app = falta o endereço em Redirect URLs; "Acesso bloqueado" = app em modo Teste e e-mail fora da lista de usuários de teste.
 
 O botão "Continuar com Google" aparece no login e no cadastro, no celular e na web. Na web o retorno passa por `/auth/callback`, que espera a sessão e segue para o início (ou volta ao login com a mensagem de erro).
 
@@ -76,11 +81,11 @@ npm run web          # abre no navegador em http://localhost:8081
 npm run build:web    # gera o site estático em dist/
 ```
 
-No Supabase, em **Authentication > URL Configuration**, adicione em **Redirect URLs** o endereço local (`http://localhost:8081`) e o endereço publicado. Use o endereço publicado também como **Site URL**.
+No Supabase, em **Authentication > URL Configuration**, adicione em **Redirect URLs** o endereço local (`http://localhost:8081/**`) e o endereço publicado (`https://SEU-ENDERECO-WEB/**`). Use o endereço publicado também como **Site URL**.
 
 Publicação gratuita (escolha um):
 
-- **Vercel**: importe o repositório; o `vercel.json` já define o build e o redirecionamento das rotas. Cadastre `EXPO_PUBLIC_SUPABASE_URL` e `EXPO_PUBLIC_SUPABASE_ANON_KEY` nas variáveis de ambiente do projeto.
+- **Vercel**: importe o repositório; o `vercel.json` já define o build e o redirecionamento das rotas. Cadastre `EXPO_PUBLIC_SUPABASE_URL` e `EXPO_PUBLIC_SUPABASE_ANON_KEY` nas variáveis de ambiente **antes do primeiro deploy** (elas entram no app na hora do build; se mudar depois, faça *Redeploy*). Preset: *Other*.
 - **Netlify**: comando de build `npx expo export --platform web`, pasta `dist`; o `public/_redirects` já trata as rotas. Cadastre as mesmas variáveis.
 - **EAS Hosting**: `npx expo export --platform web` e depois `npx eas-cli deploy`.
 
