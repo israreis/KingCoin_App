@@ -28,6 +28,14 @@ export function configurarPwa() {
   const doc = g.document;
   if (!doc) return;
 
+  // Sem barras de rolagem visíveis (a rolagem continua funcionando com dedo, roda e teclado)
+  if (!doc.querySelector('style#kc-sem-barra')) {
+    const estilo = doc.createElement('style') as Elemento & { textContent: string };
+    estilo.setAttribute('id', 'kc-sem-barra');
+    estilo.textContent =
+      '*{scrollbar-width:none;-ms-overflow-style:none}*::-webkit-scrollbar{display:none;width:0;height:0}';
+    doc.head.appendChild(estilo);
+  }
   garantir(doc, 'link[rel="manifest"]', 'link', { rel: 'manifest', href: '/manifest.webmanifest' });
   garantir(doc, 'link[rel="apple-touch-icon"]', 'link', { rel: 'apple-touch-icon', href: '/pwa/apple-touch-icon.png' });
   garantir(doc, 'meta[name="apple-mobile-web-app-capable"]', 'meta', { name: 'apple-mobile-web-app-capable', content: 'yes' });
