@@ -7,9 +7,7 @@ App de controle financeiro pessoal para **iPhone, Android e navegador**, a parti
 | Versão | Situação |
 | --- | --- |
 | **Mobile (iOS e Android)** | Versão principal. Funcionalidades completas e testadas. |
-| **Web** | 🚧 **Em reformulação.** Publicada em **[kingcoin-nine.vercel.app](https://kingcoin-nine.vercel.app)** e instalável como app (PWA). Já funciona com a mesma conta e o mesmo banco do app, mas o layout e algumas interações ainda estão sendo ajustados. |
-
-> Projeto em desenvolvimento ativo. A versão web pode mudar de visual e comportamento entre um commit e outro.
+| **Web** | Publicada em **[kingcoin-nine.vercel.app](https://kingcoin-nine.vercel.app)** e instalável como app (PWA). Usa a mesma conta e o mesmo banco do app. |
 
 ## Funcionalidades
 
@@ -74,7 +72,7 @@ Nunca coloque a chave `service_role` no app: a chave anon é pública e quem pro
 
 ## Versão web
 
-> 🚧 **Em reformulação.** Login, Carteira, Movimentações, Metas, Dashboard, Organização (orçamentos, recorrências e categorias) e relatórios em PDF e Excel já funcionam. Em andamento: refinamento do layout para computador, consistência visual entre as telas e animações.
+Login (e-mail, senha e Google), Carteira, Movimentações, Metas, Dashboard, Organização (orçamentos, recorrências e categorias) e relatórios em PDF e Excel funcionam no navegador, no celular e no computador.
 
 ```bash
 npm run web          # abre no navegador em http://localhost:8081
