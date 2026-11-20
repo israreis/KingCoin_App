@@ -69,6 +69,8 @@ export function BotaoFlutuante({
         ? 24
         : insets.bottom + 88
       : insets.bottom + 24;
+  // No computador (web), o botão secundário fica do mesmo tamanho do principal.
+  const secundarioGrande = web && desktop;
   const animacao = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -115,6 +117,7 @@ export function BotaoFlutuante({
           accessibilityLabel={secundario.rotulo}
           style={(estado) => [
             estilos.secundario,
+            secundarioGrande && estilos.secundarioGrande,
             {
               backgroundColor: cores.card,
               borderColor: cores.borda,
@@ -123,7 +126,7 @@ export function BotaoFlutuante({
             vidro(estado),
           ]}
         >
-          <Ionicons name={secundario.icone} size={22} color={cores.primaria} />
+          <Ionicons name={secundario.icone} size={secundarioGrande ? 28 : 22} color={cores.primaria} />
         </Pressable>
       ) : null}
     </Animated.View>
@@ -145,6 +148,7 @@ const estilos = StyleSheet.create({
     shadowRadius: 10,
     elevation: 6,
   },
+  secundarioGrande: { width: 64, height: 64, borderRadius: 32 },
   botao: {
     width: 64,
     height: 64,
